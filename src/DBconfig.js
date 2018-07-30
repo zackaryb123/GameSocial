@@ -1,5 +1,3 @@
-// import * as firebase from 'firebase';
-
 // Local
 export const API_LOCAL_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 
@@ -15,7 +13,3 @@ export const fireConfig = {
   storageBucket: "reactive-redux-template.appspot.com",
   messagingSenderId: "185681445453"
 };
-// firebase.initializeApp(fireConfig);
-//
-// export const fireBb = firebase.database();
-// export const fireAuth =  firebase.auth();

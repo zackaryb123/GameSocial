@@ -35,10 +35,10 @@ class LoginModal extends Component {
     this.props.registerFirebase(values);
   }
 
-  // closeResetModal(){
-  //   this.props.dispatch(reset('loginPassword'));
-  //   this.props.closeModal();
-  // }
+  closeResetModal(){
+    this.props.dispatch(reset('loginPassword'));
+    this.props.closeModal();
+  }
 
   handleItemClick = (e, { name }) => {
     this.props.openLoginModal();
@@ -70,7 +70,7 @@ class LoginModal extends Component {
 
   render() {
     const {activeItem} = this.state;
-    const { handleSubmit, loginModal, auth } = this.props;
+    const { handleSubmit, loginModal } = this.props;
 
     return (
       <Modal open={this.props.openModal} closeOnDocumentClick={true} closeOnDimmerClick={false} basic size='small'>
@@ -119,7 +119,8 @@ const LoginForm = reduxForm({
   validate: validate
 })(
   connect(mapStateToProps,
-    {loginMlab, loginFirebase, registerMlab, registerFirebase, closeLoginModal, openLoginModal, openForgotPasswordModal})
+    {loginMlab, loginFirebase, registerMlab, registerFirebase,
+      closeLoginModal, openLoginModal, openForgotPasswordModal})
   (LoginModal)
 );
 

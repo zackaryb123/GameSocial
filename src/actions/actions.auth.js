@@ -4,8 +4,8 @@ import * as firebase from 'firebase';
 import {API_BASE_URL} from '../DBconfig';
 import {normalizeResponseErrors} from './utils';
 import {saveAuthToken, clearAuthToken} from '../local-storage'; //import clearAuthToken removed
-import {Modal, NewUserObject} from './models';
-import {loginModal, closeLoginModal, openLoginModal} from "./actions.modals";
+import {NewUserObject} from './models';
+import {closeLoginModal, openLoginModal} from "./actions.modals";
 
 export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN';
 export const setAuthToken = authToken => ({
@@ -67,6 +67,17 @@ export const registerFirebase = (values) => dispatch => {
       dispatch(authError(error));
       dispatch(openLoginModal(error.code, error.message, 1));
     });
+};
+
+export const signOut = () => dispatch => {
+  dispatch(authRequest());
+  return firebase.auth().signOut().then(() =>{
+    console.log('Sign Out Successful');
+    dispatch(clearAuth());
+    dispatch(openLoginModal('Sign out Successful!', '', 0));
+  }).catch(error =>{
+    dispatch(authError(error));
+  });
 };
 
 /**********mLab Actions************/

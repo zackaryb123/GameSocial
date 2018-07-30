@@ -1,60 +1,62 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import {Header, Segment} from 'semantic-ui-react'
 // import _ from 'lodash';
 
-class ContainerHome extends Component {
+class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "ContainerHome",
+      name: "Home Container",
       status: 0
     };
-    console.log(this.state.name, "Constructor");
+    // console.log(this.state.name, "Constructor");
   }
 
 
   componentWillMount() {
     //Constructor equivalent (state updates)
-    console.log(this.state.name, "Will Mount");
+    // console.log(this.state.name, "Will Mount");
+
   }
 
   componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    console.log(this.state.name,"Did Mount");
+    // console.log(this.state.name,"Did Mount");
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // Compare and determine if render needed (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
     return true;
   }
 
   componentWillUpdate(nextProps, nextState) {
     // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    console.log(this.state.name ,"Will Update", nextProps, nextState);
+    // console.log(this.state.name ,"Will Update", nextProps, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
-    console.log(this.state.name, "Did Update", prevProps, prevState)
+    // console.log(this.state.name, "Did Update", prevProps, prevState)
   }
 
   componentWillUnmount(){
     //DOM Manipulation (side effects)
-    console.log(this.state.name, "Will Unmount");
+    // console.log(this.state.name, "Will Unmount");
   }
 
   render() {
     // const {name, status} = this.state;
     return (
-      <div>
-        <h1>Home</h1>
-      </div>
+      <Segment>
+        <Header>Home</Header>
+      </Segment>
     );
   }
 }
@@ -64,4 +66,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps,
-  {})(ContainerHome);
+  {})(Home);

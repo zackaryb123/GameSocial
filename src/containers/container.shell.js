@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {Redirect} from 'react-router-dom';
 
 import { closeLoginModal, closeResetPasswordModal, closeForgotPasswordModal,
   openLoginModal, openResetPasswordModal, openForgotPasswordModal } from '../actions/actions.modals';
@@ -14,46 +13,52 @@ class ContainerShell extends Component{
   constructor(props) {
     super(props);
     this.state = {
-     name: 'Shell'
+      name: 'Shell',
+      display: 'none'
     }
   }
 
 
   componentWillMount() {
     //Constructor equivalent (state updates)
-    console.log(this.state.name, "Will Mount");
+    // console.log(this.state.name, "Will Mount");
   }
 
   componentDidMount(){
-    console.log(this.state.name,"Did Mount");
-
+    //DOM Manipulation (side effects/state updates)(render occurs before)
+    // console.log(this.state.name,"Did Mount");
     this.props.initApp();
-    console.log('App Initialized');
   }
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
+
+    // Display app when logged in
+    if(nextProps.auth.currentUser){this.setState({display: 'block'})}
+
+    // Hide app when signed out
+    if(!nextProps.auth.currentUser){this.setState({display: 'none'})}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // Compare and determine if render needed (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
     return true;
   }
 
   componentWillUpdate(nextProps, nextState) {
     // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    console.log(this.state.name ,"Will Update", nextProps, nextState);
+    // console.log(this.state.name ,"Will Update", nextProps, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
-    console.log(this.state.name, "Did Update", prevProps, prevState)
+    // console.log(this.state.name, "Did Update", prevProps, prevState)
   }
 
   componentWillUnmount(){
     //DOM Manipulation (side effects)
-    console.log(this.state.name, "Will Unmount");
+    // console.log(this.state.name, "Will Unmount");
   }
 
 
@@ -70,7 +75,7 @@ class ContainerShell extends Component{
   }
 
   closeLoginModal(e){
-    this.props.closeLoginModal(0);
+    this.props.closeLoginModal();
   }
 
   closeResetPasswordModal(e){
@@ -83,9 +88,11 @@ class ContainerShell extends Component{
 
 
   render() {
-    const {children, resetPasswordModal, forgotPasswordModal, loginModal } = this.props;
+    // console.log('Shell render');
+    const {children, resetPasswordModal, forgotPasswordModal, loginModal} = this.props;
+    const {display} = this.state;
     return (
-      <div className="shell">
+      <div className="shell" style={{display: display}}>
         {children}
         {loginModal.openModal &&
           <LoginModal autoOptions={loginModal} openModal={loginModal.openModal} closeModal={this.closeLoginModal.bind(this)} openForgotPassModal={this.openForgotPassModal.bind(this)} /> }
@@ -99,9 +106,10 @@ class ContainerShell extends Component{
 }
 
 const mapStateToProps = state => ({
+  auth: state.auth,
   loginModal: state.loginModal,
   resetPasswordModal: state.resetPasswordModal,
-  forgotPasswordModal: state.forgotPasswordModal
+  forgotPasswordModal: state.forgotPasswordModal,
 });
 
 export default connect(mapStateToProps,

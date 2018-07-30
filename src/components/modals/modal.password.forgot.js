@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, reset } from 'redux-form';
 import {Message, Header, Input, Modal, Form, Button, Icon, Label} from 'semantic-ui-react';
 import { forgotPasswordValidate } from '../form/form.validation';
-import * as firebase from "firebase";
 import {openLoginModal, sendResetPassEmail} from "../../actions/actions.modals";
 // import _ from 'lodash';
 
