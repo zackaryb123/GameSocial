@@ -88,3 +88,17 @@ export function resetPasswordValidate(value){
   //If error
   return errors;
 }
+
+
+export function uploadValidation(value){
+  const errors = {};
+  console.log('uploadValidation');
+
+  console.log(value);
+
+  if(!value.caption){
+    errors.caption = "Caption Required";
+  }
+
+  return errors;
+}

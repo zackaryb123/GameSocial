@@ -1,4 +1,4 @@
-import {API_BASE_URL} from '../DBconfig';
+import {API_BASE_URL} from '../dbConfig';
 import {normalizeResponseErrors} from './utils';
 
 export const FETCH_PROTECTED_DATA_SUCCESS = 'FETCH_PROTECTED_DATA_SUCCESS';
@@ -13,6 +13,9 @@ export const fetchProtectedDataError = error => ({
   error
 });
 
+/*********Firebase*********/
+
+/******mLab********/
 export const fetchProtectedData = () => (dispatch, getState) => {
   const authToken = getState().auth.authToken;
   return fetch(`${API_BASE_URL}/protected`, {

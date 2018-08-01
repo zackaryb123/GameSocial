@@ -1,5 +1,5 @@
 import * as firebase from 'firebase';
-import {fireConfig}  from "../DBconfig";
+import {fireConfig}  from "../dbConfig";
 import {openLoginModal, closeResetPasswordModal, openResetPasswordModal} from "./actions.modals";
 
 export const initApp = () => dispatch => {

@@ -7,7 +7,7 @@ class Community extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "ContainerHome",
+      name: "Community Container",
       status: 0
     };
     // console.log(this.state.name, "Constructor");

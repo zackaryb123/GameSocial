@@ -1,27 +1,26 @@
-import {SubmissionError} from 'redux-form';
+import * as firebase from "firebase";
+import _ from 'lodash';
 
-import {API_BASE_URL} from '../DBconfig';
-import {normalizeResponseErrors} from './utils';
+export const USER_REQUEST = 'USER_REQUEST';
+export const userRequest = () => ({
+  type: USER_REQUEST,
+});
 
-export const registerUser = user => dispatch => {
-  return fetch(`${API_BASE_URL}/users`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify(user)
-  })
-    .then(res => normalizeResponseErrors(res))
-    .then(res => res.json())
-    .catch(err => {
-      const {reason, message, location} = err;
-      if (reason === 'ValidationError') {
-        // Convert ValidationErrors into SubmissionErrors for Redux Form
-        return Promise.reject(
-          new SubmissionError({
-            [location]: message
-          })
-        );
-      }
-    });
+export const USER_GET = 'USER_GET_SUCCESS';
+export const userGet = (data) => ({
+  type: USER_GET,
+  data
+});
+
+export const USER_ERROR = 'USER_ERROR';
+export const userError = error => ({
+  type: USER_ERROR,
+  error
+});
+
+export const getUserOnce = userId => dispatch => {
+  dispatch(userRequest());
+  return firebase.database().ref(`users/${userId}/`).once('value', (data) => {
+    dispatch(userGet(data.val()));
+  }).catch(error => dispatch(userError(error)));
 };

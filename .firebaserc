@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "reactive-redux-template"
+    "gamesocial-dev": "gamesocial-zb",
+    "default": "gamesocial-zb"
   }
 }

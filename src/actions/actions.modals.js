@@ -1,35 +1,38 @@
-import { Modal } from './models';
+import {Modal, NewVideoObj} from './models';
 import * as firebase from 'firebase';
 
-
 export const LOGIN_MODAL = 'LOGIN_MODAL';
-export const RESET_PASSWORD_MODAL = 'RESET_PASSWORD_MODAL';
+export const loginModal = (content) => ({
+  type: LOGIN_MODAL,
+  payload: content
+});
+
 export const FORGOT_PASSWORD_MODAL = 'FORGOT_PASSWORD_MODAL';
+export const forgotPasswordModal = (content) => ({
+  type: FORGOT_PASSWORD_MODAL,
+  payload: content
 
+});
 
-/******Action Modals********/
-export function loginModal(content){
-  return {
-    type: LOGIN_MODAL,
-    payload: content
-  }
-}
+export const RESET_PASSWORD_MODAL = 'RESET_PASSWORD_MODAL';
+export const resetPasswordModal = (content) => ({
+  type: RESET_PASSWORD_MODAL,
+  payload: content
+});
 
-export function forgotPasswordModal(content){
-  return {
-    type: FORGOT_PASSWORD_MODAL,
-    payload: content
-  }
-}
+export const UPLOAD_MODAL = 'UPLOAD_MODAL';
+export const uploadModal = (content) => ({
+  type: UPLOAD_MODAL,
+  payload: content
+});
 
-export function resetPasswordModal(content){
-  return {
-    type: RESET_PASSWORD_MODAL,
-    payload: content
-  }
-}
+export const FEEDBACK_MODAL = 'FEEDBACK_MODAL';
+export const feedbackModal = (content) => ({
+  type: FEEDBACK_MODAL,
+  payload: content
+});
 
-/******Open Modals********/
+/******Open Modal Actions********/
 export function openLoginModal(header, message, status){
   return function (dispatch) {
     let newModal = new Modal(true, false, false, false, message, header, status);
@@ -51,10 +54,25 @@ export function openResetPasswordModal(header, message, status){
   }
 }
 
-/******Close Modals********/
+export function openUploadModal(header, message, status, isLoading){
+  return function (dispatch) {
+    let newModal = new Modal(true, isLoading, false,false, message, header, status);
+    dispatch(uploadModal(newModal));
+  }
+}
+
+export function openFeedbackModal(header, message, status){
+  return function (dispatch) {
+    let newModal = new Modal(true, false, false,false, message, header, status);
+    dispatch(feedbackModal(newModal));
+  }
+}
+
+
+/******Close Modals Actions********/
 export function closeLoginModal(){
   return function (dispatch) {
-    let newModal = new Modal(false, false, false,false, '', '');
+    let newModal = new Modal(false, false, false,false, '', '', null);
     dispatch(loginModal(newModal));
   }
 }
@@ -74,7 +92,21 @@ export function closeResetPasswordModal(){
   }
 }
 
-// Actions
+export function closeUploadModal(){
+  return function (dispatch) {
+    let newModal = new Modal(false, false, false, false, '', '', null);
+    dispatch(uploadModal(newModal));
+  }
+}
+
+export function closeFeedbackModal(){
+  return function (dispatch) {
+    let newModal = new Modal(false, false, false, false, '', '', null);
+    dispatch(feedbackModal(newModal));
+  }
+}
+
+/******Modal Services********/
 export const sendResetPassEmail = (email) => dispatch => {
   return firebase.auth().sendPasswordResetEmail(email)
     .then(function(data) {
@@ -86,3 +118,25 @@ export const sendResetPassEmail = (email) => dispatch => {
       dispatch(openForgotPasswordModal(error.code, error.message, 1))
   });
 };
+
+export const upload = (data, file) => dispatch => {
+  return new Promise((resolve) => {
+    const upload = new NewVideoObj(data, file);
+    const postId = firebase.database().ref().child('uploads').push().key;
+    upload.id = postId;
+
+    const updates = {};
+    updates[`uploads/${postId}`] = upload;
+    updates[`users/${data.publisher.id}/uploads/${postId}`] = upload;
+    firebase.database().ref().update(updates);
+
+    resolve(true);
+  }).then((res) => {if(res){
+    dispatch(closeUploadModal());
+    dispatch(openFeedbackModal('Congrats!','Upload is complete.', 0, false))}
+  }).catch(error => {
+    dispatch(closeFeedbackModal());
+    dispatch(openUploadModal(error.code, error.message, 1, false))
+  });
+};
+

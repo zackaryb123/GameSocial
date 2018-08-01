@@ -4,7 +4,7 @@ import promise from 'redux-promise';
 import {composeWithDevTools} from 'redux-devtools-extension';
 
 //TODO: Learn
-// import { persistStore, persistReducer } from 'redux-persist';
+import { persistStore, persistReducer } from 'redux-persist';
 
 import rootReducer from "./reducers";
 
@@ -13,6 +13,6 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(promise,thunk))
 );
 
-//persistStore(store);
+persistStore(store);
 
 export default store;

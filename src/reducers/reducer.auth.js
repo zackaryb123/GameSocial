@@ -2,7 +2,7 @@ import {
   SET_AUTH_TOKEN,
   CLEAR_AUTH,
   AUTH_REQUEST,
-  AUTH_SUCCESS,
+  AUTH_GET,
   AUTH_ERROR
 } from '../actions/actions.auth';
 
@@ -28,7 +28,7 @@ export default function reducer(state = initialState, action) {
       loading: true,
       error: null
     });
-  } else if (action.type === AUTH_SUCCESS) {
+  } else if (action.type === AUTH_GET) {
     return Object.assign({}, state, {
       loading: false,
       currentUser: action.currentUser

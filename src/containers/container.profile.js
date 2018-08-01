@@ -17,7 +17,6 @@ class Profile extends Component {
   componentWillMount() {
     //Constructor equivalent (state updates)
     // console.log(this.state.name, "Will Mount");
-
   }
 
   componentDidMount() {

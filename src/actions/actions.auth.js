@@ -1,7 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import {SubmissionError} from 'redux-form';
 import * as firebase from 'firebase';
-import {API_BASE_URL} from '../DBconfig';
+import {API_BASE_URL} from '../dbConfig';
 import {normalizeResponseErrors} from './utils';
 import {saveAuthToken, clearAuthToken} from '../local-storage'; //import clearAuthToken removed
 import {NewUserObject} from './models';
@@ -23,9 +23,9 @@ export const authRequest = () => ({
   type: AUTH_REQUEST
 });
 
-export const AUTH_SUCCESS = 'AUTH_SUCCESS';
-export const authSuccess = currentUser => ({
-  type: AUTH_SUCCESS,
+export const AUTH_GET = 'AUTH_GET';
+export const authGet = currentUser => ({
+  type: AUTH_GET,
   currentUser
 });
 
@@ -42,7 +42,7 @@ export const loginFirebase = (email, password) => dispatch => {
     return firebase.auth().signInWithEmailAndPassword(email, password)
       .then(auth => {
         if(auth.user.emailVerified) {
-          dispatch(authSuccess(auth.user));
+          dispatch(authGet(auth.user));
           dispatch(closeLoginModal(3));
           resolve(auth.user);
         }
@@ -141,7 +141,7 @@ export const registerMlab = (user) => dispatch => {
 export const storeAuthInfo = (authToken, dispatch) => {
   const decodedToken = jwtDecode(authToken);
   dispatch(setAuthToken(authToken));
-  dispatch(authSuccess(decodedToken.user)); //changed user to username then removed username
+  dispatch(authGet(decodedToken.user)); //changed user to username then removed username
   saveAuthToken(authToken);
 };
 
