@@ -6,6 +6,8 @@ import authReducer from './reducer.auth';
 import userReducer from './reducer.user';
 import feedReducer from './reducer.feed';
 import likesReducer from './reducer.likes';
+import favoritesReducer from './reducer.favoirites';
+import viewsReducer from './reducer.count.views';
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -13,6 +15,8 @@ const rootReducer = combineReducers({
   user: userReducer,
   feed: feedReducer,
   likes: likesReducer,
+  favorites: favoritesReducer,
+  viewsCount: viewsReducer,
   loginModal: loginModalReducer,
   forgotPasswordModal: forgotPasswordReducer,
   resetPasswordModal: resetPasswordReducer,

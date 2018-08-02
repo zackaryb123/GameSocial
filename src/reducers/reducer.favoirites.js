@@ -1,33 +1,27 @@
 import {
-  FAVORITE_REQUEST, FAVORITE_ERROR, FAVORITE_GET_SUCCESS, FAVORITE_DELETE_SUCCESS
-} from '../actions/action.favorite';
+  FAVORITES_REQUEST, FAVORITES_ERROR, FAVORITES_GET
+} from '../actions/actions.favorites';
 
 const initialState = {
   loading: false,
   error: null,
-  data: []
+  data: null
 };
 
 export default function reducer(state = initialState, action) {
   switch(action.type){
-    case (FAVORITE_REQUEST):
+    case (FAVORITES_REQUEST):
       return Object.assign({}, state, {
         loading: true,
         error: null
       });
-    case(FAVORITE_GET_SUCCESS):
+    case(FAVORITES_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,
         loading: false
       });
-    case(FAVORITE_DELETE_SUCCESS):
-      return Object.assign({}, state, {
-        data: [],
-        error: null,
-        loading: false
-      });
-    case(FAVORITE_ERROR):
+    case(FAVORITES_ERROR):
       return Object.assign({}, state, {
         error: action.error,
         loading: false

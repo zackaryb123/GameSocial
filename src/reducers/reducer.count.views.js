@@ -1,11 +1,11 @@
 import {
-  COUNT_VIEWS_REQUEST, COUNT_VIEWS_ERROR, COUNT_VIEWS_GET_SUCCESS
+  COUNT_VIEWS_REQUEST, COUNT_VIEWS_ERROR, COUNT_VIEWS_GET
 } from '../actions/actions.count.views';
 
 const initialState = {
   loading: false,
   error: null,
-  data: []
+  data: null
 };
 
 export default function reducer(state = initialState, action) {
@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
         loading: true,
         error: null
       });
-    case(COUNT_VIEWS_GET_SUCCESS):
+    case(COUNT_VIEWS_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,

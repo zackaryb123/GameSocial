@@ -8,6 +8,7 @@ import {getUserOnce} from "../../actions/actions.user";
 import {openUploadModal, upload} from "../../actions/actions.modals";
 import FormDropzone from "../form/form.dropzone";
 import {CloudinaryConfig} from "../../dbConfig";
+
 import axios from "axios";
 
 class UploadModal extends Component {
@@ -38,6 +39,8 @@ class UploadModal extends Component {
   }
 
   onFileSelect(file) {
+    //const CloudinaryConfig = require('CloudinaryConfig');
+
     const unsignedUploadPreset = CloudinaryConfig.cloud_name;
     const thisComponent = this;
     const fileSelected = file[0];

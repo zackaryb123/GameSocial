@@ -18,7 +18,7 @@ class FeedCard extends Component {
   hover = () => this.setState({hover: true});
   unhover = () => this.setState({hover: false});
 
-  renderCardContent = (upload, hover, state) => {
+  renderCardContent = (upload, hover) => {
     return (
       <Card.Content style={hover ? topContentHover : {display: 'none'}}>
         <Feed>
@@ -32,14 +32,14 @@ class FeedCard extends Component {
               <Feed.Extra style={cWhite} text>{upload.caption}</Feed.Extra>
               <Feed.Meta style={metaContent}>
                 <Feed.Like>
-                  <Icon inverted name='eye' />
+                  <Icon inverted name={'eye'}/>
                   <span style={cWhite}>{_.size(upload.views)}</span>
                 </Feed.Like>
                 <Feed.Like>
                   <LikeToggle upload={upload}/>
                 </Feed.Like>
                 <Feed.Like>
-                  <Icon inverted name='star'/>
+                  <FavoriteToggle upload={upload}/>
                 </Feed.Like>
               </Feed.Meta>
             </Feed.Content>

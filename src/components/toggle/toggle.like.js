@@ -1,33 +1,30 @@
 import React, { Component } from 'react';
-import * as firebase from 'firebase';
-import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {Feed, Icon} from 'semantic-ui-react';
-import {removeLike, addLike, getLikesOnce} from "../../actions/actions.likes";
+import {Icon} from 'semantic-ui-react';
+import {removeLike, addLike, getInitLikeState, getLikesOnce} from "../../actions/actions.likes";
+import {upload} from "../../actions/actions.modals";
 
-//TODO: pass uploadId from this parent
 class LikeToggle extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: 'Like Toggle',
-      liked: null,
+      isLiked: null,
       count: null,
+      renderLikes: null
     }
   }
 
-  componentWillMount() {
-    //Constructor equivalent (state updates)
-    // console.log(this.state.name, "Will Mount");
-
-    // Initialize uploads like count
-    this.setState({count: _.size(this.props.upload.likes)})
-  }
-
-  componentDidMount(){
+  componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name, 'Did Mount ');
+    console.log(this.state.name, 'Did Mount ');
+
+    // TODO: Find a better way to initialize likes
+    const {upload, auth, getInitLikeState} = this.props;
+    getInitLikeState(auth.currentUser.uid, upload.id)
+      .then(exist =>
+        this.setState({count: _.size(upload.likes), isLiked: exist, renderLikes: true}));
   }
 
   componentWillReceiveProps(nextProps) {
@@ -35,32 +32,39 @@ class LikeToggle extends Component {
     console.log(this.state.name, "Will Receive Props", nextProps);
 
     const {upload, likes} = this.props;
-    // On like props received set the liked boolean
-    if(nextProps.likes.data !== likes.data)
-    {this.setState({liked: upload.id in nextProps.likes.data})}
+    // Only handles state change by check renderLikes (renderLikes set to false when props updated on click)
+    if (this.state.renderLikes && (nextProps.likes.data !== likes.data)){
+      this.setState({isLiked: nextProps.likes.data && (upload.id in nextProps.likes.data), renderLikes: true})
+    }else{console.log('Component Up to date!')}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // Compare and determine if render needed (DO NOT CHANGE STATE)
     console.log("Should", this.state.name, "Update", nextProps, nextState);
-    if(nextProps.likes.data !== this.props.likes.data) {return true}
-    return false;
-  }
 
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-
+    switch (true) {
+      case (nextState.renderLikes):
+        return true;
+      case (nextState.count !== this.state.count):
+        return true;
+      default:
+        return false
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
-    console.log(this.state.name, "Did Update", prevProps, prevState)
-  }
+    console.log(this.state.name, "Did Update", prevProps, prevState);
+    const {renderLikes, isLiked} = this.state;
 
-  componentWillUnmount(){
-    //DOM Manipulation (side effects)
-    // console.log(this.state.name, "Will Unmount");
+    switch(true) {
+      case (renderLikes && isLiked):
+        return this.setState({renderLikes: false, count: _.size(upload.likes) + 1});
+      case(renderLikes && !isLiked):
+        return this.setState({renderLikes: false, count: _.size(upload.likes)});
+      default:
+        return ('Last Render')
+    }
   }
 
   unLike = () =>{
@@ -68,26 +72,26 @@ class LikeToggle extends Component {
     const {auth, upload} = this.props;
     this.props.removeLike(auth.currentUser.uid, upload.id, upload.publisher.id);
     this.props.getLikesOnce(auth.currentUser.uid);
-
-    this.setState({count: this.state.count - 1})
+    // Set renderLikes to false to prevent prop updates from causing re-renders
+    this.setState({count: this.state.count - 1, isLiked: false, renderLikes: false})
   };
 
-  like = () => {
+  doLike = () => {
     console.log('click favorite success');
     const {auth, upload} = this.props;
     this.props.addLike(auth.currentUser.uid, upload.id, upload.publisher.id);
     this.props.getLikesOnce(auth.currentUser.uid);
-
-    this.setState({count: this.state.count + 1})
+    // Set renderLikes to false to prevent prop updates from causing re-renders
+    this.setState({count: this.state.count + 1, isLiked: true, renderLikes: false})
   };
 
   render() {
     const {auth} = this.props;
-    const {liked, count} = this.state;
+    const {isLiked, count} = this.state;
     return (
       auth.currentUser &&
       <span>
-        <Icon inverted name={liked ? 'heart' : 'heart outline'} onClick={liked ? this.unLike : this.like}/>
+        <Icon inverted name={isLiked ? 'heart' : 'heart outline'} onClick={isLiked ? this.unLike : this.doLike}/>
         <span style={cWhite}>{count}</span>
       </span>
     );
@@ -101,7 +105,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps,
-  {getLikesOnce, removeLike, addLike})
+  {getLikesOnce, removeLike, addLike, getInitLikeState})
 (LikeToggle);
 
 const cWhite = {

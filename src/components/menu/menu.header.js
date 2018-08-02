@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link, Redirect} from 'react-router-dom';
 import {Segment, Menu, Image, Dropdown, Button, Icon} from 'semantic-ui-react'
 import {signOut} from "../../actions/actions.auth";
 import {openUploadModal} from "../../actions/actions.modals";
@@ -14,7 +14,8 @@ class HeaderBar extends Component {
       name: 'Header Menu',
       activeItem: null,
       windowWidth: null,
-      dropped: false
+      dropped: false,
+      signedOut: null
     };
     // console.log(this.state.name, "Constructor");
   }
@@ -57,13 +58,22 @@ class HeaderBar extends Component {
   }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
-  handleSignOut = (e) => this.props.signOut();
+  handleSignOut = (e) => {
+    this.setState({signedOut: true});
+    this.props.signOut();
+  };
   handleDropDown = (e) => this.setState({dropped: !this.state.dropped});
   openUploadModal() {this.props.openUploadModal()}
 
 
   render() {
     // console.log(this.state.name, 'Render');
+
+    // Redirect to home page on sign out to only allow one login entry container.
+    if(this.state.signedOut){
+      return <Redirect to='/'/>
+    }
+
     const Logo = require.resolve('./../../ui/assets/img/logo.PNG');
     const { activeItem, windowWidth, dropped } = this.state;
     return (
@@ -77,10 +87,10 @@ class HeaderBar extends Component {
           <Icon size='large' onClick={this.handleDropDown} name={dropped ? 'angle double up':'angle double down' } />
         </Button>
 
-        <Menu.Item as={Link} to='/community' style={(windowWidth <= 748) && !dropped ? {display: 'none'}: null}
+        <Menu.Item as={Link} to='/feed' style={(windowWidth <= 748) && !dropped ? {display: 'none'}: null}
           icon={{name: 'signal'}}
-          name='community'
-          active={activeItem === 'community'}
+          name='feed'
+          active={activeItem === 'feed'}
           onClick={this.handleItemClick}/>
 
         <Menu.Item as={Link} to='/discover' style={(windowWidth <= 748) && !dropped ? {display: 'none'}: null}

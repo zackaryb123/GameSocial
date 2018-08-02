@@ -1,7 +1,5 @@
 //import ReactGA from 'react-ga';
 
-
-//TODO: MOVE ALL CONFIGS AND BDS TO ENV.CONFIG FILE and import through webpack
 // Local
 export const API_LOCAL_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 

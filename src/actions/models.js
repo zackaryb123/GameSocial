@@ -1,3 +1,28 @@
+class FirebaseEnvObj {
+  constructor(env){
+    this.name = env.name;
+    this.apiKey = env.apiKey;
+    this.authDomain = env.authDomain;
+    this.databaseURL = env.databaseURL;
+    this.projectId = env.projectId;
+    this.storageBucket = env.storageBucket;
+    this.messagingSenderId = env.messagingSenderId;
+  }
+}
+
+class CloudinaryEnvObj {
+  constructor(env){
+    this.name = env.cloud_name;
+    this.Id = env.Id;
+    this.avatarUrl = env.avatarUrl;
+    this.videoUrl = env.videoUrl;
+    this.imageUrl = env.imageUrl;
+    this.sourceUrl = env.sourceUrl;
+    this.apiUrl = env.apiUrl;
+    this.Secret = env.Secret;
+  }
+}
+
 class NewUserObject {
   constructor(auth, user) {
     this.id = auth.uid;
@@ -9,10 +34,9 @@ class NewUserObject {
       lastName: user.lastName,
       dob: user.dob || '',
     };
-    this.like = [{id: 'default'}];
-    this.following = [{id: 'default'}];
-    this.followers = [{id: 'default'}];
-    this.favorites = [{id: 'default'}];
+    this.following = null;
+    this.followers = null;
+    this.favorites = null;
     this.isAdmin = false;
   }
 }
@@ -27,7 +51,7 @@ class NewVideoObj {
     this.type = file.resource_type;
     this.codec = file.format === 'video' ? file.video.codec: null;
     this.views = null;
-    this.like = null;
+    this.likes = null;
     this.status =  {
       enabled: true,
       featured: false,
@@ -70,17 +94,8 @@ class PlaylistObject{
   }
 }
 
-class FavoriteObject{
-  constructor(upload){
-    this.id = upload.id;
-    this.publisher = upload.publisher;
-    this.content = upload.content;
-    this.url = upload.url;
-    this.config = upload.config;
-  }
-}
 
-class TrackedFavoriteObject{
+class TrackedFavoritesObj{
   constructor(authId, publisherId){
     this.userId = authId;
     this.uploadId = publisherId;
@@ -88,4 +103,4 @@ class TrackedFavoriteObject{
 }
 
 
-module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject, FavoriteObject ,TrackedFavoriteObject };
+module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, CloudinaryEnvObj, FirebaseEnvObj };

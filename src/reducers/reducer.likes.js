@@ -1,11 +1,11 @@
 import {
-  LIKES_REQUEST, LIKES_ERROR, LIKES_GET_SUCCESS
+  LIKES_REQUEST, LIKES_ERROR, LIKES_GET
 } from '../actions/actions.likes';
 
 const initialState = {
   loading: false,
   error: null,
-  data: []
+  data: null
 };
 
 export default function reducer(state = initialState, action) {
@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
         loading: true,
         error: null
       });
-    case(LIKES_GET_SUCCESS):
+    case(LIKES_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,

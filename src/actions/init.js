@@ -1,9 +1,14 @@
 import * as firebase from 'firebase';
+//import {FirebaseEnvObj} from './models';
 import {fireConfig}  from "../dbConfig";
 import {openLoginModal, closeResetPasswordModal, openResetPasswordModal} from "./actions.modals";
 
 export const initApp = () => dispatch => {
-  firebase.initializeApp(fireConfig);
+  //var config = new FirebaseEnvObj(require('FirebaseConfig'));
+  //firebase.initializeApp(config); // Webpack Config
+
+  firebase.initializeApp(fireConfig); // Browser config
+
   const auth = firebase.auth();
   const mode = getUrlParameters('mode', "", true);
   const actionCode = getUrlParameters('oobCode', "", true);
@@ -75,7 +80,7 @@ export const handleConfirmPasswordReset = (actionCode, newPassword) => dispatch 
   firebase.auth().confirmPasswordReset(actionCode, newPassword).then(function(resp) {
     console.log('confirmPasswordReset:', resp);
     dispatch(closeResetPasswordModal());
-    dispatch(openLoginModal(`Password reset successful!!`, 'You may continue to login.', 0));
+    dispatch(openLoginModal(`Password reset successful!`, 'You may continue to login.', 0));
   }).catch(function(error) {
     dispatch(closeResetPasswordModal());
     dispatch(openLoginModal(error.header, error.message, 1));

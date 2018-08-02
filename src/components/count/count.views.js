@@ -4,9 +4,9 @@ import * as firebase from "firebase";
 import { Icon, Button } from 'semantic-ui-react';
 const publicIp = require('public-ip');
 
-import {checkUploadViewsList, addCountViews, getCountViews} from "../../actions/actions.count.views";
+import {checkUploadViewsList, addCountViews, getCountViewsOnce} from "../../actions/actions.count.views";
+import _ from "lodash";
 
-//TODO: Need to pass type and uploadId from parent
 class ViewsCount extends Component {
   constructor(props) {
     super(props);
@@ -16,73 +16,96 @@ class ViewsCount extends Component {
     };
   }
 
+  componentWillMount() {
+    //Constructor equivalent (state updates)
+    console.log(this.state.name, "Will Mount");
+
+    // Initialize IP address in the state
+    // publicIp.v4().then(ip => {
+    //   console.log(ip);
+    //   let ipString = ip.split(".").join("-");
+    //   this.setState({ipAddress: ipString});
+    // });
+  }
+
   componentDidMount(){
+    //DOM Manipulation (side effects/state updates)(render occurs before)
+    // console.log(this.state.name, 'Did Mount ');
     publicIp.v4().then(ip => {
       console.log(ip);
       let ipString = ip.split(".").join("-");
       this.setState({ipAddress: ipString});
-      this.checkUploadViewList();
+      this.props.checkUploadViewsList(ipString, this.props.upload.id)
+        .then(hasViewed => {
+          this.setState({hasViewed: hasViewed});
+          if(!hasViewed){this.incrementViews()
+          }else{this.props.getCountViewsOnce(this.props.upload.id);}
+        });
     });
   }
 
-  checkUploadViewList(){
-    const {ipAddress} = this.state;
-    const {uploadId, type} = this.props;
-    if(type === 'image') {
-      database.ref(`uploads/images/${uploadId}/views/${ipAddress}`)
-        .once('value', data => {
-          let hasViewed = !!data.val();
-          if(!hasViewed){
-            this.incrementViews()
-          }else{
-            this.props.getCountViews(uploadId, type);
-          }
-        });
-    }
+  componentWillReceiveProps(nextProps) {
+    //Update state based on changed props (state updates)
+    console.log(this.state.name, "Will Receive Props", nextProps);
 
-    if(type === 'video'){
-      database.ref(`uploads/videos/${uploadId}/views/${ipAddress}`)
-        .once('value', data => {
-          let hasViewed = !!data.val();
-          if(!hasViewed){
-            this.incrementViews()
-          }else {
-            this.props.getCountViews(uploadId, type);
-          }
-        })
-    }
+    // const {upload} = this.props;
+    // On like props received set the liked boolean
+    // if(nextProps.upload.views !== upload.views) {this.setState({reCount: true})}
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // Compare and determine if render needed (DO NOT CHANGE STATE)
+    console.log("Should", this.state.name, "Update", nextProps, nextState);
+
+    // if(this.state.reCount && (nextProps.upload.views !== this.props.upload.views)) {return true}
+    return true;
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    // Set or reset cached values before next render (DO NOT CHANGE STATE)
+    console.log(this.state.name ,"Will Update", nextProps, nextState);
+
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    //DOM Manipulation (render occurs before)
+    console.log(this.state.name, "Did Update", prevProps, prevState)
+
+  }
+
+  componentWillUnmount(){
+    //DOM Manipulation (side effects)
+    // console.log(this.state.name, "Will Unmount");
   }
 
   incrementViews(){
     const {ipAddress} = this.state;
-    const {uploadId, type} = this.props;
-    this.props.addCountViews(ipAddress, uploadId, type);
-    this.props.getCountViews(uploadId, type);
-  }
-
-  setCount(val){
-    let usersRef = firebase.database().ref("users/"+this.props.userId+"/following");
-    if(val){
-      usersRef.child(this.props.publisherId).set(val);
-    }else{
-      usersRef.child(this.props.publisherId).remove();
-    }
+    const {upload} = this.props;
+    this.props.addCountViews(ipAddress, upload);
+    this.props.getCountViewsOnce(upload.id);
   }
 
   render() {
+    console.log('Render');
+    const {auth, viewsCount, upload} = this.props;
     return (
-      <div>
-        Views: {this.props.countViews.data}
-      </div>
+      auth.currentUser &&
+      <span>
+        <Icon inverted name={'eye'}/><span style={cWhite}>{_.size(upload.views)}</span>
+      </span>
     );
   }
 }
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  countViews: state.countViews
+  viewsCount: state.viewsCount
 });
 
 export default connect (mapStateToProps,
-  {checkUploadViewsList, addCountViews, getCountViews})
+  {checkUploadViewsList, addCountViews, getCountViewsOnce})
 (ViewsCount);
+
+const cWhite = {
+  color: 'white'
+};
