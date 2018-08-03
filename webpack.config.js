@@ -2,14 +2,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const envConfig = require('./env.config');
 const webpack = require('webpack');
-// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 // const cssDev = ['style-loader', css-loader', 'less-loader']
-// const cssProd = ExtractTextPlugin.extract({
-//   fallback: 'style-loader',
-//   use: ['css-loader','less-loader'],
-//   publicPath: 'public'
-// });
+const cssConfig = ExtractTextPlugin.extract({
+  fallback: 'style-loader',
+  use: ['css-loader','less-loader'],
+  publicPath: 'public'
+});
 
 // compress: false,
 //   contentBase: 'public',
@@ -24,30 +24,29 @@ const webpack = require('webpack');
 const env = process.env.NODE_ENV  || 'development';
 const isProd = (process.env.NODE_ENV === 'staging') || (process.env.NODE_ENV === 'production');
 
-const PUBLIC_DIR = path.resolve(__dirname, 'public');
-const SRC_DIR = path.resolve(__dirname, 'src');
-const entryConfig = [ SRC_DIR + '/index.js', SRC_DIR + '/main.less'];
+const PUBLIC_DIR = path.join(__dirname, '/public/');
+const SRC_DIR = [__dirname + '/src/index.js'];
+const entryConfig = [ __dirname + '/src/index.js', __dirname + '/src/main.less'];
 
 module.exports = {
+    devtool: 'eval-source-map',
     watch: true,
-    entry: SRC_DIR + '/index.js',
+    entry: SRC_DIR,
     output: {
       filename: 'bundle.js',
-      path: PUBLIC_DIR
+      path: PUBLIC_DIR,
+      publicPath: "/"
+    },
+    resolve: {
+      alias: {
+        '../../theme.config$': path.join(__dirname, 'src/ui/theme.config')
+      }
     },
     devServer: {
-      historyApiFallback: true
+      historyApiFallback: true,
     },
     module: {
       rules: [
-        {
-          test: /\.html$/,
-          use: [
-            {
-              loader: "html-loader"
-            }
-          ]
-        },
         {
           test: /\.json$/,
           loader: 'json-loader'
@@ -55,28 +54,11 @@ module.exports = {
         {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
-          include: SRC_DIR,
-          use: {
-            loader: 'babel-loader'
-          }
-        },
-        {
-          test: /\.scss$/,
-          use: [
-            {
-              loader: 'style-loader'
-            },
-            {
-              loader: 'css-loader'
-            },
-            {
-              loader: 'sass-loader'
-            }
-          ]
+          use: 'babel-loader'
         },
         {
           test: /\.(css|less)$/,
-          use: ['css-loader', 'less-loader', 'style-loader']
+          use: cssConfig
         },
         {
           test: /\.(woff|woff2|eot|ttf|svg)$/,
@@ -105,10 +87,14 @@ module.exports = {
     plugins: [
       new HtmlWebpackPlugin({
         template: './src/index.html',
-        filename: "index.html"
+        inject: true,
+        hash: true,
+        minify: {
+          collapseWhitespace: true
+        },
+        excludeChunks: ['styleguide'],
       }),
-      new webpack.DefinePlugin({
-
-      })
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.NamedModulesPlugin(),
     ]
 };
