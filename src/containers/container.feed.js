@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {Container, Header, Grid, Segment} from 'semantic-ui-react'
 import {getFeedOnce} from '../actions/actions.feed';
 import {getLikesOnce} from "../actions/actions.likes";
+import _ from 'lodash';
 
 import FeedCard from '../components/card/card.feed';
 

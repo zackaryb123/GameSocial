@@ -4,8 +4,6 @@ import {Link} from 'react-router-dom';
 import {Segment, Grid, List, Image} from 'semantic-ui-react';
 // import _ from 'lodash';
 
-import Logo from '../../ui/assets/img/logo.PNG'
-
 
 class FooterBar extends Component {
   constructor(props) {
@@ -49,7 +47,8 @@ class FooterBar extends Component {
 
   render() {
     // console.log('render', this.state.name);
-    const Logo = require.resolve('./../../ui/assets/img/logo.PNG');
+    const Logo = 'http://www.placeholde.com/400x320';
+    //= require.resolve('./../../ui/assets/img/logo.PNG');
     return (
         <Segment>
           <Grid container stackable verticalAlign='middle'>

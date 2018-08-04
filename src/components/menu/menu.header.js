@@ -74,7 +74,8 @@ class HeaderBar extends Component {
       return <Redirect to='/'/>
     }
 
-    const Logo = require.resolve('./../../ui/assets/img/logo.PNG');
+    const Logo = 'http://www.placeholde.com/400x320';
+    // = require.resolve('./../../ui/assets/img/logo.PNG');
     const { activeItem, windowWidth, dropped } = this.state;
     return (
       <Menu stackable fixed='top' inverted pointing>

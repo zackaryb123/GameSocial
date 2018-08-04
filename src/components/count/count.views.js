@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as firebase from "firebase";
 import { Icon, Button } from 'semantic-ui-react';
-const publicIp = require('public-ip');
-
 import {checkUploadViewsList, addCountViews, getCountViewsOnce} from "../../actions/actions.count.views";
-import _ from "lodash";
+import _ from 'lodash';
+
+const publicIp = require('public-ip');
 
 class ViewsCount extends Component {
   constructor(props) {

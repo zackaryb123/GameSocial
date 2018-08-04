@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Player, BigPlayButton} from 'video-react';
-import {Card, Image, Feed, Icon, Reveal} from 'semantic-ui-react';
+import {Card, Image, Feed, Icon, Header} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import _ from 'lodash';
 
 import FavoriteToggle from '../toggle/toggle.favorite';
 import LikeToggle from '../toggle/toggle.like';
+import VideoPlayer from "../video/video.player";
 
 class FeedCard extends Component {
   constructor(props) {
@@ -60,10 +61,11 @@ class FeedCard extends Component {
               //as={Link} to={`/view/${upload.publisher.id}/${upload.type}/${upload.id}`}
           >
           {this.renderCardContent(upload, hover, liked)}
-          <Player className="card-img-top" alt="upload" aspectRatio='16:9' controls={false} playsInline={true} muted={true} autoPlay={false} loop={false}>
-            <source src={upload.url}/>
-            <BigPlayButton position="center" />
-          </Player>
+          <VideoPlayer source={upload} options={upload.options}/>
+          {/*<Player className="card-img-top" alt="upload" aspectRatio='16:9' controls={false} playsInline={true} muted={true} autoPlay={false} loop={false}>*/}
+            {/*<source src={upload.url}/>*/}
+            {/*<BigPlayButton position="center" />*/}
+          {/*</Player>*/}
         </Card>
       );
     } else if (upload.type === 'image') {
