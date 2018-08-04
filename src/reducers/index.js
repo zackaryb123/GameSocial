@@ -1,13 +1,19 @@
-import { combineReducers } from 'redux'
-import {reducer as formReducer} from "redux-form";
-import {loginModalReducer, forgotPasswordReducer,
-  resetPasswordReducer, uploadModalReducer, feedbackModalReducer} from "./reducer.modal";
-import authReducer from './reducer.auth';
-import userReducer from './reducer.user';
-import feedReducer from './reducer.feed';
-import likesReducer from './reducer.likes';
-import favoritesReducer from './reducer.favoirites';
-import viewsReducer from './reducer.count.views';
+import { combineReducers } from "redux";
+import { reducer as formReducer } from "redux-form";
+import {
+  loginModalReducer,
+  forgotPasswordReducer,
+  resetPasswordReducer,
+  uploadModalReducer,
+  feedbackModalReducer
+} from "./reducer.modal";
+import authReducer from "./reducer.auth";
+import userReducer from "./reducer.user";
+import feedReducer from "./reducer.feed";
+import likesReducer from "./reducer.likes";
+import favoritesReducer from "./reducer.favoirites";
+import viewsReducer from "./reducer.count.views";
+import uploadReducer from "./reducer.upload";
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -17,6 +23,7 @@ const rootReducer = combineReducers({
   likes: likesReducer,
   favorites: favoritesReducer,
   viewsCount: viewsReducer,
+  upload: uploadReducer,
   loginModal: loginModalReducer,
   forgotPasswordModal: forgotPasswordReducer,
   resetPasswordModal: resetPasswordReducer,

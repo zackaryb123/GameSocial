@@ -12,7 +12,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 import store from "./store";
 import Shell from "./containers/container.shell";
-import View from "./containers/container.view";
+import Upload from "./containers/container.upload";
 import Home from "./containers/container.home";
 import Discover from "./containers/container.discover";
 import Feed from "./containers/container.feed";
@@ -40,8 +40,8 @@ ReactDOM.render(
             <Route exact path="/about-us" component={AboutUs} />
             <Route
               exact
-              path="/view/:userId/:type/:uploadId"
-              component={View}
+              path="/upload/:userId/uploads/:uploadId"
+              component={Upload}
             />
             <Route exact path="/profile/:userId" component={Profile} />
             <Route exact path="/discover" component={Discover} />

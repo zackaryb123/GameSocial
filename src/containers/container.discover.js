@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {Header, Segment} from 'semantic-ui-react'
+import { Container, Header, Segment } from "semantic-ui-react";
 // import _ from 'lodash';
 
 class Discover extends Component {
@@ -54,9 +54,11 @@ class Discover extends Component {
   render() {
     // const {name, status} = this.state;
     return (
-      <Segment>
-        <Header>Discover</Header>
-      </Segment>
+      <Container>
+        <Segment>
+          <Header>Discover</Header>
+        </Segment>
+      </Container>
     );
   }
 }

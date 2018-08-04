@@ -14,9 +14,11 @@ class Feed extends Component {
       name: "Feed Container",
       status: 0,
       samePageLogin: null,
+
       renderFeed: null,
       renderLikes: null,
       renderFavorites: null,
+
       updateFeed: null,
       updateLikes: null,
       updateFavorites: null
@@ -93,7 +95,7 @@ class Feed extends Component {
     switch(true){
       case (samePageLogin):
         this.setState({samePageLogin: false});
-        return getFeedOnce(auth.currentUser.uid, following); // && getLikesOnce(auth.currentUser.uid)
+        return getFeedOnce(auth.currentUser.uid, following);
       case(renderFeed):
         return this.setState({renderFeed: false});
       // case(renderLikes):
@@ -101,7 +103,7 @@ class Feed extends Component {
       // case(renderFavorites):
       //   return this.setState({renderFavorites: false});
       // case(updateFeed):
-      //   this.setState({updateLikes: false});
+      //   this.setState({updateFeed: false});
       //   return getLikesOnce(auth.currentUser.uid);
       // case(updateLikes):
       //   this.setState({updateLikes: false});
@@ -136,11 +138,16 @@ class Feed extends Component {
 
     return (
       <Container>
-        <Header>The Feed</Header>
+
+        <Segment>
+          <Header>The Feed</Header>
+        </Segment>
+
         <Grid stackable column={2}>
           <Grid.Row centered>
             {this.renderFeed(feed)}
           </Grid.Row>
+
         </Grid>
       </Container>
     );

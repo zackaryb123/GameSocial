@@ -31,16 +31,6 @@ const lessConfig = [
   { loader: "less-loader" }
 ];
 
-const cssConfig4 = [
-  "style-loader",
-  "css-loader",
-  new RewriteImportPlugin({
-    paths: {
-      "../../theme.config": __dirname + "/app/semantic-ui/theme.config"
-    }
-  })
-];
-
 //process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
 const env = process.env.NODE_ENV || "development";
 const isProd =

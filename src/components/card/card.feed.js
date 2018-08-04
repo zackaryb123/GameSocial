@@ -16,25 +16,31 @@ class FeedCard extends Component {
     }
   }
 
-  hover = () => this.setState({hover: true});
-  unhover = () => this.setState({hover: false});
+  hoverCard = (e) => this.setState({hoverCard: true});
+  unhoverCard = (e) => this.setState({hoverCard: false});
 
-  renderCardContent = (upload, hover) => {
+  hoverLink = (e) => this.setState({hoverLink: true});
+  unhoverLink = (e) => this.setState({hoverLink: false});
+
+  renderCardContent = (upload, hoverCard, hoverLink) => {
     return (
-      <Card.Content style={hover ? topContentHover : {display: 'none'}}>
+      <Card.Content style={hoverCard? topContentHover : {display: 'none'}}>
         <Feed>
           <Feed.Event>
             <Feed.Label image='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' />
             <Feed.Content>
               <Feed.Summary>
-                <Feed.User as={Link} to='/' style={cWhite}>{upload.publisher.username}</Feed.User>
-                <Feed.Date style={cWhite}>{upload.created_at}</Feed.Date>
+                <Feed.User as={Link} to={`/profile/${upload.publisher.id}`} style={white}>{upload.publisher.username}</Feed.User>
+                <Feed.Date style={white}>{upload.created_at}</Feed.Date>
               </Feed.Summary>
-              <Feed.Extra style={cWhite} text>{upload.caption}</Feed.Extra>
+              <Feed.Extra name='caption'
+                onMouseEnter={this.hoverLink} onMouseLeave={this.unhoverLink}
+                as={Link} to={`/upload/${upload.publisher.id}/uploads/${upload.id}`}
+                style={hoverLink?white:lightBlue} text>{upload.caption}</Feed.Extra>
               <Feed.Meta style={metaContent}>
                 <Feed.Like>
                   <Icon inverted name={'eye'}/>
-                  <span style={cWhite}>{_.size(upload.views)}</span>
+                  <span style={white}>{_.size(upload.views)}</span>
                 </Feed.Like>
                 <Feed.Like>
                   <LikeToggle upload={upload}/>
@@ -53,33 +59,25 @@ class FeedCard extends Component {
 
   render() {
     const {upload} = this.props;
-    const {hover, liked} = this.state;
+    const {hoverCard, hoverLink} = this.state;
 
     if(upload.type === 'video'){
       return (
-        <Card fluid onMouseEnter={this.hover} onMouseLeave={this.unhover}
-              //as={Link} to={`/view/${upload.publisher.id}/${upload.type}/${upload.id}`}
-          >
-          {this.renderCardContent(upload, hover, liked)}
+        <Card fluid name='card' onMouseEnter={this.hoverCard} onMouseLeave={this.unhoverCard}>
+          {this.renderCardContent(upload, hoverCard, hoverLink)}
           <VideoPlayer source={upload} options={upload.options}/>
-          {/*<Player className="card-img-top" alt="upload" aspectRatio='16:9' controls={false} playsInline={true} muted={true} autoPlay={false} loop={false}>*/}
-            {/*<source src={upload.url}/>*/}
-            {/*<BigPlayButton position="center" />*/}
-          {/*</Player>*/}
         </Card>
       );
     } else if (upload.type === 'image') {
       return(
-        <Card fluid onMouseEnter={this.hover} onMouseLeave={this.unhover}
-              //as={Link} to={`/view/${upload.publisher.id}/${upload.type}/${upload.id}`}
-        >
-          {this.renderCardContent(upload, hover, liked)}
+        <Card fluid name='card' onMouseEnter={this.hoverCard} onMouseLeave={this.unhoverCard}>
+          {this.renderCardContent(upload, hoverCard, hoverLink)}
           <Image alt="upload" src={upload.url}/>
         </Card>
         );
     } else {
       return(
-      <Card fluid onMouseEnter={this.hover} onMouseLeave={this.unhover} as={Link} to={`/view/${upload.publisher.id}/${upload.type}/${upload.id}`}>
+      <Card fluid>
         <Header>Upload Type Not Supported</Header>
       </Card>
       );
@@ -96,7 +94,7 @@ export default connect(mapStateToProps,
 
 
 const topContentHover = {
-  marginBottom: '-5.1rem',
+  marginBottom: '-4.5rem',
   zIndex: '1',
   backgroundColor: 'rgba(0,0,0,.85)',
   transition: 'all 1s ease',
@@ -110,6 +108,10 @@ const metaContent = {
   marginRight: '1rem'
 };
 
-const cWhite = {
+const white = {
   color: 'white'
+};
+
+const lightBlue = {
+  color: 'blue'
 };

@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
-import { Player, ControlBar, ReplayControl, CurrentTimeDisplay, TimeDivider, PlaybackRateMenuButton, VolumeMenuButton } from 'video-react';
-import {Container } from 'semantic-ui-react';
+import {
+  Player,
+  ControlBar,
+  ReplayControl,
+  CurrentTimeDisplay,
+  TimeDivider,
+  PlaybackRateMenuButton,
+  VolumeMenuButton,
+  BigPlayButton
+} from "video-react";
+import { Card, Container } from "semantic-ui-react";
 
 import "../../ui/assets/css/video-react.css";
 
@@ -16,8 +25,7 @@ class VideoPlayer extends Component {
 
     return (
       <section id='video-player'>
-        <Container>
-          <Player aspectRatio='16:9' controls={false} playsInline={true} muted={true} autoPlay={this.props.options.autoPlay} loop={this.props.options.looping_enabled}>
+          <Player aspectRatio='16:9' controls={false} playsInline={true} muted={true} loop={this.props.options.looping_enabled}>
             <source src={this.props.source.url} />
             <ControlBar>
               <ReplayControl seconds={10} order={1.1} />
@@ -28,8 +36,8 @@ class VideoPlayer extends Component {
                 order={7.1} />
               <VolumeMenuButton />
             </ControlBar>
+            <BigPlayButton position="center" />
           </Player>
-        </Container>
       </section>
     )
   }

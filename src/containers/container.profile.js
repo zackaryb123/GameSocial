@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {Header, Segment} from 'semantic-ui-react'
+import { Container, Header, Segment } from "semantic-ui-react";
 // import _ from 'lodash';
 
 class Profile extends Component {
@@ -53,9 +53,11 @@ class Profile extends Component {
   render() {
     // const {name, status} = this.state;
     return (
-      <Segment>
-        <Header>Profile</Header>
-      </Segment>
+      <Container>
+        <Segment>
+          <Header>Profile</Header>
+        </Segment>
+      </Container>
     );
   }
 }
