@@ -1,5 +1,5 @@
 import {
-  COMMENTS_ERROR, COMMENTS_GET_SUCCESS, COMMENTS_REQUEST
+  COMMENTS_ERROR, COMMENTS_GET, COMMENTS_REQUEST
 } from '../actions/actions.comments';
 
 const initialState = {
@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
         loading: true,
         error: null
       });
-    case(COMMENTS_GET_SUCCESS):
+    case(COMMENTS_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,

@@ -166,72 +166,60 @@ class Upload extends Component {
     }
     return (
       <Container fluid>
-      <Container fluid>
-        <Grid textAlign="center" style={{ backgroundColor: "black" }}>
-          <Grid.Row className="row">
-            <Grid.Column width={15}>
-              {upload.data.type === 'video' && <VideoPlayer source={upload.data} options={upload.data.options} />}
-              {upload.data.type === 'image' && <Image alt="upload" src={upload.data.url}/>}
-            </Grid.Column>
-            <Grid centered>
-              <Grid.Row>
-                <Grid.Column width={15}>
-                  <Segment.Group>
-                    <Segment.Group horizontal>
-                      <Segment>
+        <Container fluid >
+          <Grid textAlign="center" style={{ backgroundColor: "black" }}>
+            <Grid.Row className="row">
+              <Grid.Column width={16} style={{maxWidth: '1028px'}}>
+                {upload.data.type === 'video' && <VideoPlayer source={upload.data} options={upload.data.options} />}
+                {upload.data.type === 'image' && <Image alt="upload" src={upload.data.url}/>}
+              </Grid.Column>
+
+              <Grid.Column width={16}>
+                <Grid centered>
+                  <Grid.Row>
+                    <Grid.Column width={10}>
+                      <Segment inverted style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <ViewsCount upload={upload.data}/>
+                        <FavoriteToggle upload={upload.data} />
                         <LikesToggle upload={upload.data} />
                       </Segment>
-                      <Segment>
-                        <ViewsCount upload={upload.data}/>
-                      </Segment>
-                      <Segment>
-                        <FavoriteToggle upload={upload.data} />
-                        {auth.currentUser &&
-                        auth.currentUser.isAdmin && (
-                          <div>
-                            <span style={{ float: "left" }}>Featured</span>
-                            <FeaturedToggle upload={upload.data} />
-                          </div>
-                        )}
-                      </Segment>
-                    </Segment.Group>
-                  </Segment.Group>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Grid.Row>
-        </Grid>
-      </Container>
-      <Container>
+                    </Grid.Column>
+                  </Grid.Row>
+                </Grid>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Container>
+
         <Grid stackable stretched centered>
-          <Grid.Row>
+          <Grid.Row centered>
             <Grid.Column width={10}>
               <Segment>
                 <h1>{upload.data.caption}</h1>
                 <span>Tags</span>
+                {auth.currentUser && auth.currentUser.isAdmin && (
+                  <div>
+                    <span style={{ float: "left" }}>Featured</span>
+                    <FeaturedToggle upload={upload.data} />
+                  </div>
+                )}
                 <span style={{ float: "right" }}>{upload.data.created_at}</span>
               </Segment>
             </Grid.Column>
+
             <Grid.Column width={5}>
-              <Segment>
-                {/*<UserCard*/}
-                  {/*page={this.props.page}*/}
-                  {/*publisher={upload.data.publisher}*/}
-                {/*/>*/}
-              </Segment>
+              <UserCard publisher={upload.data.publisher}/>
             </Grid.Column>
           </Grid.Row>
         </Grid>
+
         <Grid>
-          <Grid.Row>
+          <Grid.Row centered>
             <Grid.Column width={16}>
-              <Segment>
-                {/*<Comments />*/}
-              </Segment>
+              <Comments />
             </Grid.Column>
           </Grid.Row>
         </Grid>
-      </Container>
       </Container>
     );
   }

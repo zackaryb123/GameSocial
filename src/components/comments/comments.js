@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import { Button, Form, Comment, Header } from 'semantic-ui-react';
+import { Segment, Form, Comment, Header, Input, Label, Button } from "semantic-ui-react";
 import {reduxForm, reset, Field} from "redux-form";
 import {Link} from 'react-router-dom';
 import {addComment, getComments, getCommentsOnce, getCommentsPromise} from "../../actions/actions.comments";
@@ -10,23 +10,54 @@ class Comments extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      loadingComments: true,
+      initState: false
     }
   }
   componentWillMount() {
-    this.setState({
-      loadingComments: true,
-      initState: false
-    })
+    //this.props.getCommentsOnce(upload.data.id)
+  }
+
+  componentDidMount() {
+    // TODO: Decide weather to user on or once call and load comments on submit/refresh
+    this.props.getComments(this.props.upload.data.id);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    //Update state based on changed props (state updates)
+    // console.log(this.state.name, "Will Receive Props", nextProps);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // Compare and determine if render needed (DO NOT CHANGE STATE)
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
+    return true;
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    // Set or reset cached values before next render (DO NOT CHANGE STATE)
+    // console.log(this.state.name ,"Will Update", nextProps, nextState);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    //DOM Manipulation (render occurs before)
+    // console.log(this.state.name, "Did Update", prevProps, prevState)
+  }
+
+  componentWillUnmount(){
+    //DOM Manipulation (side effects)
+    // console.log(this.state.name, "Will Unmount");
   }
 
   onSubmit(values) {
-    const {view, auth} = this.props;
-    this.props.addComment(auth.currentUser, this.props.view.data.id, values);
+    const {upload, auth} = this.props;
+    this.props.addComment(auth.currentUser, upload.data.id, values);
     this.props.dispatch(reset('comments'));
-    this.props.getCommentsOnce(view.data.id)
+    // this.props.getCommentsOnce(upload.data.id)
   }
 
   handleChange = (e) => {
+    console.log(e.target.value);
     this.setState({
       [e.target.name]: e.target.value
     })
@@ -34,12 +65,14 @@ class Comments extends Component {
 
   renderCommentList() {
     const {comments} = this.props;
-    console.log(comments);
+
     return _.map(comments.data, comment => {
       let infoArray = Object.values(comment);
+      console.log(infoArray);
+
       return (
-        <Comment key={infoArray[1]} >
-          <Comment.Avatar src={infoArray[2].avatar.url} />
+        <Comment key={infoArray[1]}>
+          {/*<Comment.Avatar src={infoArray[2].avatar.url} />*/}
           <Comment.Content>
             <Comment.Author as={Link} to={`/profile/${comment.profile.id}`}>{infoArray[2].username}</Comment.Author>
             <Comment.Metadata>
@@ -55,21 +88,25 @@ class Comments extends Component {
     })
   }
 
+  renderFields(field) {
+    return (
+      <Form.Field required>
+        <Input {...field.input} {...field.error} fluid={field.fluid} type={field.type} placeholder={field.placeholder}/>
+        {field.meta.touched && (field.meta.error && <Label pointing color='red'> {field.meta.error} </Label>)}
+      </Form.Field>
+    )
+  }
+
   render() {
     const {comments} = this.props;
-    if(comments.loading){
-      return <div>Loading...</div>
-    }
 
     console.log(this.renderCommentList());
     return(
-      <div>
-        {
-          !_.isEmpty(this.props.auth.currentUser) &&
-          <Form onSubmit={this.props.handleSubmit(values => this.onSubmit(values))}>
-
-          </Form>
-        }
+      <Segment>
+        <Form onSubmit={this.props.handleSubmit(values => this.onSubmit(values))}>
+          <Field onChange={this.handleChange}  fluid name="comment" type="text" placeholder="Post a comment" component={this.renderFields}/>
+          <Button floated='right' type='submit' basic color='green'>Submit</Button>
+        </Form>
         <div>
           <Comment.Group>
             <Header as={'h3'} dividing>
@@ -78,7 +115,7 @@ class Comments extends Component {
               {this.renderCommentList()}
           </Comment.Group>
         </div>
-      </div>
+      </Segment>
     );
   }
 }
@@ -86,7 +123,7 @@ class Comments extends Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   comments: state.comments,
-  view: state.view
+  upload: state.upload
 });
 
 Comments = connect(mapStateToProps,

@@ -19,17 +19,6 @@ class ViewsCount extends Component {
     //Constructor equivalent (state updates)
     console.log(this.state.name, "Will Mount");
 
-    // Initialize IP address in the state
-    // publicIp.v4().then(ip => {
-    //   console.log(ip);
-    //   let ipString = ip.split(".").join("-");
-    //   this.setState({ipAddress: ipString});
-    // });
-  }
-
-  componentDidMount(){
-    //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name, 'Did Mount ');
     publicIp.v4().then(ip => {
       console.log(ip);
       let ipString = ip.split(".").join("-");
@@ -41,6 +30,11 @@ class ViewsCount extends Component {
           }else{this.props.getCountViewsOnce(this.props.upload.id);}
         });
     });
+  }
+
+  componentDidMount(){
+    //DOM Manipulation (side effects/state updates)(render occurs before)
+    // console.log(this.state.name, 'Did Mount ');
   }
 
   componentWillReceiveProps(nextProps) {

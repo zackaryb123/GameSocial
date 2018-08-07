@@ -15,7 +15,8 @@ class HeaderBar extends Component {
       activeItem: null,
       windowWidth: null,
       dropped: false,
-      signedOut: null
+      signedOut: null,
+      authLoading: false
     };
     // console.log(this.state.name, "Constructor");
   }
@@ -38,11 +39,18 @@ class HeaderBar extends Component {
 
   componentWillReceiveProps(nextProps) {
     // console.log(this.state.name, "Will Receive Props", nextProps);
+    const {auth} = this.props;
+    if(auth.loading){this.setState({authLoading: true })}
+    else{console.log('Props up to date')}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // console.log("Should", this.state.name, "Update", nextProps, nextState);
-    return true;
+    if(this.state.signedOut){return true}
+    if(nextState.windowWidth !== this.state.windowWidth){return true}
+    if(nextState.authLoading){return true}
+    else{console.log('Header Menu up to date')}
+    return false;
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -51,6 +59,9 @@ class HeaderBar extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     // console.log(this.state.name, "Did Update", prevProps, prevState)
+    if(this.state.signedOut){this.setState({signedOut: false})}
+    else if(this.state.authLoading){this.setState({authLoading: false})}
+    else{return null}
   }
 
   componentWillUnmount(){
@@ -69,8 +80,9 @@ class HeaderBar extends Component {
   render() {
     // console.log(this.state.name, 'Render');
     const {auth} = this.props;
+    console.log(this.props);
     // Redirect to home page on sign out to only allow one login entry container.
-    if(this.state.signedOut || _.isEmpty(auth.currentUser)){
+    if(this.state.signedOut){
       return <Redirect to='/'/>
     }
 
@@ -100,34 +112,20 @@ class HeaderBar extends Component {
           active={activeItem === 'discover'}
           onClick={this.handleItemClick}/>
 
-        <Menu.Menu  position='right' style={(windowWidth <= 748) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
+        <Menu.Menu position='right' style={(windowWidth <= 748) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
           <Menu.Item active={activeItem === 'upload'} onClick={this.handleItemClick}>
             <Button secondary style={{backgroundColor: '#696969'}} icon={{name: 'upload', size: 'large'}} onClick={this.openUploadModal.bind(this)} name={'upload'}/>
           </Menu.Item>
-          <Menu.Item active={activeItem === 'profile'} onClick={this.handleItemClick}>
-            <Dropdown item icon={{name: 'user outline', size: 'large'}}>
-              <Dropdown.Menu>
-                <Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item>
-                <Dropdown.Item as={Link} to='/settings'>Settings</Dropdown.Item>
-                <Dropdown.Item onClick={this.handleSignOut}>Sign Out</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Menu.Item>
+
+          {auth.currentUser &&
+          <Dropdown item={true} icon={{ name: 'user outline', size: 'large' }} active={(activeItem === 'profile').toString()} onClick={this.handleItemClick}>
+            <Dropdown.Menu>
+              <Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item>
+              <Dropdown.Item as={Link} to='/settings'>Settings</Dropdown.Item>
+              <Dropdown.Item onClick={this.handleSignOut}>Sign Out</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>}
         </Menu.Menu>
-
-        {/*<Button.Group attached='right' style={(windowWidth <= 748) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>*/}
-          {/*<Button secondary style={{backgroundColor: '#696969'}} icon={{name: 'upload', size: 'large'}} onClick={this.openUploadModal.bind(this)} name={'upload'}/>*/}
-
-          {/*<Button secondary style={{backgroundColor: '#696969' }}>*/}
-          {/*<Dropdown item icon={{name: 'user outline', size: 'large'}}>*/}
-            {/*<Dropdown.Menu>*/}
-              {/*<Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item>*/}
-              {/*<Dropdown.Item as={Link} to='/settings'>Settings</Dropdown.Item>*/}
-              {/*<Dropdown.Item onClick={this.handleSignOut}>Sign Out</Dropdown.Item>*/}
-            {/*</Dropdown.Menu>*/}
-          {/*</Dropdown>*/}
-          {/*</Button>*/}
-        {/*</Button.Group>*/}
       </Menu>
     );
   }

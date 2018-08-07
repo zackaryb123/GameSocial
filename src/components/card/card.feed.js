@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Player, BigPlayButton} from 'video-react';
 import {Card, Image, Feed, Icon, Header} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import _ from 'lodash';

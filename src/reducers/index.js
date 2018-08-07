@@ -14,6 +14,7 @@ import likesReducer from "./reducer.likes";
 import favoritesReducer from "./reducer.favoirites";
 import viewsReducer from "./reducer.count.views";
 import uploadReducer from "./reducer.upload";
+import commentsReducer from "./reducer.comments";
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   favorites: favoritesReducer,
   viewsCount: viewsReducer,
   upload: uploadReducer,
+  comments: commentsReducer,
   loginModal: loginModalReducer,
   forgotPasswordModal: forgotPasswordReducer,
   resetPasswordModal: resetPasswordReducer,

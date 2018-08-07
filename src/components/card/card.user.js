@@ -18,21 +18,18 @@ class UserCard extends Component {
   }
 
   render() {
-    const {publisher, auth, following, page} = this.props;
+    const {publisher} = this.props;
     return (
       <Card>
         <Card.Content>
-          <Image
-            style={{borderRadius: '.25rem'}}
-            floated='right' size='mini' src={publisher.avatar.url} />
+          {/*<Image style={{borderRadius: '.25rem'}} floated='right' size='mini' src={publisher.avatar.url} />*/}
           <Card.Header>
             {publisher.username}
           </Card.Header>
         </Card.Content>
         <Card.Content extra>
           <div className='ui two buttons'>
-            <FollowToggle
-              publisher={publisher}/>
+            {/*<FollowToggle publisher={publisher}/>*/}
             <Button
               color='blue'><Link to={`/profile/${publisher.id}`}>Profile</Link></Button>
           </div>
