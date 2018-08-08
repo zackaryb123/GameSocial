@@ -31,7 +31,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Shell>
       <BrowserRouter basename="/">
-        <main style={{ marginTop: "7rem" }}>
+        <main style={{ marginTop: "4rem" }}>
           <HeaderBar />
           <Switch>
             <Route exact path="/settings" component={Settings} />

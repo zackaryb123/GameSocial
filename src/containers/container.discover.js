@@ -130,6 +130,12 @@ class Discover extends Component {
 
     return (
       <Container fluid>
+        <Container>
+          <Segment textAlign='center'>
+            <Header>Featured</Header>
+          </Segment>
+        </Container>
+
         <Container fluid >
           <Grid textAlign="center" style={{ backgroundColor: "black" }}>
             <Grid.Row>
@@ -138,6 +144,12 @@ class Discover extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
+        </Container>
+
+        <Container>
+          <Segment textAlign='center'>
+            <Header>Discover</Header>
+          </Segment>
         </Container>
 
         <Grid container stackable>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {Segment, Grid, List, Image} from 'semantic-ui-react';
+import { Segment, Grid, List, Image, Header, Menu } from "semantic-ui-react";
 // import _ from 'lodash';
 
 
@@ -55,7 +55,10 @@ class FooterBar extends Component {
             <Grid.Row>
               <Grid.Column textAlign='justified' width={12}>
                 <List celled horizontal>
-                  <List.Item style={{borderLeft: 'none'}}><Image as={Link} to={'/'} size='tiny' src={Logo}/></List.Item>
+                  <List.Item style={{borderLeft: 'none'}}>
+                    {/*<Image as={Link} to={'/'} size='tiny' src={Logo}/>*/}
+                    <Header as={Link} to='/'>Game Social</Header>
+                  </List.Item>
                   <List.Item><Link to={'/about-us'}>About Us</Link></List.Item>
                   <List.Item><Link to={'/community-rules'}>Community Rules</Link></List.Item>
                   <List.Item style={{borderRight: 'none'}}><Link to={'/contact-us'}>Contact Us</Link></List.Item>

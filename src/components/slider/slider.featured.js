@@ -133,7 +133,7 @@ class FeaturedSlider extends Component {
               {feature.type === 'image' && <Image alt="upload" src={feature.url}/>}
               <Grid centered>
                 <Grid.Row>
-                  <Grid.Column width={10}>
+                  <Grid.Column width={16}>
                     <Segment inverted style={{display: 'flex', justifyContent: 'space-between'}}>
                       <ViewsCount upload={feature}/>
                       <FavoriteToggle upload={feature} />

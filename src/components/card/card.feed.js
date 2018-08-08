@@ -23,7 +23,8 @@ class FeedCard extends Component {
 
   renderCardContent = (upload, hoverCard, hoverLink) => {
     return (
-      <Card.Content style={hoverCard? topContentHover : {display: 'none'}}>
+      <Card.Content style={topContentHover}>
+        {/*hoverCard ? topContentHover : {display: 'none'}}>*/}
         <Feed>
           <Feed.Event>
             <Feed.Label image='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' />
@@ -93,8 +94,10 @@ export default connect(mapStateToProps,
 
 
 const topContentHover = {
-  marginBottom: '-4.5rem',
-  zIndex: '1',
+  // display: 'block',
+  // position: 'absolute',
+  // zIndex: '1',
+  width: '100%',
   backgroundColor: 'rgba(0,0,0,.85)',
   transition: 'all 1s ease',
   paddingBottom: '0'

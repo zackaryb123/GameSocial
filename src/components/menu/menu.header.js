@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Link, Redirect} from 'react-router-dom';
-import {Segment, Menu, Image, Dropdown, Button, Icon} from 'semantic-ui-react'
+import {Header, Menu, Image, Dropdown, Button, Icon} from 'semantic-ui-react'
 import {signOut} from "../../actions/actions.auth";
 import {openUploadModal} from "../../actions/actions.modals";
 
@@ -88,14 +88,15 @@ class HeaderBar extends Component {
       return <Redirect to='/'/>
     }
 
-    const Logo = 'http://www.placeholde.com/400x320';
+    const Logo = 'http://www.placeholde.com/350x270';
     // = require.resolve('./../../ui/assets/img/logo.PNG');
     const { activeItem, windowWidth, dropped } = this.state;
     return (
       <Menu stackable fixed='top' inverted pointing style={{backgroundColor: '#696969'}}>
 
         <Menu.Item name='home' style={{margin: '0'}} active={activeItem === 'home'} onClick={this.handleItemClick} as={Button}>
-          <Image as={Link} to='/' size='tiny' src={Logo} />
+          <Header as={Link} to='/'>Game Social</Header>
+          {/*<Image as={Link} to='/' size='tiny' src={Logo} />*/}
         </Menu.Item>
 
         <Button fluid secondary style={windowWidth > 748 ? {display: 'none'}: {display: 'block', marginTop: '-3rem', backgroundColor: '#696969'}} icon>
