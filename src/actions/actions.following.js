@@ -5,9 +5,9 @@ export const followingRequest = () => ({
   type: FOLLOWING_REQUEST,
 });
 
-export const FOLLOWING_GET_SUCCESS = 'FOLLOWING_GET_SUCCESS';
-export const followingGetSuccess = (data) => ({
-  type: FOLLOWING_GET_SUCCESS,
+export const FOLLOWING_GET = 'FOLLOWING_GET';
+export const followingGet = (data) => ({
+  type: FOLLOWING_GET,
   data
 });
 
@@ -24,7 +24,7 @@ export const getFollowingPromise = (userId) => dispatch => {
   return new Promise((resolve, reject) => {
     firebase.database().ref(`users/${userId}/following`).once('value', (data) => {
       const following = data.val();
-      resolve(dispatch(followingGetSuccess(following)));
+      resolve(dispatch(followingGet(following)));
     })
   })
 };
@@ -32,17 +32,25 @@ export const getFollowingPromise = (userId) => dispatch => {
 export const getFollowingOnce = (userId) => dispatch => {
   dispatch(followingRequest());
   firebase.database().ref(`users/${userId}/following`).once('value', (data) => {
-    dispatch(followingGetSuccess(data.val()));
+    dispatch(followingGet(data.val()));
   }).catch(error => dispatch(followingError(error)));
 };
 
 //*** SERVICES ***//
+export const getInitFollowingState = (authId, publisherId) => dispatch => {
+  return new Promise((resolve, reject) => {
+    return firebase.database().ref(`users/${authId}/following/${publisherId}`).once('value', (snapshot) => {
+      const isFollowed = !!snapshot.val();
+      resolve(isFollowed);
+    })
+  })
+};
 
 export const addFollowing = (authId ,publisher) => dispatch => {
   const followingRef = firebase.database().ref(`users/${authId}/following`);
   followingRef.child(`${publisher.id}/id`).set(publisher.id);
   followingRef.child(`${publisher.id}/username`).set(publisher.username);
-  followingRef.child(`${publisher.id}/avatar/url`).set(publisher.avatar.url);
+  // followingRef.child(`${publisher.id}/avatar/url`).set(publisher.avatar.url);
 };
 
 export const removeFollowing = (authId, publisherId) => dispatch => {

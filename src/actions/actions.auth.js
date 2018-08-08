@@ -42,6 +42,12 @@ export const loginFirebase = (email, password) => dispatch => {
     return firebase.auth().signInWithEmailAndPassword(email, password)
       .then(auth => {
         if(auth.user.emailVerified) {
+          let currentUser = auth.user;
+          firebase.database().ref(`/users/${auth.user.uid}`).once('value', snapshot => {
+            const user = snapshot.val();
+            // auth.updateProfile({photoURL: user.profile.avatar.url});
+            auth.user.isAdmin = user.isAdmin
+          });
           dispatch(authGet(auth.user));
           dispatch(closeLoginModal(3));
           resolve(auth.user);

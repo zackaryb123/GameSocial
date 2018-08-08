@@ -46,10 +46,12 @@ class HeaderBar extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // console.log("Should", this.state.name, "Update", nextProps, nextState);
-    if(this.state.signedOut){return true}
-    if(nextState.windowWidth !== this.state.windowWidth){return true}
-    if(nextState.authLoading){return true}
-    else{console.log('Header Menu up to date')}
+    if(nextState.signedOut){return true}
+    else if(nextState.dropped !== this.state.dropped){return true}
+    else if(nextState.windowWidth !== this.state.windowWidth) {return true}
+    else if(nextState.authLoading){return true}
+    else if(nextState.activeItem !== this.state.activeItem){return true}
+    else{ console.log('Header Menu up to date')}
     return false;
   }
 
@@ -59,7 +61,7 @@ class HeaderBar extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     // console.log(this.state.name, "Did Update", prevProps, prevState)
-    if(this.state.signedOut){this.setState({signedOut: false})}
+    if(this.state.signedOut){this.setState({signedOut: null})}
     else if(this.state.authLoading){this.setState({authLoading: false})}
     else{return null}
   }
@@ -68,7 +70,8 @@ class HeaderBar extends Component {
     // console.log(this.state.name, "Will Unmount");
   }
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+  handleItemClick = (e, { name }) =>
+    this.setState({ activeItem: name });
   handleSignOut = (e) => {
     this.setState({signedOut: true});
     this.props.signOut();
@@ -80,7 +83,6 @@ class HeaderBar extends Component {
   render() {
     // console.log(this.state.name, 'Render');
     const {auth} = this.props;
-    console.log(this.props);
     // Redirect to home page on sign out to only allow one login entry container.
     if(this.state.signedOut){
       return <Redirect to='/'/>
@@ -92,7 +94,7 @@ class HeaderBar extends Component {
     return (
       <Menu stackable fixed='top' inverted pointing style={{backgroundColor: '#696969'}}>
 
-        <Menu.Item style={{margin: '0'}} active={activeItem === 'home'} onClick={this.handleItemClick} as={Button}>
+        <Menu.Item name='home' style={{margin: '0'}} active={activeItem === 'home'} onClick={this.handleItemClick} as={Button}>
           <Image as={Link} to='/' size='tiny' src={Logo} />
         </Menu.Item>
 
@@ -113,12 +115,12 @@ class HeaderBar extends Component {
           onClick={this.handleItemClick}/>
 
         <Menu.Menu position='right' style={(windowWidth <= 748) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
-          <Menu.Item active={activeItem === 'upload'} onClick={this.handleItemClick}>
+          <Menu.Item name='upload' active={activeItem === 'upload'} onClick={this.handleItemClick}>
             <Button secondary style={{backgroundColor: '#696969'}} icon={{name: 'upload', size: 'large'}} onClick={this.openUploadModal.bind(this)} name={'upload'}/>
           </Menu.Item>
 
           {auth.currentUser &&
-          <Dropdown item={true} icon={{ name: 'user outline', size: 'large' }} active={(activeItem === 'profile').toString()} onClick={this.handleItemClick}>
+          <Dropdown item={true} name='profile' icon={{ name: 'user outline', size: 'large' }} active={(activeItem === 'profile').toString()} onClick={this.handleItemClick}>
             <Dropdown.Menu>
               <Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item>
               <Dropdown.Item as={Link} to='/settings'>Settings</Dropdown.Item>

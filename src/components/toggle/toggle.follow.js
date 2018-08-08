@@ -1,22 +1,62 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
-import _ from 'lodash';
-
-import {Image, Card, Button} from 'semantic-ui-react';
+import { Icon, Button } from "semantic-ui-react";
 
 import {addFollowers, removeFollowers} from "../../actions/actions.followers";
-import {addFollowing,removeFollowing, getFollowingOnce} from "../../actions/actions.following";
+import {addFollowing, removeFollowing, getFollowingOnce, getInitFollowingState} from "../../actions/actions.following";
 import {getUserOnce} from "../../actions/actions.user";
 
 class FollowToggle extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      followers: null,
-      following: null
+      name: 'Follow Toggle',
+      renderFollow: null
     }
   }
+
+  componentDidMount(){
+    //DOM Manipulation (side effects/state updates)(render occurs before)
+    // console.log(this.state.name, 'Did Mount ');
+
+    // TODO: Find a better way to initialize favorites
+    const {publisher, auth, getInitFollowingState} = this.props;
+    getInitFollowingState(auth.currentUser.uid, publisher.id)
+      .then(exist => this.setState({isFollowed: exist, renderFollow: true}));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    //Update state based on changed props (state updates)
+    console.log(this.state.name, "Will Receive Props", nextProps);
+
+    const {publisher, following} = this.props;
+    if (nextProps.following.data !== following.data){
+      this.setState({
+        isFollowed: nextProps.following.data && (publisher.id in nextProps.following.data),
+        renderFollow: true})
+    } else {
+      console.log('Component Up to date!')}
+  }
+
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // Compare and determine if render needed (DO NOT CHANGE STATE)
+    console.log("Should", this.state.name, "Update", nextProps, nextState);
+
+    if(nextState.renderFollow){return true}
+    return false;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    //DOM Manipulation (render occurs before)
+    console.log(this.state.name, "Did Update", prevProps, prevState);
+    if(this.state.renderFollow){
+      this.setState({renderFollow: false})
+    } else { alert('missing toggle fav handler') }
+  }
+
+
+
 
   unFollow = () => {
     console.log('click unfollow success');
@@ -24,57 +64,33 @@ class FollowToggle extends Component {
     this.props.removeFollowers(auth.currentUser.uid, publisher.id);
     this.props.removeFollowing(auth.currentUser.uid, publisher.id);
     this.props.getFollowingOnce(auth.currentUser.uid);
-
-    if(user.data){
-      this.props.getUserOnce(this.props.user.data.id);
-    }
+    // For Profile page
+    // if(user.data){
+    //   this.props.getUserOnce(this.props.user.data.id);
+    // }
   };
 
-  Follow = () => {
+  doFollow = () => {
     console.log('click follow success');
     const {auth, publisher, user} = this.props;
     this.props.addFollowers(auth.currentUser, publisher.id);
     this.props.addFollowing(auth.currentUser.uid, publisher);
     this.props.getFollowingOnce(auth.currentUser.uid);
-
-    if(user.data){
-      this.props.getUserOnce(this.props.user.data.id);
-    }
+    // For Profile page
+    // if(user.data){
+    //   this.props.getUserOnce(this.props.user.data.id);
+    // }
   };
 
   render() {
-    const {publisher, auth, following} = this.props;
+    const {auth, publisher} = this.props;
+    const {isFollowed} = this.state;
     return (
-      <div>
-        {
-          // If followers is updating return loading button
-          // TODO: Change loading to state to render individual buttons
-          following.loading ? (
-            <Button loading/>
-          ):(
-            <div>
-              {
-                // if unAuthorized (not logged in) don't show follow or unfollow button
-                (!_.isEmpty(auth.currentUser) && (publisher.id !== this.props.auth.currentUser.uid)) &&
-                <div>
-                  {
-                    // Check auth user's following list to render unfollow or follow button
-                    following.data[publisher.id] ? (
-                      <Button
-                        onClick={this.unFollow}
-                        color='green'>Unfollow</Button>
-                    ):(
-                      <Button
-                        onClick={this.Follow}
-                        basic color='green'>Follow</Button>
-                    )
-                  }
-                </div>
-              }
-            </div>
-          )
-        }
-      </div>
+      auth.currentUser !== publisher.id &&
+      <Button onClick={isFollowed ? this.unFollow : this.doFollow}>
+        <Icon name={isFollowed ? 'check' : null}/>
+        <Icon name='user'/>
+      </Button>
     );
   }
 }
@@ -88,7 +104,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps,
-  { addFollowing, addFollowers,
+  { addFollowing, addFollowers, getInitFollowingState,
     removeFollowing, removeFollowers, getUserOnce, getFollowingOnce})
 (FollowToggle);
 

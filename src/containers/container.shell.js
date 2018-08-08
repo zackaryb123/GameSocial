@@ -113,6 +113,7 @@ class ContainerShell extends Component{
     // console.log('Shell render');
     const {children, resetPasswordModal, forgotPasswordModal, loginModal, uploadModal, feedbackModal} = this.props;
     const {display} = this.state;
+
     return (
       <div className="shell" style={{display: display}}>
         {children}

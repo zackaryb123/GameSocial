@@ -36,17 +36,19 @@ class Feed extends Component {
 
     const {auth, following, getFeedOnce, getLikesOnce} = this.props;
     if(!_.isEmpty(auth.currentUser)){
-      getFeedOnce(auth.currentUser.uid, following);
+      getFeedOnce(auth.currentUser.uid, following.data);
     }
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
     const {auth, feed, likes, favorites} = this.props;
 
-    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)){this.setState({samePageLogin: true})}
-    else if(!_.isEmpty(nextProps.feed.data) && (nextProps.feed.data !== feed.data)){this.setState({renderFeed: true})}
+    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser))
+    {this.setState({samePageLogin: true})}
+    else if(!_.isEmpty(nextProps.feed.data) && (nextProps.feed.data !== feed.data))
+    {this.setState({renderFeed: true})}
     // TODO: Determine if better to initialize data in container or in individual components
     // else if(!_.isEmpty(nextProps.likes.data) && (nextProps.likes.data !== likes.data)){this.setState({renderLikes: true})}
     // else if(!_.isEmpty(nextProps.favorites.data) && (nextProps.favorites.data !== favorites.data)){this.setState({renderFavorites: true})}
@@ -55,7 +57,7 @@ class Feed extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // Re-render if prev/current props !equal and data requested is !empty (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
 
     switch(true){
       case (_.isEmpty(nextProps.auth.currentUser)):
@@ -95,7 +97,7 @@ class Feed extends Component {
     switch(true){
       case (samePageLogin):
         this.setState({samePageLogin: false});
-        return getFeedOnce(auth.currentUser.uid, following);
+        return getFeedOnce(auth.currentUser.uid, following.data);
       case(renderFeed):
         return this.setState({renderFeed: false});
       // case(renderLikes):
@@ -133,21 +135,19 @@ class Feed extends Component {
   }
 
   render() {
-    console.log(this.state.name, 'Render');
-    const {feed} = this.props;
+    const {feed, auth} = this.props;
+
+    if(_.isEmpty(auth.currentUser)){return null}
 
     return (
       <Container>
-
         <Segment>
           <Header>The Feed</Header>
         </Segment>
-
-        <Grid stackable column={2}>
+        <Grid stackable>
           <Grid.Row centered>
             {this.renderFeed(feed)}
           </Grid.Row>
-
         </Grid>
       </Container>
     );

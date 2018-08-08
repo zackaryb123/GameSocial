@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Container, Header, Segment} from 'semantic-ui-react'
+import RequiresLogin from '../components/hoc/requires.auth';
 
 class Home extends Component {
   constructor(props) {
@@ -22,12 +23,12 @@ class Home extends Component {
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // Re-render if prev/current props !equal and data requested is !empty (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
     return true
   }
 
@@ -48,7 +49,6 @@ class Home extends Component {
   }
 
   render() {
-    console.log(this.state.name, 'Render');
     const {feed} = this.props;
 
     return (

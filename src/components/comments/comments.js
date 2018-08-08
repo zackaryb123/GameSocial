@@ -72,17 +72,14 @@ class Comments extends Component {
 
       return (
         <Comment key={comment.commentId + comment.uploadId}>
-          {/*key={infoArray[1]}>*/}
-          {/*<Comment.Avatar src={infoArray[2].avatar.url} />*/}
+          <Comment.Avatar src='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' />
           <Comment.Content>
             <Comment.Author as={Link} to={`/profile/${comment.profile.id}`}>{comment.username}
-            {/*{infoArray[2].username}*/}
             </Comment.Author>
             <Comment.Metadata>
               <div>Today at 5:42PM</div>
             </Comment.Metadata>
             <Comment.Text>{comment.comment}
-            {/*{infoArray[0]}*/}
             </Comment.Text>
             <Comment.Actions>
               <Comment.Action>Reply</Comment.Action>
@@ -110,7 +107,7 @@ class Comments extends Component {
       <Segment>
         <Form onSubmit={this.props.handleSubmit(values => this.onSubmit(values))}>
           <Field onChange={this.handleChange}  fluid name="comment" type="text" placeholder="Post a comment" component={this.renderFields}/>
-          <Button disabled={this.props.pristine || this.props.submitting} floated='right' type='submit' basic color='green'>Submit</Button>
+          <Button disabled={this.props.pristine || this.props.submitting}  type='submit' basic color='green'>Submit</Button>
         </Form>
         <div>
           <Comment.Group>

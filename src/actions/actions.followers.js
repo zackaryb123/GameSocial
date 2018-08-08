@@ -5,9 +5,9 @@ export const followersRequest = () => ({
   type: FOLLOWERS_REQUEST,
 });
 
-export const FOLLOWERS_GET_SUCCESS = 'FOLLOWERS_GET_SUCCESS';
-export const followersGetSuccess = (data) => ({
-  type: FOLLOWERS_GET_SUCCESS,
+export const FOLLOWERS_GET = 'FOLLOWERS_GET';
+export const followersGet = (data) => ({
+  type: FOLLOWERS_GET,
   data
 });
 
@@ -24,7 +24,7 @@ export const getFollowersPromise = (userId) => dispatch => {
   return new Promise((resolve, reject) => {
     return firebase.database().ref(`users/${userId}/followers`).once('value', (data) => {
       let followers = data.val();
-      resolve(dispatch(followersGetSuccess(followers)));
+      resolve(dispatch(followersGet(followers)));
     });
   })
 };
@@ -32,16 +32,26 @@ export const getFollowersPromise = (userId) => dispatch => {
 export const getFollowersOnce = (userId) => dispatch => {
   dispatch(followersRequest());
   firebase.database().ref(`users/${userId}/followers`).once('value', (data) => {
-    dispatch(followersGetSuccess(data.val()));
+    dispatch(followersGet(data.val()));
   }).catch(error => dispatch(followersError(error)));
 };
 
 //*** SERVICES ***//
+export const getInitFollowersState = (authId, uploadId) => dispatch => {
+  return new Promise((resolve, reject) => {
+    return firebase.database().ref(`users/${authId}/favorites/${uploadId}`).once('value', (snapshot) => {
+      const isFavorite = !!snapshot.val();
+      resolve(isFavorite);
+    })
+  })
+};
+
+
 export const addFollowers = (auth, publisherId) => dispatch => {
   const followersRef = firebase.database().ref(`users/${publisherId}/followers/`);
   followersRef.child(`${auth.uid}/id`).set(auth.uid);
   followersRef.child(`${auth.uid}/username`).set(auth.displayName);
-  followersRef.child(`${auth.uid}/avatar/url`).set(auth.photoURL);
+  // followersRef.child(`${auth.uid}/avatar/url`).set(auth.photoURL);
 };
 
 export const removeFollowers = (authId, publisherId) => dispatch => {

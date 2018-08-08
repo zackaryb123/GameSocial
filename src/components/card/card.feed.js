@@ -112,5 +112,5 @@ const white = {
 };
 
 const lightBlue = {
-  color: 'blue'
+  color: '#1e70bf'
 };

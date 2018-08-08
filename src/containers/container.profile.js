@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { Container, Header, Segment } from "semantic-ui-react";
+import _ from "lodash";
 // import _ from 'lodash';
 
 class Profile extends Component {
@@ -52,6 +53,9 @@ class Profile extends Component {
 
   render() {
     // const {name, status} = this.state;
+    const {auth} = this.props;
+    if(_.isEmpty(auth.currentUser)){return null}
+
     return (
       <Container>
         <Segment>
@@ -63,7 +67,7 @@ class Profile extends Component {
 }
 
 const mapStateToProps = state => ({
-
+  auth: state.auth
 });
 
 export default connect(mapStateToProps,

@@ -11,6 +11,11 @@ export const uploadGet = data => ({
   data
 });
 
+export const UPLOAD_CLEAR = "UPLOAD_CLEAR";
+export const uploadClear = () => ({
+  type: UPLOAD_CLEAR,
+});
+
 export const UPLOAD_ERROR = "UPLOAD_ERROR";
 export const uploadError = error => ({
   type: UPLOAD_ERROR,
@@ -26,8 +31,7 @@ export const getUploadOnce = (uploadId) => dispatch => {
   });
 };
 
-//*** SERVICES **//
-export const storeUpload = (upload) => dispatch => {
-  dispatch(uploadGet(upload));
+export const clearUpload = () => dispatch => {
+  dispatch(uploadClear());
 };
 

@@ -1,11 +1,11 @@
 import {
-  FOLLOWERS_REQUEST, FOLLOWERS_ERROR, FOLLOWERS_GET_SUCCESS
+  FOLLOWERS_REQUEST, FOLLOWERS_ERROR, FOLLOWERS_GET
 } from '../actions/actions.followers';
 
 const initialState = {
   loading: false,
   error: null,
-  data: []
+  data: null
 };
 
 export default function reducer(state = initialState, action) {
@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
         loading: true,
         error: null
       });
-    case(FOLLOWERS_GET_SUCCESS):
+    case(FOLLOWERS_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,

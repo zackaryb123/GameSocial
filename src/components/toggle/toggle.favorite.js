@@ -20,20 +20,22 @@ class FavoriteToggle extends Component {
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name, 'Did Mount ');
 
-    // TODO: Find a better way to initialize favorites
+    this.mounted = true;
     const {upload, auth, getInitFavoriteState} = this.props;
     getInitFavoriteState(auth.currentUser.uid, upload.id)
-      .then(exist => this.setState({isFavorite: exist, renderFavorites: true})) ;
+      .then(exist => {
+        if(this.mounted) {this.setState({ isFavorite: exist, renderFavorites: true })}
+      });
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
 
     const {upload, favorites} = this.props;
-    // On like props received set the liked boolean
     if (nextProps.favorites.data !== favorites.data){
-      this.setState({isFavorite: nextProps.favorites.data && (upload.id in nextProps.favorites.data),
+      this.setState({
+        isFavorite: nextProps.favorites.data && (upload.id in nextProps.favorites.data),
         renderFavorites: true})
     } else {
       console.log('Component Up to date!')}
@@ -42,18 +44,23 @@ class FavoriteToggle extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // Compare and determine if render needed (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
 
     if(nextState.renderFavorites){return true}
+    else{console.log('Toggle favorite up to date')}
     return false;
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
-    console.log(this.state.name, "Did Update", prevProps, prevState);
+    // console.log(this.state.name, "Did Update", prevProps, prevState);
     if(this.state.renderFavorites){
       this.setState({renderFavorites: false})
     } else { alert('missing toggle fav handler') }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   unFavorite = () =>{

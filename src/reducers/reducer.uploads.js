@@ -1,9 +1,8 @@
 import {
-  UPLOAD_REQUEST,
-  UPLOAD_ERROR,
-  UPLOAD_CLEAR,
-  UPLOAD_GET
-} from "../actions/actions.upload";
+  UPLOADS_REQUEST,
+  UPLOADS_ERROR,
+  UPLOADS_GET
+} from "../actions/actions.uploads";
 
 const initialState = {
   loading: false,
@@ -13,24 +12,18 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-    case UPLOAD_REQUEST:
+    case UPLOADS_REQUEST:
       return Object.assign({}, state, {
         loading: true,
         error: null
       });
-    case UPLOAD_GET:
+    case UPLOADS_GET:
       return Object.assign({}, state, {
         data: action.data,
         error: null,
         loading: false
       });
-    case UPLOAD_CLEAR:
-      return Object.assign({}, state, {
-        data: null,
-        error: null,
-        loading: false
-      });
-    case UPLOAD_ERROR:
+    case UPLOADS_ERROR:
       return Object.assign({}, state, {
         error: action.error,
         loading: false

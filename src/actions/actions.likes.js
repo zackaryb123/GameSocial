@@ -30,8 +30,8 @@ export const getLikesOnce = (authId) => dispatch => {
 export const getInitLikeState = (authId, uploadId) => dispatch => {
   return new Promise((resolve, reject) => {
     return firebase.database().ref(`users/${authId}/likes/${uploadId}`).once('value', (snapshot) => {
-      const exist = !!snapshot.val();
-        resolve(exist);
+      const isLiked = !!snapshot.val();
+        resolve(isLiked);
     })
   })
 };

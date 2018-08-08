@@ -5,9 +5,9 @@ export const featuredRequest = () => ({
   type: FEATURED_REQUEST,
 });
 
-export const FEATURED_GET_SUCCESS = 'FEATURED_GET_SUCCESS';
-export const featuredGetSuccess = (data) => ({
-  type: FEATURED_GET_SUCCESS,
+export const FEATURED_GET = 'FEATURED_GET';
+export const featuredGet = (data) => ({
+  type: FEATURED_GET,
   data
 });
 
@@ -18,32 +18,27 @@ export const featuredError = error => ({
 });
 
 //*** ACTIONS **//
-export const getFeaturedPromise = () => dispatch => {
-  dispatch(featuredRequest());
-  return new Promise((resolve, reject) => {
-    firebase.database().ref(`featured`).on('value', (data) => {
-      let featured = data.val();
-      resolve(dispatch(featuredGetSuccess(featured)));
-    });
-  }).catch(error => dispatch(featuredError(error)));
-};
-
 export const getFeaturedOnce = () => dispatch => {
   dispatch(featuredRequest());
-  return firebase.database().ref(`featured`).once('value', (data) => {
-    let featured = data.val();
-    dispatch(featuredGetSuccess(featured));
+  return firebase.database().ref(`featured`).once('value', (snapshot) => {
+    let featured = snapshot.val();
+    dispatch(featuredGet(featured));
   }).catch(error => dispatch(featuredError(error)));
 };
 
 //*** SERVICES ***//
+export const getInitFeaturedState = (uploadId) => dispatch => {
+  return new Promise((resolve, reject) => {
+    return firebase.database().ref(`featured/${uploadId}`).once('value', snapshot => {
+        console.log(snapshot.val());
+        let isFeatured = !!snapshot.val();
+        resolve(isFeatured);
+      });
+  })
+};
+
 export const addFeatured = (upload) => dispatch => {
-  const featuredRef = firebase.database().ref(`featured/${upload.id}`);
-  featuredRef.child('/id').set(upload.id);
-  featuredRef.child('/publisher').set(upload.publisher);
-  featuredRef.child('/content').set(upload.content);
-  featuredRef.child('/url').set(upload.url);
-  featuredRef.child('thumbnail').set(upload.thumbnail);
+  firebase.database().ref(`featured/${upload.id}`).set(upload);
 };
 
 export const removeFeatured = (uploadId) => dispatch => {

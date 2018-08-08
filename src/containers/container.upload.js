@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Grid, Container, Segment, Dimmer, Loader, Image, Card } from "semantic-ui-react";
+import {Link} from 'react-router-dom';
+import { Grid, Container, Segment, Dimmer, Loader, Image, Header, Item, Feed } from "semantic-ui-react";
 
-import { getUploadOnce } from "./../actions/actions.upload";
+import { getUploadOnce, clearUpload } from "./../actions/actions.upload";
 
 import Comments from "../components/comments/comments";
-import UserCard from "../components/card/card.user";
 import ViewsCount from "../components/count/count.views";
 import FavoriteToggle from "../components/toggle/toggle.favorite";
 import LikesToggle from "../components/toggle/toggle.like";
@@ -40,17 +40,20 @@ class Upload extends Component {
 
   componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name,"Did Mount");
-    const {
-      match: { params },
-      getUploadOnce
-    } = this.props;
-    getUploadOnce(params.uploadId);
+    console.log(this.state.name,"Did Mount");
+
+    const {auth, match: { params }, getUploadOnce } = this.props;
+
+
+    // TODO: NOT PULLING CORRECT UPLOAD ID (PULLING PREV)
+    if(!_.isEmpty(auth.currentUser)) {
+      getUploadOnce(params.uploadId);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
     const { upload, auth, viewsCount, likes, favorites } = this.props;
 
     if (
@@ -75,7 +78,7 @@ class Upload extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // Re-render if prev/current props !equal and data requested is !empty (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
 
     switch (true) {
       case _.isEmpty(nextProps.auth.currentUser):
@@ -145,14 +148,14 @@ class Upload extends Component {
   componentWillUnmount() {
     //DOM Manipulation (side effects)
     // console.log(this.state.name, "Will Unmount");
+    this.props.clearUpload();
   }
 
   render() {
     const { upload, auth } = this.props;
+    const {hoverLink} = this.state;
 
-    if (!upload.data) {
-      return null
-    }
+    if(_.isEmpty(auth.currentUser)){return null}
 
     if (upload.loading) {
       return (
@@ -164,24 +167,40 @@ class Upload extends Component {
         </Segment>
       );
     }
+
+    if (!upload.data) {return <h1>No Upload Data</h1>}
+
     return (
       <Container fluid>
         <Container fluid >
           <Grid textAlign="center" style={{ backgroundColor: "black" }}>
             <Grid.Row className="row">
-              <Grid.Column width={16} style={{maxWidth: '1028px'}}>
+              <Grid.Column width={16} style={{maxWidth: '720px'}}>
+                <Segment inverted>
+                  <Feed>
+                    <Feed.Event>
+                      <Feed.Label><img src='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' /></Feed.Label>
+                      <Feed.Content>
+                        <Feed.Date style={white}>{upload.data.created_at}</Feed.Date>
+                        <Feed.Summary style={white}>
+                          <Link to={`/profile/${upload.data.publisher.id}`}>
+                            {upload.data.publisher.username}</Link>
+                        </Feed.Summary>
+                        <Feed.Extra style={white} text>{upload.data.caption}</Feed.Extra>
+                      </Feed.Content>
+                    </Feed.Event>
+                  </Feed>
+                </Segment>
                 {upload.data.type === 'video' && <VideoPlayer source={upload.data} options={upload.data.options} />}
                 {upload.data.type === 'image' && <Image alt="upload" src={upload.data.url}/>}
-              </Grid.Column>
-
-              <Grid.Column width={16}>
                 <Grid centered>
                   <Grid.Row>
-                    <Grid.Column width={10}>
+                    <Grid.Column width={16}>
                       <Segment inverted style={{display: 'flex', justifyContent: 'space-between'}}>
                         <ViewsCount upload={upload.data}/>
                         <FavoriteToggle upload={upload.data} />
                         <LikesToggle upload={upload.data} />
+                        {auth.currentUser.isAdmin && <FeaturedToggle upload={upload.data} />}
                       </Segment>
                     </Grid.Column>
                   </Grid.Row>
@@ -190,28 +209,6 @@ class Upload extends Component {
             </Grid.Row>
           </Grid>
         </Container>
-
-        <Grid stackable stretched centered>
-          <Grid.Row centered>
-            <Grid.Column width={10}>
-              <Segment>
-                <h1>{upload.data.caption}</h1>
-                <span>Tags</span>
-                {auth.currentUser && auth.currentUser.isAdmin && (
-                  <div>
-                    <span style={{ float: "left" }}>Featured</span>
-                    <FeaturedToggle upload={upload.data} />
-                  </div>
-                )}
-                <span style={{ float: "right" }}>{upload.data.created_at}</span>
-              </Segment>
-            </Grid.Column>
-
-            <Grid.Column width={5}>
-              <UserCard publisher={upload.data.publisher}/>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
 
         <Grid>
           <Grid.Row centered>
@@ -235,5 +232,14 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getUploadOnce }
+  { getUploadOnce, clearUpload }
 )(Upload);
+
+
+const white = {
+  color: 'white'
+};
+
+const blue = {
+  color: '#1e70bf'
+};

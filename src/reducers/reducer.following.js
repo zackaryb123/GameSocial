@@ -1,5 +1,5 @@
 import {
-  FOLLOWING_REQUEST, FOLLOWING_ERROR, FOLLOWING_GET_SUCCESS
+  FOLLOWING_REQUEST, FOLLOWING_ERROR, FOLLOWING_GET
 } from '../actions/actions.following';
 
 const initialState = {
@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
         loading: true,
         error: null
       });
-    case(FOLLOWING_GET_SUCCESS):
+    case(FOLLOWING_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,

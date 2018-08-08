@@ -2,6 +2,7 @@ import * as firebase from 'firebase';
 //import {FirebaseEnvObj} from './models';
 import {fireConfig}  from "../dbConfig";
 import {openLoginModal, closeResetPasswordModal, openResetPasswordModal} from "./actions.modals";
+import {authGet} from "./actions.auth";
 
 export const initApp = () => dispatch => {
   //var config = new FirebaseEnvObj(require('FirebaseConfig'));
@@ -26,12 +27,29 @@ export const initApp = () => dispatch => {
         handleVerifyEmail(auth, actionCode);
         break;
       default:
+        break;
+
     }
   } else {
-    dispatch(openLoginModal('', '', null));
+    checkAuthStateChange(auth);
   }
 
   /********Functions*********/
+  function checkAuthStateChange(auth) {
+    auth.onAuthStateChanged(function(auth) {
+      if (auth && auth.emailVerified) {
+        console.log('User is logged in', auth);
+        return firebase.database().ref(`users/${auth.uid}`).once('value', snapshot => {
+          let user = snapshot.val();
+          auth.isAdmin = user.isAdmin;
+          dispatch(authGet(auth));
+        });
+      }else{
+        dispatch(openLoginModal('', '', null));
+      }
+    });
+  }
+
   function handleVerifyEmail (auth, actionCode) {
     return auth.applyActionCode(actionCode).then(function (resp) {
       console.log('handleVerifyEmail:', resp);

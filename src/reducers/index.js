@@ -14,7 +14,11 @@ import likesReducer from "./reducer.likes";
 import favoritesReducer from "./reducer.favoirites";
 import viewsReducer from "./reducer.count.views";
 import uploadReducer from "./reducer.upload";
+import uploadsReducer from "./reducer.uploads";
 import commentsReducer from "./reducer.comments";
+import followersReducer from "./reducer.followers";
+import followingReducer from "./reducer.following";
+import featuredReducer from "./reducer.featured";
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -25,7 +29,11 @@ const rootReducer = combineReducers({
   favorites: favoritesReducer,
   viewsCount: viewsReducer,
   upload: uploadReducer,
+  uploads: uploadsReducer,
   comments: commentsReducer,
+  followers: followersReducer,
+  following: followingReducer,
+  featured: featuredReducer,
   loginModal: loginModalReducer,
   forgotPasswordModal: forgotPasswordReducer,
   resetPasswordModal: resetPasswordReducer,

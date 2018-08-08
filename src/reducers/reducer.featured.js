@@ -1,5 +1,5 @@
 import {
-  FEATURED_REQUEST, FEATURED_ERROR, FEATURED_GET_SUCCESS
+  FEATURED_REQUEST, FEATURED_ERROR, FEATURED_GET
 } from '../actions/actions.featured';
 
 const initialState = {
@@ -15,7 +15,7 @@ export default function reducer(state = initialState, action) {
         loading: true,
         error: null
       });
-    case(FEATURED_GET_SUCCESS):
+    case(FEATURED_GET):
       return Object.assign({}, state, {
         data: action.data,
         error: null,

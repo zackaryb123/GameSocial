@@ -10,6 +10,7 @@ class ViewsCount extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      name: 'View Count',
       ipAddress: null,
       hasViewed: null
     };
@@ -17,29 +18,29 @@ class ViewsCount extends Component {
 
   componentWillMount() {
     //Constructor equivalent (state updates)
-    console.log(this.state.name, "Will Mount");
+    // console.log(this.state.name, "Will Mount");
+  }
 
+  componentDidMount(){
+    //DOM Manipulation (side effects/state updates)(render occurs before)
+    // console.log(this.state.name, 'Did Mount ');
+    this.mounted = true;
     publicIp.v4().then(ip => {
       console.log(ip);
       let ipString = ip.split(".").join("-");
-      this.setState({ipAddress: ipString});
+      if(this.mounted){this.setState({ipAddress: ipString});}
       this.props.checkUploadViewsList(ipString, this.props.upload.id)
         .then(hasViewed => {
-          this.setState({hasViewed: hasViewed});
+          if(this.mounted) {this.setState({ hasViewed: hasViewed });}
           if(!hasViewed){this.incrementViews()
           }else{this.props.getCountViewsOnce(this.props.upload.id);}
         });
     });
   }
 
-  componentDidMount(){
-    //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name, 'Did Mount ');
-  }
-
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
+    // console.log(this.state.name, "Will Receive Props", nextProps);
 
     // const {upload} = this.props;
     // On like props received set the liked boolean
@@ -48,7 +49,7 @@ class ViewsCount extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // Compare and determine if render needed (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
+    // console.log("Should", this.state.name, "Update", nextProps, nextState);
 
     // if(this.state.reCount && (nextProps.upload.views !== this.props.upload.views)) {return true}
     return true;
@@ -56,19 +57,20 @@ class ViewsCount extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    console.log(this.state.name ,"Will Update", nextProps, nextState);
+    // console.log(this.state.name ,"Will Update", nextProps, nextState);
 
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
-    console.log(this.state.name, "Did Update", prevProps, prevState)
+    // console.log(this.state.name, "Did Update", prevProps, prevState)
 
   }
 
   componentWillUnmount(){
     //DOM Manipulation (side effects)
     // console.log(this.state.name, "Will Unmount");
+    this.mounted = false;
   }
 
   incrementViews(){
@@ -79,7 +81,6 @@ class ViewsCount extends Component {
   }
 
   render() {
-    console.log('Render');
     const {auth, viewsCount, upload} = this.props;
     return (
       auth.currentUser &&
