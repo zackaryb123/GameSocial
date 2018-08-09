@@ -7,9 +7,15 @@ export const feedRequest = () => ({
   type: FEED_REQUEST
 });
 
-export const FEED_GET = 'FEED_SUCCESS';
+export const FEED_GET = 'FEED_GET';
 export const feedGet = (data) => ({
   type: FEED_GET,
+  data
+});
+
+export const FEED_CLEAR = 'FEED_CLEAR';
+export const feedClear = (data) => ({
+  type: FEED_CLEAR,
   data
 });
 
@@ -19,7 +25,7 @@ export const feedError = error => ({
   error
 });
 
-
+// Actions
 export const getFeedOnce = (authId, following) => dispatch => {
   return new Promise((resolve) => {
   dispatch(feedRequest);
@@ -38,11 +44,16 @@ export const getFeedOnce = (authId, following) => dispatch => {
         _.forEach(dataArray, data => {
           feed.push(data);
         });
-        resolve(feed);
         feed.sort((a,b) => {return a.created_at - b.created_at});
         feed.reverse();
+        resolve(feed);
         dispatch(feedGet(feed))
       });
     }).catch(error => dispatch(feedError(error)))
 };
 
+
+// Service
+export const clearFeed = () => dispatch => {
+  dispatch(feedClear());
+};

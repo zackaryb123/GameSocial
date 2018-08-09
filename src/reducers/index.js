@@ -10,7 +10,6 @@ import {
 import authReducer from "./reducer.auth";
 import userReducer from "./reducer.user";
 import feedReducer from "./reducer.feed";
-import likesReducer from "./reducer.likes";
 import favoritesReducer from "./reducer.favoirites";
 import viewsReducer from "./reducer.count.views";
 import uploadReducer from "./reducer.upload";
@@ -25,7 +24,6 @@ const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   feed: feedReducer,
-  likes: likesReducer,
   favorites: favoritesReducer,
   viewsCount: viewsReducer,
   upload: uploadReducer,

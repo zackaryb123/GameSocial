@@ -1,6 +1,4 @@
-import {
-  LIKES_REQUEST, LIKES_ERROR, LIKES_GET
-} from '../actions/actions.likes';
+import { LIKES_REQUEST, LIKES_ERROR, LIKES_GET } from "./actions.likes";
 
 const initialState = {
   loading: false,
@@ -9,19 +7,19 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action) {
-  switch(action.type){
-    case (LIKES_REQUEST):
+  switch (action.type) {
+    case LIKES_REQUEST:
       return Object.assign({}, state, {
         loading: true,
         error: null
       });
-    case(LIKES_GET):
+    case LIKES_GET:
       return Object.assign({}, state, {
         data: action.data,
         error: null,
         loading: false
       });
-    case(LIKES_ERROR):
+    case LIKES_ERROR:
       return Object.assign({}, state, {
         error: action.error,
         loading: false

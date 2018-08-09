@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Container, Header, Grid, Segment} from 'semantic-ui-react'
-import {getFeedOnce} from '../actions/actions.feed';
-import {getLikesOnce} from "../actions/actions.likes";
+import {getFeedOnce, clearFeed} from '../actions/actions.feed';
 import _ from 'lodash';
 
 import FeedCard from '../components/card/card.feed';
@@ -35,7 +34,7 @@ class Feed extends Component {
     // console.log(this.state.name,"Did Mount");
 
     const {auth, following, getFeedOnce, getLikesOnce} = this.props;
-    if(!_.isEmpty(auth.currentUser)){
+    if(!_.isEmpty(auth.currentUser)) {
       getFeedOnce(auth.currentUser.uid, following.data);
     }
   }
@@ -43,15 +42,12 @@ class Feed extends Component {
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-    const {auth, feed, likes, favorites} = this.props;
+    const {auth, feed} = this.props;
 
     if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser))
     {this.setState({samePageLogin: true})}
     else if(!_.isEmpty(nextProps.feed.data) && (nextProps.feed.data !== feed.data))
     {this.setState({renderFeed: true})}
-    // TODO: Determine if better to initialize data in container or in individual components
-    // else if(!_.isEmpty(nextProps.likes.data) && (nextProps.likes.data !== likes.data)){this.setState({renderLikes: true})}
-    // else if(!_.isEmpty(nextProps.favorites.data) && (nextProps.favorites.data !== favorites.data)){this.setState({renderFavorites: true})}
     else{console.log('Props state up to date!')}
   }
 
@@ -66,15 +62,7 @@ class Feed extends Component {
         return true;
       case (nextState.renderFeed):
         return true;
-      // case (nextState.renderLikes):
-      //   return true;
-      // case (nextState.renderFavorites):
-      //   return true;
       // case (nextState.updateFeed):
-      //   return true;
-      // case (nextState.updateLikes):
-      //   return true;
-      // case (nextState.updateFavorites):
       //   return true;
       default:
         return false;
@@ -90,9 +78,8 @@ class Feed extends Component {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
 
-    const {following, getFeedOnce, getLikesOnce, auth} = this.props;
-    const {samePageLogin, renderFeed, renderLikes, renderFavorites,
-      updateFeed, updateLikes, updateFavorites} = this.state;
+    const {following, getFeedOnce, auth} = this.props;
+    const {samePageLogin, renderFeed, updateFeed} = this.state;
 
     switch(true){
       case (samePageLogin):
@@ -100,18 +87,8 @@ class Feed extends Component {
         return getFeedOnce(auth.currentUser.uid, following.data);
       case(renderFeed):
         return this.setState({renderFeed: false});
-      // case(renderLikes):
-      //   return this.setState({renderLikes: false});
-      // case(renderFavorites):
-      //   return this.setState({renderFavorites: false});
       // case(updateFeed):
       //   this.setState({updateFeed: false});
-      //   return getLikesOnce(auth.currentUser.uid);
-      // case(updateLikes):
-      //   this.setState({updateLikes: false});
-      //   return getLikesOnce(auth.currentUser.uid);
-      // case(updateFavorites):
-      //   this.setState({updateFavorites: false});
       //   return getLikesOnce(auth.currentUser.uid);
       default:
         return alert(this.state.name, '');
@@ -122,6 +99,7 @@ class Feed extends Component {
   componentWillUnmount(){
     //DOM Manipulation (side effects)
     // console.log(this.state.name, "Will Unmount");
+    this.props.clearFeed();
   }
 
   renderFeed(feed) {
@@ -162,4 +140,4 @@ const mapStateToProps = state => ({
 });
 
 export default (connect(mapStateToProps,
-  {getFeedOnce, getLikesOnce})(Feed));
+  {getFeedOnce, clearFeed})(Feed));

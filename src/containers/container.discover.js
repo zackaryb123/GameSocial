@@ -51,7 +51,6 @@ class Discover extends Component {
     {this.setState({samePageLogin: true})}
     else if(!_.isEmpty(nextProps.uploads.data) && (nextProps.uploads.data !== uploads.data))
     {this.setState({renderUploads: true})}
-    // else if(!_.isEmpty(nextProps.featured.data) && (nextProps.featured.data !== featured.data)){this.setState({renderFeatured: true})}
     else {console.log('Props up to date')}
 
   }
@@ -66,11 +65,7 @@ class Discover extends Component {
         return true;
       case (nextState.renderUploads):
         return true;
-      // case (nextState.renderFeatured):
-      //   return true;
       // case (nextState.updateUploads):
-      //   return true;
-      // case (nextState.updateFeatured):
       //   return true;
       default:
         return false;
@@ -94,14 +89,9 @@ class Discover extends Component {
         return getUploadsOnce();
       case(renderUploads):
         return this.setState({ renderUploads: false });
-      // case(renderFeatured):
-      //   return this.setState({ renderFeatured: false });
       // case(updateUploads):
       //   this.setState({updateUploads: false});
       //   return getUploadsOnce(auth.currentUser.uid);
-      // case(updateFeatured):
-      //   this.setState({updateFeatured: false});
-      //   return getFeaturedOnce(auth.currentUser.uid);
       default:
         return alert(this.state.name, '');
     }
@@ -165,7 +155,6 @@ class Discover extends Component {
 const mapStateToProps = state => ({
   auth: state.auth,
   uploads: state.uploads,
-  // featured: state.featured
 });
 
 export default connect(mapStateToProps,

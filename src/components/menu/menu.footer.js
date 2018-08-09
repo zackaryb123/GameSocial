@@ -46,7 +46,6 @@ class FooterBar extends Component {
 
 
   render() {
-    // console.log('render', this.state.name);
     const Logo = 'http://www.placeholde.com/400x320';
     //= require.resolve('./../../ui/assets/img/logo.PNG');
     return (
