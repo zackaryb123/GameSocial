@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import { Icon, Button } from "semantic-ui-react";
+import { Icon, Button, Header } from "semantic-ui-react";
 
 import {addFollowers, removeFollowers} from "../../actions/actions.followers";
 import {addFollowing, removeFollowing, getFollowingOnce, getInitFollowingState} from "../../actions/actions.following";
@@ -19,10 +19,13 @@ class FollowToggle extends Component {
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name, 'Did Mount ');
 
-    // TODO: Find a better way to initialize favorites
+    this.mount = true;
     const {publisher, auth, getInitFollowingState} = this.props;
     getInitFollowingState(auth.currentUser.uid, publisher.id)
-      .then(exist => this.setState({isFollowed: exist, renderFollow: true}));
+      .then(exist => {
+        if(this.mount)
+        {this.setState({isFollowed: exist, renderFollow: true})}
+      })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,6 +47,7 @@ class FollowToggle extends Component {
     console.log("Should", this.state.name, "Update", nextProps, nextState);
 
     if(nextState.renderFollow){return true}
+    else{console.log(this.state.name, 'up to date')}
     return false;
   }
 
@@ -56,7 +60,9 @@ class FollowToggle extends Component {
   }
 
 
-
+  componentWillUnmount() {
+    this.mount = false;
+  }
 
   unFollow = () => {
     console.log('click unfollow success');
@@ -64,10 +70,11 @@ class FollowToggle extends Component {
     this.props.removeFollowers(auth.currentUser.uid, publisher.id);
     this.props.removeFollowing(auth.currentUser.uid, publisher.id);
     this.props.getFollowingOnce(auth.currentUser.uid);
-    // For Profile page
-    // if(user.data){
-    //   this.props.getUserOnce(this.props.user.data.id);
-    // }
+
+    //For Profile page
+    if(user.data){
+      this.props.getUserOnce(this.props.user.data.id);
+    }
   };
 
   doFollow = () => {
@@ -77,9 +84,9 @@ class FollowToggle extends Component {
     this.props.addFollowing(auth.currentUser.uid, publisher);
     this.props.getFollowingOnce(auth.currentUser.uid);
     // For Profile page
-    // if(user.data){
-    //   this.props.getUserOnce(this.props.user.data.id);
-    // }
+    if(user.data){
+      this.props.getUserOnce(this.props.user.data.id);
+    }
   };
 
   render() {
@@ -87,9 +94,10 @@ class FollowToggle extends Component {
     const {isFollowed} = this.state;
     return (
       auth.currentUser !== publisher.id &&
-      <Button onClick={isFollowed ? this.unFollow : this.doFollow}>
-        <Icon name={isFollowed ? 'check' : null}/>
-        <Icon name='user'/>
+      <Button style={followBtn} onClick={isFollowed ? this.unFollow : this.doFollow}>
+        <Icon style={{color: '#4183c4'}} name={isFollowed ? 'check' : null}/>
+        <Icon style={{color: '#4183c4'}} name='user'/>
+        <Header style={{margin: '0', color: '#4183c4'}} as='h6'>{isFollowed?'Following':'Follow'}</Header>
       </Button>
     );
   }
@@ -108,3 +116,14 @@ export default connect(mapStateToProps,
     removeFollowing, removeFollowers, getUserOnce, getFollowingOnce})
 (FollowToggle);
 
+const followBtn = {
+  backgroundColor: 'inherit',
+  position: 'absolute',
+  right: '0',
+  top: '0',
+  bottom: '0',
+  padding: '.5rem .5rem',
+  margin: '0',
+  border: '1px solid #4183c4',
+  outline: 'none'
+};

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Image, Card, Button } from "semantic-ui-react";
 
-import FollowToggle from "../toggle/toggle.follow";
+import FollowToggle from "../toggle/toggle.following";
 
 import { addFollowers, removeFollowers } from "../../actions/actions.followers";
 import { addFollowing, removeFollowing } from "../../actions/actions.following";
@@ -23,16 +23,13 @@ class UserCard extends Component {
         <Card.Content>
           <Image
             style={{ borderRadius: ".25rem" }}
-            floated="right"
             size="mini"
             src="https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png"
           />
-          <Card.Header>
+          <Card.Header style={cssHeader}>
             <Link to={`/profile/${publisher.id}`}>{publisher.username}</Link>
           </Card.Header>
-          {auth.currentUser.uid !== publisher.id && (
-            <FollowToggle publisher={publisher} />
-          )}
+          {auth.currentUser.uid !== publisher.id && <FollowToggle publisher={publisher} />}
         </Card.Content>
       </Card>
     );
@@ -41,9 +38,7 @@ class UserCard extends Component {
 
 const mapStateToProps = state => ({
   user: state.user,
-  auth: state.auth,
-
-  following: state.following
+  auth: state.auth
 });
 
 export default connect(
@@ -55,3 +50,20 @@ export default connect(
     removeFollowers
   }
 )(UserCard);
+
+
+const cssHeader = {
+  display: 'inline-block',
+  marginLeft: '.5rem'
+};
+
+const followBtn = {
+  backgroundColor: 'white',
+  position: 'absolute',
+  right: '0',
+  top: '0',
+  bottom: '0',
+  padding: '.5rem .5rem',
+  margin: '0',
+  border: 'none'
+};

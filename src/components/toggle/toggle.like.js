@@ -27,7 +27,7 @@ class LikeToggle extends Component {
           this.setState({
             count: _.size(likeList),
             isLiked: auth.currentUser.uid in likeList,
-            likeList: likeList,
+            // likeList: likeList,
             renderLikes: true
           })
         }

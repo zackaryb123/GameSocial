@@ -46,6 +46,15 @@ export const getInitFollowingState = (authId, publisherId) => dispatch => {
   })
 };
 
+export const getInitFollowing = (authId) => dispatch => {
+  return new Promise((resolve, reject) =>  {
+    return firebase.database().ref(`users/${authId}/following`).once('value', snapshot => {
+      const followingList = snapshot.val();
+      resolve(followingList)
+    })
+  })
+};
+
 export const addFollowing = (authId ,publisher) => dispatch => {
   const followingRef = firebase.database().ref(`users/${authId}/following`);
   followingRef.child(`${publisher.id}/id`).set(publisher.id);

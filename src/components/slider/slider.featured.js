@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import _ from "lodash";
-import { Header, Grid, Image, Segment, Feed } from "semantic-ui-react";
+import { Header, Grid, Image, Segment, Feed, Dimmer, Loader } from "semantic-ui-react";
 
 import {getFeaturedOnce} from '../../actions/actions.featured';
 
@@ -12,10 +12,7 @@ import ViewsCount from "../count/count.views";
 import FavoriteToggle from "../toggle/toggle.favorite";
 import LikesToggle from "../toggle/toggle.like";
 import FeaturedToggle from "../toggle/toggle.featured";
-// import ViewsCount from "../count/count.views";
-// import FavoriteToggle from "../toggle/toggle.favorite";
-// import LikesToggle from "../toggle/toggle.like";
-// import { FeaturedToggle } from "../toggle/toggle.featured";
+import FollowToggle  from '../toggle/toggle.following'
 
 const settings = {
   dots: true,
@@ -108,12 +105,24 @@ class FeaturedSlider extends Component {
   render() {
     const {auth, featured} = this.props;
 
+    if(!featured.data || featured.loading){
+      return (
+        <Segment>
+          <Dimmer active>
+            <Loader>Loading</Loader>
+          </Dimmer>
+          <Image src="/images/wireframe/short-paragraph.png" />
+        </Segment>
+      );
+    }
+
     const hasList = !!this.props.featured.data;
     return hasList ? (
       <Slider {...settings}>
         {_.map(featured.data, feature => {
           return (
-            <Segment basic key={feature.id} style={{ backgroundColor: "black" }}>
+            <Segment basic key={feature.id}>
+              {/*style={{ backgroundColor: "#1B1C1D" }}>*/}
               <Segment inverted>
                 <Feed>
                   <Feed.Event>
@@ -124,7 +133,8 @@ class FeaturedSlider extends Component {
                         <Link to={`/profile/${feature.publisher.id}`}>
                           {feature.publisher.username}</Link>
                       </Feed.Summary>
-                      <Feed.Extra style={white} text>{feature.caption}</Feed.Extra>
+                      <Feed.Extra as={Link} to={`/upload/${feature.publisher.id}/uploads/${feature.id}`} style={white} text>{feature.caption}</Feed.Extra>
+                      {auth.currentUser.uid !== feature.publisher.id && <FollowToggle publisher={feature.publisher}/>}
                     </Feed.Content>
                   </Feed.Event>
                 </Feed>

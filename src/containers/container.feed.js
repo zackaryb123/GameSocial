@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {Container, Header, Grid, Segment} from 'semantic-ui-react'
+import { Container, Header, Grid, Segment, Dimmer, Loader, Image } from "semantic-ui-react";
 import {getFeedOnce, clearFeed} from '../actions/actions.feed';
+import {getInitFollowing} from '../actions/actions.following';
 import _ from 'lodash';
 
 import FeedCard from '../components/card/card.feed';
@@ -31,23 +32,26 @@ class Feed extends Component {
 
   componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name,"Did Mount");
+    // console.log(this.state.name, "Did Mount");
+    const { auth, getFeedOnce, getInitFollowing, following } = this.props;
+    this.mount = true;
 
-    const {auth, following, getFeedOnce, getLikesOnce} = this.props;
-    if(!_.isEmpty(auth.currentUser)) {
-      getFeedOnce(auth.currentUser.uid, following.data);
-    }
+
+    if (!_.isEmpty(auth.currentUser)) {
+      // Handle remount
+      getInitFollowing(auth.currentUser.uid).then(followingList => { if(this.mount) {
+        getFeedOnce(auth.currentUser.uid, followingList);
+        this.setState({ renderFollow: true })}});
+    } else{ console.log('No Remount')}
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
     const {auth, feed} = this.props;
-
-    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser))
-    {this.setState({samePageLogin: true})}
-    else if(!_.isEmpty(nextProps.feed.data) && (nextProps.feed.data !== feed.data))
-    {this.setState({renderFeed: true})}
+    // Handle refresh
+    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)) {this.setState({samePageLogin: true})}
+    else if(!_.isEmpty(nextProps.feed.data) && (nextProps.feed.data !== feed.data)) {this.setState({renderFeed: true})}
     else{console.log('Props state up to date!')}
   }
 
@@ -58,7 +62,7 @@ class Feed extends Component {
     switch(true){
       case (_.isEmpty(nextProps.auth.currentUser)):
         return false;
-      case (nextState.samePageLogin):
+      case (nextState.samePageLogin): // Handle refresh
         return true;
       case (nextState.renderFeed):
         return true;
@@ -78,20 +82,22 @@ class Feed extends Component {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
 
-    const {following, getFeedOnce, auth} = this.props;
+    const {following, getFeedOnce, auth, getInitFollowing} = this.props;
     const {samePageLogin, renderFeed, updateFeed} = this.state;
 
     switch(true){
-      case (samePageLogin):
+      case (samePageLogin): // Handle refresh
         this.setState({samePageLogin: false});
-        return getFeedOnce(auth.currentUser.uid, following.data);
+        getInitFollowing(auth.currentUser.uid).then(followingList => {
+          if(this.mount){getFeedOnce(auth.currentUser.uid, followingList)}});
+        break;
       case(renderFeed):
         return this.setState({renderFeed: false});
       // case(updateFeed):
       //   this.setState({updateFeed: false});
       //   return getLikesOnce(auth.currentUser.uid);
       default:
-        return alert(this.state.name, '');
+        return console.log('No caught update')
     }
   }
 
@@ -99,7 +105,7 @@ class Feed extends Component {
   componentWillUnmount(){
     //DOM Manipulation (side effects)
     // console.log(this.state.name, "Will Unmount");
-    this.props.clearFeed();
+    this.mount = false;
   }
 
   renderFeed(feed) {
@@ -117,9 +123,20 @@ class Feed extends Component {
 
     if(_.isEmpty(auth.currentUser)){return null}
 
+    if(!feed.data || feed.loading){
+      return (
+        <Segment>
+          <Dimmer active>
+            <Loader>Loading</Loader>
+          </Dimmer>
+          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
+        </Segment>
+      );
+    }
+
     return (
       <Container>
-        <Segment>
+        <Segment style={{backgroundColor: 'coral'}}>
           <Header>The Feed</Header>
         </Segment>
         <Grid stackable>
@@ -140,4 +157,4 @@ const mapStateToProps = state => ({
 });
 
 export default (connect(mapStateToProps,
-  {getFeedOnce, clearFeed})(Feed));
+  {getFeedOnce, clearFeed, getInitFollowing})(Feed));

@@ -88,7 +88,8 @@ export class FeaturedToggle extends Component {
     return (
       auth.currentUser && auth.currentUser.isAdmin &&
         <span>
-          <Checkbox toggle checked={isFeatured} onClick={this.handleToggle}/> Featured
+          <Checkbox style={{verticalAlign: 'middle'}} toggle checked={isFeatured} onClick={this.handleToggle}/>
+          <span style={{marginLeft: '.5rem', fontSize: '12px'}}>Featured</span>
         </span>
     );
   }

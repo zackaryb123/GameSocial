@@ -49,11 +49,16 @@ class FavoriteToggle extends Component {
     if(nextState.renderFavorites){return true}
     else{console.log('Toggle favorite up to date')}
     return false;
+
+    // if(nextState.isFeatured === this.state.isFavorite){return false}
+    // else{console.log('Component up to date!')}
+    // return true;
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
+
     if(this.state.renderFavorites){
       this.setState({renderFavorites: false})
     } else { alert('missing toggle fav handler') }

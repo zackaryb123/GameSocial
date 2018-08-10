@@ -37,38 +37,38 @@ class HeaderBar extends Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    // console.log(this.state.name, "Will Receive Props", nextProps);
-    const {auth} = this.props;
-    if(auth.loading){this.setState({authLoading: true })}
-    else{console.log('Props up to date')}
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   // console.log(this.state.name, "Will Receive Props", nextProps);
+  //   const {auth} = this.props;
+  //   if(nextProps.auth.loading){this.setState({authLoading: true })}
+  //   else{console.log('Props up to date')}
+  // }
+  //
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   // console.log("Should", this.state.name, "Update", nextProps, nextState);
+  //   if(nextState.signedOut){return true}
+  //   else if(nextState.dropped !== this.state.dropped){return true}
+  //   else if(nextState.windowWidth !== this.state.windowWidth) {return true}
+  //   else if(nextState.authLoading === this.props.auth.loading){return true}
+  //   else if(nextState.activeItem !== this.state.activeItem){return true}
+  //   else{ console.log('Header Menu up to date')}
+  //   return false;
+  // }
+  //
+  // componentWillUpdate(nextProps, nextState) {
+  //   // console.log(this.state.name ,"Will Update", nextProps, nextState);
+  // }
+  //
+  // componentDidUpdate(prevProps, prevState) {
+  //   // console.log(this.state.name, "Did Update", prevProps, prevState)
+  //   if(this.state.signedOut){this.setState({signedOut: null})}
+  //   else if(this.state.authLoading){this.setState({authLoading: false})}
+  //   else{return null}
+  // }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-    if(nextState.signedOut){return true}
-    else if(nextState.dropped !== this.state.dropped){return true}
-    else if(nextState.windowWidth !== this.state.windowWidth) {return true}
-    else if(nextState.authLoading){return true}
-    else if(nextState.activeItem !== this.state.activeItem){return true}
-    else{ console.log('Header Menu up to date')}
-    return false;
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
-    if(this.state.signedOut){this.setState({signedOut: null})}
-    else if(this.state.authLoading){this.setState({authLoading: false})}
-    else{return null}
-  }
-
-  componentWillUnmount(){
-    // console.log(this.state.name, "Will Unmount");
-  }
+  // componentWillUnmount(){
+  //   // console.log(this.state.name, "Will Unmount");
+  // }
 
   handleItemClick = (e, { name }) =>
     this.setState({ activeItem: name });
@@ -84,9 +84,9 @@ class HeaderBar extends Component {
     // console.log(this.state.name, 'Render');
     const {auth} = this.props;
     // Redirect to home page on sign out to only allow one login entry container.
-    if(this.state.signedOut){
-      return <Redirect to='/'/>
-    }
+    // if(this.state.signedOut){
+    //   return <Redirect to='/'/>
+    // }
 
     const Logo = 'http://www.placeholde.com/350x270';
     // = require.resolve('./../../ui/assets/img/logo.PNG');
@@ -99,28 +99,28 @@ class HeaderBar extends Component {
           {/*<Image as={Link} to='/' size='tiny' src={Logo} />*/}
         </Menu.Item>
 
-        <Button fluid secondary style={windowWidth > 748 ? {display: 'none'}: {display: 'block', marginTop: '-3rem', backgroundColor: '#696969'}} icon>
+        <Button fluid secondary style={windowWidth >= 767 ? {display: 'none'}: {display: 'block', marginTop: '-3rem', backgroundColor: '#696969'}} icon>
           <Icon size='large' onClick={this.handleDropDown} name={dropped ? 'angle double up':'angle double down' } />
         </Button>
 
-        <Menu.Item as={Link} to='/feed' style={(windowWidth <= 748) && !dropped ? {display: 'none'}: null}
+        <Menu.Item as={Link} to='/feed' style={(windowWidth < 767) && !dropped ? {display: 'none'}: null}
           icon={{name: 'signal'}}
           name='feed'
           active={activeItem === 'feed'}
           onClick={this.handleItemClick}/>
 
-        <Menu.Item as={Link} to='/discover' style={(windowWidth <= 748) && !dropped ? {display: 'none'}: null}
+        <Menu.Item as={Link} to='/discover' style={(windowWidth < 767) && !dropped ? {display: 'none'}: null}
           icon={{name: 'world'}}
           name='discover'
           active={activeItem === 'discover'}
           onClick={this.handleItemClick}/>
 
-        <Menu.Menu position='right' style={(windowWidth <= 748) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
+        <Menu.Menu position='right' style={(windowWidth < 767) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
           <Menu.Item name='upload' active={activeItem === 'upload'} onClick={this.handleItemClick}>
             <Button secondary style={{backgroundColor: '#696969'}} icon={{name: 'upload', size: 'large'}} onClick={this.openUploadModal.bind(this)} name={'upload'}/>
           </Menu.Item>
 
-          {auth.currentUser &&
+          {!auth.currentUser || this.props.auth.loading ? <Button loading/> :
           <Dropdown item={true} name='profile' icon={{ name: 'user outline', size: 'large' }} active={(activeItem === 'profile').toString()} onClick={this.handleItemClick}>
             <Dropdown.Menu>
               <Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item>

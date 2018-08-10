@@ -21,7 +21,10 @@ class FeedCard extends Component {
   hoverLink = (e) => this.setState({hoverLink: true});
   unhoverLink = (e) => this.setState({hoverLink: false});
 
-  renderCardContent = (upload, hoverCard, hoverLink) => {
+  hoverUser = (e) => this.setState({hoverUser: true});
+  unhoverUser = (e) => this.setState({hoverUser: false});
+
+  renderCardContent = (upload, hoverCard, hoverLink, hoverUser) => {
     return (
       <Card.Content style={topContentHover}>
         {/*hoverCard ? topContentHover : {display: 'none'}}>*/}
@@ -30,7 +33,10 @@ class FeedCard extends Component {
             <Feed.Label image='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' />
             <Feed.Content>
               <Feed.Summary>
-                <Feed.User as={Link} to={`/profile/${upload.publisher.id}`} style={white}>{upload.publisher.username}</Feed.User>
+                <Feed.User
+                  onMouseEnter={this.hoverUser} onMouseLeave={this.unhoverUser}
+                  as={Link} to={`/profile/${upload.publisher.id}`}
+                  style={hoverUser?white:lightBlue}>{upload.publisher.username}</Feed.User>
                 <Feed.Date style={white}>{upload.created_at}</Feed.Date>
               </Feed.Summary>
               <Feed.Extra name='caption'
@@ -59,19 +65,19 @@ class FeedCard extends Component {
 
   render() {
     const {upload} = this.props;
-    const {hoverCard, hoverLink} = this.state;
+    const {hoverCard, hoverLink, hoverUser} = this.state;
 
     if(upload.type === 'video'){
       return (
         <Card fluid name='card' onMouseEnter={this.hoverCard} onMouseLeave={this.unhoverCard}>
-          {this.renderCardContent(upload, hoverCard, hoverLink)}
+          {this.renderCardContent(upload, hoverCard, hoverLink, hoverUser)}
           <VideoPlayer source={upload} options={upload.options}/>
         </Card>
       );
     } else if (upload.type === 'image') {
       return(
         <Card fluid name='card' onMouseEnter={this.hoverCard} onMouseLeave={this.unhoverCard}>
-          {this.renderCardContent(upload, hoverCard, hoverLink)}
+          {this.renderCardContent(upload, hoverCard, hoverLink, hoverUser)}
           <Image alt="upload" src={upload.url}/>
         </Card>
         );

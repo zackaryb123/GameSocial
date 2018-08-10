@@ -13,6 +13,7 @@ import FeaturedToggle from "../components/toggle/toggle.featured";
 import PlaylistToggle from "../components/toggle/toggle.playlist";
 import VideoPlayer from "../components/video/video.player";
 import _ from "lodash";
+import FollowToggle from "../components/toggle/toggle.following";
 
 class Upload extends Component {
   constructor(props) {
@@ -20,16 +21,8 @@ class Upload extends Component {
     this.state = {
       name: "Upload Container",
       samePageLogin: null,
-
       renderUpload: null,
-      renderLikes: null,
-      renderFavorites: null,
-      renderViews: null,
-
       updateUpload: null,
-      updateLikes: null,
-      updateFavorites: null,
-      updateViews: null
     };
   }
 
@@ -44,8 +37,8 @@ class Upload extends Component {
 
     const {auth, match: { params }, getUploadOnce } = this.props;
 
+    //TODO: Get the refresh page working and pull initial needed data
 
-    // TODO: NOT PULLING CORRECT UPLOAD ID (PULLING PREV)
     if(!_.isEmpty(auth.currentUser)) {
       getUploadOnce(params.uploadId);
     }
@@ -54,26 +47,13 @@ class Upload extends Component {
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-    const { upload, auth, viewsCount, likes, favorites } = this.props;
+    const { upload, auth } = this.props;
 
-    if (
-      !_.isEmpty(nextProps.auth.currentUser) &&
-      nextProps.auth.currentUser !== auth.currentUser
-    ) {
-      this.setState({ samePageLogin: true });
-    } else if (
-      !_.isEmpty(nextProps.upload) &&
-      nextProps.upload.data !== upload.data
-    ) {
-      this.setState({ renderUpload: true });
-    }
-    // TODO: Determine if better to initialize data in container or in individual components
-    // else if(!_.isEmpty(nextProps.likes.data) && (nextProps.likes.data !== likes.data)){this.setState({renderLikes: true})}
-    // else if(!_.isEmpty(nextProps.favorites.data) && (nextProps.favorites.data !== favorites.data)){this.setState({renderFavorites: true})}
-    // else if (!_.isEmpty(nextProps.viewsCount.data) && nextProps.viewsCount.data !== viewsCount.data){this.setState({ renderViews: true })}
-    else {
-      console.log("Props state up to date!");
-    }
+    if (!_.isEmpty(nextProps.auth.currentUser) && nextProps.auth.currentUser !== auth.currentUser
+    ) {this.setState({ samePageLogin: true });
+    } else if (!_.isEmpty(nextProps.upload.data) && nextProps.upload.data !== upload.data
+    ) {this.setState({ renderUpload: true });
+    } else {console.log("Props state up to date!");}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -87,16 +67,8 @@ class Upload extends Component {
         return true;
       case nextState.renderUpload:
         return true;
-      // case (nextState.renderLikes):
-      //   return true;
-      // case (nextState.renderFavorites):
-      //   return true;
       // case (nextState.updateUpload):
-      //   return true;
-      // case (nextState.updateLikes):
-      //   return true;
-      // case (nextState.updateFavorites):
-      //   return true;
+      //   return true;;
       default:
         return false;
     }
@@ -110,16 +82,8 @@ class Upload extends Component {
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
-    const {getUploadOnce, getLikesOnce, auth, upload } = this.props;
-    const {
-      samePageLogin,
-      renderUpload,
-      renderLikes,
-      renderFavorites,
-      updateFeed,
-      updateLikes,
-      updateFavorites
-    } = this.state;
+    const {getUploadOnce, auth, upload } = this.props;
+    const { samePageLogin, renderUpload, } = this.state;
 
     switch (true) {
       case samePageLogin:
@@ -127,19 +91,8 @@ class Upload extends Component {
         return getUploadOnce(upload.data.id);
       case renderUpload:
         return this.setState({ renderUpload: false });
-      // case(renderLikes):
-      //   return this.setState({renderLikes: false});
-      // case(renderFavorites):
-      //   return this.setState({renderFavorites: false});
-      // case(updateUpload):
       //   this.setState({updateUpload: false});
-      //   return getLikesOnce(auth.currentUser.uid);
-      // case(updateLikes):
-      //   this.setState({updateLikes: false});
-      //   return getLikesOnce(auth.currentUser.uid);
-      // case(updateFavorites):
-      //   this.setState({updateFavorites: false});
-      //   return getLikesOnce(auth.currentUser.uid);
+      //   return getUploadOnce(auth.currentUser.uid);
       default:
         return alert(this.state.name, "");
     }
@@ -157,13 +110,13 @@ class Upload extends Component {
 
     if(_.isEmpty(auth.currentUser)){return null}
 
-    if (upload.loading) {
+    if (!upload.data || upload.loading) {
       return (
         <Segment>
           <Dimmer active>
             <Loader>Loading</Loader>
           </Dimmer>
-          <Image src="/images/wireframe/short-paragraph.png" />
+          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
         </Segment>
       );
     }
@@ -173,7 +126,7 @@ class Upload extends Component {
     return (
       <Container fluid>
         <Container fluid >
-          <Grid textAlign="center" style={{ backgroundColor: "black" }}>
+          <Grid textAlign="center" style={{ backgroundColor: "#1B1C1D" }}>
             <Grid.Row className="row">
               <Grid.Column width={16} style={{maxWidth: '720px'}}>
                 <Segment inverted>
@@ -187,6 +140,7 @@ class Upload extends Component {
                             {upload.data.publisher.username}</Link>
                         </Feed.Summary>
                         <Feed.Extra style={white} text>{upload.data.caption}</Feed.Extra>
+                        {auth.currentUser.uid !== upload.data.publisher.id && <FollowToggle publisher={upload.data.publisher}/>}
                       </Feed.Content>
                     </Feed.Event>
                   </Feed>
@@ -242,4 +196,15 @@ const white = {
 
 const blue = {
   color: '#1e70bf'
+};
+
+const followBtn = {
+  backgroundColor: '#1B1C1D',
+  position: 'absolute',
+  right: '0',
+  top: '0',
+  bottom: '0',
+  padding: '.5rem .5rem',
+  margin: '0',
+  border: 'none'
 };

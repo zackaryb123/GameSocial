@@ -53,7 +53,7 @@ class Home extends Component {
 
     return (
       <Container>
-        <Segment>
+        <Segment style={{backgroundColor: 'coral'}}>
           <Header>Home Landing Page</Header>
         </Segment>
       </Container>

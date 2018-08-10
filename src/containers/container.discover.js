@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import { Container, Header, Segment, Grid, Image } from "semantic-ui-react";
+import { Container, Header, Segment, Grid, Image, Dimmer, Loader } from "semantic-ui-react";
 
 import {getUploadsOnce} from '../actions/actions.uploads';
 
@@ -118,16 +118,27 @@ class Discover extends Component {
 
     if(_.isEmpty(auth.currentUser)){return null}
 
+    if(!uploads.data || uploads.loading){
+      return (
+        <Segment>
+          <Dimmer active>
+            <Loader>Loading</Loader>
+          </Dimmer>
+          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
+        </Segment>
+      );
+    }
+
     return (
       <Container fluid>
         <Container>
-          <Segment textAlign='center'>
+          <Segment textAlign='center' style={{backgroundColor: 'coral'}}>
             <Header>Featured</Header>
           </Segment>
         </Container>
 
         <Container fluid >
-          <Grid textAlign="center" style={{ backgroundColor: "black" }}>
+          <Grid textAlign="center" style={{ backgroundColor: "#1B1C1D" }}>
             <Grid.Row>
               <Grid.Column width={16} style={{maxWidth: '720px'}}>
                 <FeaturedSlider/>
@@ -137,7 +148,7 @@ class Discover extends Component {
         </Container>
 
         <Container>
-          <Segment textAlign='center'>
+          <Segment textAlign='center' style={{backgroundColor: 'coral'}}>
             <Header>Discover</Header>
           </Segment>
         </Container>

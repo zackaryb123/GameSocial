@@ -1,6 +1,7 @@
 import {
   USER_REQUEST,
   USER_GET,
+  USER_CLEAR,
   USER_ERROR
 } from '../actions/actions.user';
 
@@ -20,6 +21,12 @@ export default function reducer(state = initialState, action) {
     case USER_GET:
       return Object.assign({}, state, {
         data: action.data,
+        loading: false,
+        error: null
+      });
+    case USER_CLEAR:
+      return Object.assign({}, state, {
+        data: null,
         loading: false,
         error: null
       });

@@ -37,7 +37,7 @@ export const getInitFavoriteState = (authId, uploadId) => dispatch => {
 };
 
 export const addFavorite = (authId, upload) => dispatch => {
-  firebase.database().ref(`users/${authId}/favorites/${upload.id}/id`).set(upload.id);
+  firebase.database().ref(`users/${authId}/favorites/${upload.id}`).set(upload);
 };
 
 export const removeFavorite = (authId, uploadId) => dispatch => {
