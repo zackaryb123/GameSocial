@@ -154,19 +154,12 @@ export class Profile extends Component {
   }
 
   render() {
-    const {user} = this.props;
+    const {user, auth} = this.props;
     const {activeMenu} = this.state;
 
-    if(!user.data || user.loading){
-      return (
-        <Segment>
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
-        </Segment>
-      );
-    }
+    if(user.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
+    if(_.isEmpty(auth.currentUser) || _.isEmpty(user.data)){return null}
+
 
     return (
       <div>

@@ -93,20 +93,9 @@ class Upload extends Component {
   render() {
     const { upload, auth } = this.props;
 
-    if(_.isEmpty(auth.currentUser)){return null}
+    if (upload.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
+    if(_.isEmpty(auth.currentUser) || _.isEmpty(upload.data)){return null}
 
-    if (!upload.data || upload.loading) {
-      return (
-        <Segment>
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
-        </Segment>
-      );
-    }
-
-    if (!upload.data) {return <h1>No Upload Data</h1>}
 
     return (
       <div>

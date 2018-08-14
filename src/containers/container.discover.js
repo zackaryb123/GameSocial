@@ -41,8 +41,6 @@ class Discover extends Component {
 
     if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser))
     {this.setState({pageRefresh: true})}
-    // else if(!_.isEmpty(nextProps.uploads.data) && (nextProps.uploads.data !== uploads.data))
-    // {this.setState({renderUploads: true})}
     else {console.log('Props up to date')}
 
   }
@@ -92,18 +90,8 @@ class Discover extends Component {
   render() {
     const {auth, uploads} = this.props;
 
-    if(_.isEmpty(auth.currentUser)){return null}
-
-    if(!uploads.data || uploads.loading){
-      return (
-        <Segment>
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
-        </Segment>
-      );
-    }
+    if(uploads.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
+    if(_.isEmpty(auth.currentUser) || _.isEmpty(uploads.data)){return null}
 
     return (
       <div>

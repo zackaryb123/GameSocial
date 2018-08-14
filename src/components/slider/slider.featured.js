@@ -96,18 +96,8 @@ class FeaturedSlider extends Component {
   render() {
     const {auth, featured} = this.props;
 
-    if(_.isEmpty(auth.currentUser)){return null}
-
-    if(!featured.data || featured.loading){
-      return (
-        <Segment>
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-          <Image src="/images/wireframe/short-paragraph.png" />
-        </Segment>
-      );
-    }
+    if(featured.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
+    if(_.isEmpty(auth.currentUser) || _.isEmpty(featured.data)){return null}
 
     const hasList = !!this.props.featured.data;
     return hasList ? (

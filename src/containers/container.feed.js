@@ -93,18 +93,8 @@ class Feed extends Component {
   render() {
     const {feed, auth} = this.props;
 
-    if(_.isEmpty(auth.currentUser)){return null}
-
-    if(!feed.data || feed.loading){
-      return (
-        <Segment>
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-          {/*<Image src="/images/wireframe/short-paragraph.png" />*/}
-        </Segment>
-      );
-    }
+    if(feed.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
+    if(_.isEmpty(auth.currentUser) || isEmpty(feed.data)){return null}
 
     return (
       <Container>
