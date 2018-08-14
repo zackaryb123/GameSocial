@@ -18,50 +18,25 @@ class FollowToggle extends Component {
   componentDidMount(){
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name, 'Did Mount ');
-
-    this.mount = true;
+    this.mounted = true;
     const {publisher, auth, getInitFollowingState} = this.props;
     getInitFollowingState(auth.currentUser.uid, publisher.id)
-      .then(exist => {
-        if(this.mount)
-        {this.setState({isFollowed: exist, renderFollow: true})}
-      })
+      .then(exist => {if(this.mounted) {this.setState({isFollowed: exist})}})
+
+    // this.props.getFollowingOnce(this.props.auth.currentUser.uid);
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
-    console.log(this.state.name, "Will Receive Props", nextProps);
-
+    // console.log(this.state.name, "Will Receive Props", nextProps);
     const {publisher, following} = this.props;
     if (nextProps.following.data !== following.data){
-      this.setState({
-        isFollowed: nextProps.following.data && (publisher.id in nextProps.following.data),
-        renderFollow: true})
-    } else {
-      console.log('Component Up to date!')}
+      this.setState({ isFollowed: nextProps.following.data && (publisher.id in nextProps.following.data)})
+    }else{console.log('Component Up to date!')}
   }
 
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    console.log("Should", this.state.name, "Update", nextProps, nextState);
-
-    if(nextState.renderFollow){return true}
-    else{console.log(this.state.name, 'up to date')}
-    return false;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    console.log(this.state.name, "Did Update", prevProps, prevState);
-    if(this.state.renderFollow){
-      this.setState({renderFollow: false})
-    } else { alert('missing toggle fav handler') }
-  }
-
-
-  componentWillUnmount() {
-    this.mount = false;
+  componentWillUnmount(){
+    this.mounted = false;
   }
 
   unFollow = () => {
@@ -102,7 +77,6 @@ class FollowToggle extends Component {
     );
   }
 }
-
 
 const mapStateToProps = state => ({
   user: state.user,

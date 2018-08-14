@@ -1,6 +1,8 @@
 import {
-  PLAYLIST_REQUEST, PLAYLIST_ERROR, PLAYLIST_GET_SUCCESS
-} from '../actions/actions.playlist';
+  PLAYLIST_REQUEST,
+  PLAYLIST_ERROR,
+  PLAYLIST_GET
+} from "../actions/actions.playlist";
 
 const initialState = {
   loading: false,
@@ -9,19 +11,19 @@ const initialState = {
 };
 
 export default function reducer(state = initialState, action) {
-  switch(action.type){
-    case (PLAYLIST_REQUEST):
+  switch (action.type) {
+    case PLAYLIST_REQUEST:
       return Object.assign({}, state, {
         loading: true,
         error: null
       });
-    case(PLAYLIST_GET_SUCCESS):
+    case PLAYLIST_GET:
       return Object.assign({}, state, {
         data: action.data,
         error: null,
         loading: false
       });
-    case(PLAYLIST_ERROR):
+    case PLAYLIST_ERROR:
       return Object.assign({}, state, {
         error: action.error,
         loading: false

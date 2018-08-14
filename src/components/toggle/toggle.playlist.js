@@ -5,46 +5,72 @@ import _ from 'lodash';
 
 import {Image, Card, Button, Dropdown} from 'semantic-ui-react';
 
-import {getPlaylistOnce, addToPlaylist, removeFromPlaylist} from "../../actions/actions.playlist";
+import {getPlaylistOnce, addToPlaylist, removeFromPlaylist, getPlaylistOptions} from "../../actions/actions.playlist";
 
-//TODO: pass uploadId from this parent
 class PlaylistToggle extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      playlistList: null
     }
   }
 
-  removePlaylist(value) {
-    console.log(value);
-    const {auth, upload} = this.props;
-    this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, value);
+  componentDidMount(){
+    //DOM Manipulation (side effects/state updates)(render occurs before)
+    // console.log(this.state.name, 'Did Mount ');
+    this.mounted = true;
+    const {auth, getPlaylistOptions} = this.props;
+    getPlaylistOptions(auth.currentUser.uid)
+      .then(playlistList => {
+        console.log(playlistList);
+        if(this.mounted) {
+          this.setState({ playlistList: playlistList})}
+      });
+  }
 
+  componentWillReceiveProps(nextProps) {
+    //Update state based on changed props (state updates)
+    // console.log(this.state.name, "Will Receive Props", nextProps);
+    const {playlist} = this.props;
+    if (nextProps.playlist.data !== playlist.data){
+      this.setState({ playlistList: nextProps.playlist.data})
+    } else {
+      console.log('Component Up to date!')}
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+  }
+
+  removePlaylist(playlistName) {
+    const {auth, upload} = this.props;
+    this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, playlistName);
     this.props.getPlaylistOnce(auth.currentUser.uid);
   };
 
-  addPlaylist(value) {
-    console.log(value);
-    const {auth, view} = this.props;
-    this.props.addToPlaylist(auth.currentUser.uid, view.data, value);
-
+  addPlaylist(playlistName) {
+    const {auth, upload} = this.props;
+    this.props.addToPlaylist(auth.currentUser.uid, upload, playlistName);
     this.props.getPlaylistOnce(auth.currentUser.uid);
   };
 
   renderPlaylistItems() {
-    const {playlist, auth, upload} = this.props;
-    return _.map(playlist.data, listee => {
+    const {upload} = this.props;
+    const {playlistList} = this.state;
+
+    return _.map(playlistList, playlist => {
       return (
-        <div key={listee.name}>
+        <div key={playlist.name}>
+          {console.log(playlistList[playlist.name][upload.id])}
           {
-            !_.isEmpty(auth.currentUser) && listee[upload.id] ? (
-              <Dropdown.Item
-                onClick={() => this.removePlaylist(listee.name)}
-                icon='minus' text={listee.name} />
+            playlistList[playlist.name][upload.id] ? (
+              <Dropdown.Item style={cssPlaylist}
+                onClick={() => this.removePlaylist(playlist.name)}
+                icon='minus' text={playlist.name} />
             ) : (
-              <Dropdown.Item
-                onClick={() => this.addPlaylist(listee.name)}
-                icon='plus' text={`${listee.name}`} />
+              <Dropdown.Item style={cssPlaylist}
+                onClick={() => this.addPlaylist(playlist.name)}
+                icon='plus' text={playlist.name} />
             )
         }
         </div>
@@ -53,8 +79,8 @@ class PlaylistToggle extends Component {
   };
 
   renderPlaylistDropdown(){
-    const {playlist} = this.props;
-    if(_.isEmpty(playlist.data)){
+    const {playlistList} = this.state;
+    if(_.isEmpty(playlistList)){
       return (
         <Dropdown item text='Playlist'>
           <Dropdown.Menu>
@@ -73,25 +99,9 @@ class PlaylistToggle extends Component {
   };
 
   render() {
-    const {auth, playlist} = this.props;
     return (
       <div>
-        {
-          // If followers is updating return loading button
-          playlist.loading ? (
-            <Button loading/>
-          ):(
-            <div>
-              {
-                // if unAuthorized (not logged in) don't show follow or unfollow button
-                !_.isEmpty(auth.currentUser) &&
-                  <div>
-                    {this.renderPlaylistDropdown()}
-                  </div>
-              }
-            </div>
-          )
-        }
+        {this.renderPlaylistDropdown()}
       </div>
     );
   }
@@ -101,10 +111,14 @@ class PlaylistToggle extends Component {
 const mapStateToProps = state => ({
   user: state.user,
   auth: state.auth,
-  playlist: state.playlist,
-  view: state.view
+  playlist: state.playlist
 });
 
 export default connect(mapStateToProps,
-  {getPlaylistOnce, removeFromPlaylist, addToPlaylist})
+  {getPlaylistOnce, removeFromPlaylist, addToPlaylist, getPlaylistOptions})
 (PlaylistToggle);
+
+const cssPlaylist = {
+  color: 'black',
+  cursor: 'pointer'
+};

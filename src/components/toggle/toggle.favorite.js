@@ -19,54 +19,28 @@ class FavoriteToggle extends Component {
   componentDidMount(){
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name, 'Did Mount ');
-
     this.mounted = true;
     const {upload, auth, getInitFavoriteState} = this.props;
     getInitFavoriteState(auth.currentUser.uid, upload.id)
-      .then(exist => {
-        if(this.mounted) {this.setState({ isFavorite: exist, renderFavorites: true })}
-      });
+      .then(exist => { console.log('EXIST:',exist); if(this.mounted) {this.setState({ isFavorite: exist})}});
+
+    //this.props.getFavoritesOnce(auth.currentUser.uid);
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-
     const {upload, favorites} = this.props;
     if (nextProps.favorites.data !== favorites.data){
-      this.setState({
-        isFavorite: nextProps.favorites.data && (upload.id in nextProps.favorites.data),
-        renderFavorites: true})
+      this.setState({ isFavorite: nextProps.favorites.data && (upload.id in nextProps.favorites.data)})
     } else {
       console.log('Component Up to date!')}
   }
 
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-
-    if(nextState.renderFavorites){return true}
-    else{console.log('Toggle favorite up to date')}
-    return false;
-
-    // if(nextState.isFeatured === this.state.isFavorite){return false}
-    // else{console.log('Component up to date!')}
-    // return true;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState);
-
-    if(this.state.renderFavorites){
-      this.setState({renderFavorites: false})
-    } else { alert('missing toggle fav handler') }
-  }
-
-  componentWillUnmount() {
+  componentWillUnmount(){
     this.mounted = false;
   }
+
 
   unFavorite = () =>{
     console.log('click unfavorite success');
@@ -108,6 +82,6 @@ export default connect(mapStateToProps,
   removeTrackedFavorite, addTrackedFavorite, getTrackedFavoritesOnce})
 (FavoriteToggle);
 
-const cWhite = {
+const white = {
   color: 'white'
 };

@@ -13,14 +13,17 @@ import FavoriteToggle from "../toggle/toggle.favorite";
 import LikesToggle from "../toggle/toggle.like";
 import FeaturedToggle from "../toggle/toggle.featured";
 import FollowToggle  from '../toggle/toggle.following'
+import PlaylistToggle from "../toggle/toggle.playlist";
 
 const settings = {
-  dots: true,
+  dots: false,
   infinite: true,
   speed: 500,
   lazyLoad: true,
   slidesToShow: 1,
-  slidesToScroll: 1
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 5000
 };
 
 class FeaturedSlider extends Component {
@@ -36,12 +39,12 @@ class FeaturedSlider extends Component {
   componentWillMount() {
     //Constructor equivalent (state updates)
     // console.log(this.state.name, "Will Mount");
-
   }
 
   componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name,"Did Mount");
+    this.mounted = true;
     if(!_.isEmpty(this.props.auth.currentUser)) {
       this.props.getFeaturedOnce();
     }
@@ -50,9 +53,8 @@ class FeaturedSlider extends Component {
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-    const {auth, featured} = this.props;
-    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)){this.setState({samePageLogin: true})}
-    else if(!_.isEmpty(nextProps.featured.data) && (nextProps.featured.data !== featured.data)){this.setState({renderFeatured: true})}
+    const {auth} = this.props;
+    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)){this.setState({pageRefresh: true})}
     else {console.log('Props up to date')}
 
   }
@@ -61,49 +63,40 @@ class FeaturedSlider extends Component {
     // Compare and determine if render needed (DO NOT CHANGE STATE)
     // console.log("Should", this.state.name, "Update", nextProps, nextState);
     switch(true){
-      case (nextState.samePageLogin):
-        return true;
-      case (nextState.renderFeatured):
-        return true;
-      // case (nextState.updateFeatured):
-      //   return true;
-      default:
+      case (_.isEmpty(nextProps.auth.currentUser)):
         return false;
+      case (nextState.pageRefresh):
+        // this.forceUpdate();
+        return false;
+      default: return true;
     }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState)
     const {getFeaturedOnce} = this.props;
-    const {renderFeatured, samePageLogin} = this.state;
+    const {pageRefresh} = this.state;
 
     switch(true) {
-      case (samePageLogin):
-        this.setState({samePageLogin: false});
-        return getFeaturedOnce();
-      case(renderFeatured):
-        return this.setState({ renderFeatured: false });
-      // case(updateFeatured):
-      //   this.setState({updateFeatured: false});
-      //   return getFeaturedOnce(auth.currentUser.uid);
-      default:
-        return alert(this.state.name, '');
+      case (pageRefresh):
+        this.setState({pageRefresh: false});
+        getFeaturedOnce()
+        break;
+      default:return null;
     }
   }
 
   componentWillUnmount(){
     //DOM Manipulation (side effects)
     // console.log(this.state.name, "Will Unmount");
+    this.mounted = false;
   }
 
   render() {
     const {auth, featured} = this.props;
+
+    if(_.isEmpty(auth.currentUser)){return null}
 
     if(!featured.data || featured.loading){
       return (
@@ -148,6 +141,7 @@ class FeaturedSlider extends Component {
                       <ViewsCount upload={feature}/>
                       <FavoriteToggle upload={feature} />
                       <LikesToggle upload={feature} />
+                      {feature.type === 'video' && <PlaylistToggle upload={feature}/>}
                       {auth.currentUser.isAdmin && <FeaturedToggle upload={feature} />}
                     </Segment>
                   </Grid.Column>

@@ -5,7 +5,7 @@ import {getFeedOnce, clearFeed} from '../actions/actions.feed';
 import {getInitFollowing} from '../actions/actions.following';
 import _ from 'lodash';
 
-import FeedCard from '../components/card/card.feed';
+import FeedCard from '../components/card/card.upload';
 
 class Feed extends Component {
   constructor(props) {
@@ -13,15 +13,7 @@ class Feed extends Component {
     this.state = {
       name: "Feed Container",
       status: 0,
-      samePageLogin: null,
-
-      renderFeed: null,
-      renderLikes: null,
-      renderFavorites: null,
-
-      updateFeed: null,
-      updateLikes: null,
-      updateFavorites: null
+      pageRefresh: null,
     };
   }
 
@@ -35,11 +27,8 @@ class Feed extends Component {
     // console.log(this.state.name, "Did Mount");
     const { auth, getFeedOnce, getInitFollowing, following } = this.props;
     this.mount = true;
-
-
     if (!_.isEmpty(auth.currentUser)) {
-      // Handle remount
-      getInitFollowing(auth.currentUser.uid).then(followingList => { if(this.mount) {
+      getInitFollowing(auth.currentUser.uid).then(followingList => { if(this.mount) { // Handle remount
         getFeedOnce(auth.currentUser.uid, followingList);
         this.setState({ renderFollow: true })}});
     } else{ console.log('No Remount')}
@@ -48,56 +37,39 @@ class Feed extends Component {
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-    const {auth, feed} = this.props;
-    // Handle refresh
-    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)) {this.setState({samePageLogin: true})}
-    else if(!_.isEmpty(nextProps.feed.data) && (nextProps.feed.data !== feed.data)) {this.setState({renderFeed: true})}
+    const {auth} = this.props;
+    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)) {
+      this.setState({pageRefresh: true})} // Handle refresh
     else{console.log('Props state up to date!')}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // Re-render if prev/current props !equal and data requested is !empty (DO NOT CHANGE STATE)
     // console.log("Should", this.state.name, "Update", nextProps, nextState);
-
     switch(true){
       case (_.isEmpty(nextProps.auth.currentUser)):
         return false;
-      case (nextState.samePageLogin): // Handle refresh
-        return true;
-      case (nextState.renderFeed):
-        return true;
-      // case (nextState.updateFeed):
-      //   return true;
-      default:
+      case (nextState.pageRefresh):
+        this.forceUpdate();
         return false;
+      default: return true;
     }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
 
-    const {following, getFeedOnce, auth, getInitFollowing} = this.props;
-    const {samePageLogin, renderFeed, updateFeed} = this.state;
+    const {getFeedOnce, auth, getInitFollowing} = this.props;
+    const {pageRefresh} = this.state;
 
     switch(true){
-      case (samePageLogin): // Handle refresh
-        this.setState({samePageLogin: false});
+      case (pageRefresh):
+        this.setState({pageRefresh: false});
         getInitFollowing(auth.currentUser.uid).then(followingList => {
           if(this.mount){getFeedOnce(auth.currentUser.uid, followingList)}});
         break;
-      case(renderFeed):
-        return this.setState({renderFeed: false});
-      // case(updateFeed):
-      //   this.setState({updateFeed: false});
-      //   return getLikesOnce(auth.currentUser.uid);
-      default:
-        return console.log('No caught update')
+      default: return null;
     }
   }
 

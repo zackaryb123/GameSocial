@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Menu, Container } from "semantic-ui-react";
-import Media from "react-media";
+import { Menu } from "semantic-ui-react";
 import _ from "lodash";
 
 class MenuProfile extends Component {
@@ -17,13 +16,16 @@ class MenuProfile extends Component {
 
   componentDidMount() {
     // console.log(this.state.name,"Did Mount");
-
+    this.mounted = true;
     let thisComponent = this;
-    // Event listener to watch the window width change
     window.addEventListener("resize", function(event) {
-      thisComponent.setState({windowWidth: document.body.clientWidth});
-      console.log('Window Width:', thisComponent.state.windowWidth);
+      if(thisComponent.mounted){
+        thisComponent.setState({ windowWidth: document.body.clientWidth })}
     })
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
   }
 
   handleItemClick = (e, { name }) => {
@@ -33,7 +35,7 @@ class MenuProfile extends Component {
 
   render() {
     const { activeMenu, windowWidth } = this.state;
-    const { user } = this.props;
+    const { user, auth } = this.props;
     return (
       <Menu fluid style={cssMenu} inverted tabular>
         <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
@@ -60,19 +62,21 @@ class MenuProfile extends Component {
           onClick={this.handleItemClick}
         >Favorites {_.size(user.data.favorites)}
         </Menu.Item>
-        <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
-          name="playlist"
-          active={activeMenu === "playlist"}
-          onClick={this.handleItemClick}
-        >Playlist {_.size(user.data.playlist)}
-        </Menu.Item>
+        {auth.currentUser.uid === user.data.id &&
+          <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
+            name="playlist"
+            active={activeMenu === "playlist"}
+            onClick={this.handleItemClick}
+          >Playlist {_.size(user.data.playlist)}
+          </Menu.Item>
+        }
       </Menu>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  // user: state.user
+  auth: state.auth
 });
 
 export default connect(mapStateToProps)(MenuProfile);
@@ -83,14 +87,6 @@ const cssMenu = {
   justifyContent: 'space-evenly'
 };
 
-// @media only screen and (max-width: 767px).ui.container {
-  /* width: auto!important; */
-  /* margin-left: 1em!important; */
-  /* margin-right: 1em!important; */
-// }
-
-
-// @media only screen and (max-width: 767px).ui.container {
 const cssMenuItemMobile = {
   padding: '0.2rem',
   fontSize: '12px'

@@ -80,17 +80,11 @@ class Modal {
 
 class PlaylistObject{
   constructor(upload, playlistName) {
-    if(upload === null) {
-      this.id = '';
-      this.url = '';
-      this.name = '';
-      this.playlist = '';
-    }else {
-      this.id = upload.id;
-      this.url = upload.url;
-      this.name = upload.content.title;
-      this.playlist = playlistName;
-    }
+    this.id = upload.id;
+    this.url = upload.url;
+    this.caption = upload.caption;
+    this.playlist = playlistName;
+    this.options = upload.options;
   }
 }
 

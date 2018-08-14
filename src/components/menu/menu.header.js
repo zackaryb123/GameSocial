@@ -5,8 +5,6 @@ import {Header, Menu, Image, Dropdown, Button, Icon} from 'semantic-ui-react'
 import {signOut} from "../../actions/actions.auth";
 import {openUploadModal} from "../../actions/actions.modals";
 
-// import _ from 'lodash';
-
 class HeaderBar extends Component {
   constructor(props) {
     super(props);
@@ -14,9 +12,6 @@ class HeaderBar extends Component {
       name: 'Header Menu',
       activeItem: null,
       windowWidth: null,
-      dropped: false,
-      signedOut: null,
-      authLoading: false
     };
     // console.log(this.state.name, "Constructor");
   }
@@ -28,47 +23,12 @@ class HeaderBar extends Component {
 
   componentDidMount() {
     // console.log(this.state.name,"Did Mount");
-
     let thisComponent = this;
-    // Event listener to watch the window width change
     window.addEventListener("resize", function(event) {
       thisComponent.setState({windowWidth: document.body.clientWidth});
       console.log('Window Width:', thisComponent.state.windowWidth);
     })
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   // console.log(this.state.name, "Will Receive Props", nextProps);
-  //   const {auth} = this.props;
-  //   if(nextProps.auth.loading){this.setState({authLoading: true })}
-  //   else{console.log('Props up to date')}
-  // }
-  //
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   // console.log("Should", this.state.name, "Update", nextProps, nextState);
-  //   if(nextState.signedOut){return true}
-  //   else if(nextState.dropped !== this.state.dropped){return true}
-  //   else if(nextState.windowWidth !== this.state.windowWidth) {return true}
-  //   else if(nextState.authLoading === this.props.auth.loading){return true}
-  //   else if(nextState.activeItem !== this.state.activeItem){return true}
-  //   else{ console.log('Header Menu up to date')}
-  //   return false;
-  // }
-  //
-  // componentWillUpdate(nextProps, nextState) {
-  //   // console.log(this.state.name ,"Will Update", nextProps, nextState);
-  // }
-  //
-  // componentDidUpdate(prevProps, prevState) {
-  //   // console.log(this.state.name, "Did Update", prevProps, prevState)
-  //   if(this.state.signedOut){this.setState({signedOut: null})}
-  //   else if(this.state.authLoading){this.setState({authLoading: false})}
-  //   else{return null}
-  // }
-
-  // componentWillUnmount(){
-  //   // console.log(this.state.name, "Will Unmount");
-  // }
 
   handleItemClick = (e, { name }) =>
     this.setState({ activeItem: name });
@@ -83,13 +43,10 @@ class HeaderBar extends Component {
   render() {
     // console.log(this.state.name, 'Render');
     const {auth} = this.props;
-    // Redirect to home page on sign out to only allow one login entry container.
-    // if(this.state.signedOut){
-    //   return <Redirect to='/'/>
-    // }
 
     const Logo = 'http://www.placeholde.com/350x270';
     // = require.resolve('./../../ui/assets/img/logo.PNG');
+
     const { activeItem, windowWidth, dropped } = this.state;
     return (
       <Menu stackable fixed='top' inverted pointing style={{backgroundColor: '#696969'}}>
@@ -120,14 +77,14 @@ class HeaderBar extends Component {
             <Button secondary style={{backgroundColor: '#696969'}} icon={{name: 'upload', size: 'large'}} onClick={this.openUploadModal.bind(this)} name={'upload'}/>
           </Menu.Item>
 
-          {!auth.currentUser || this.props.auth.loading ? <Button loading/> :
+          {auth.currentUser && !auth.loading ?
           <Dropdown item={true} name='profile' icon={{ name: 'user outline', size: 'large' }} active={(activeItem === 'profile').toString()} onClick={this.handleItemClick}>
             <Dropdown.Menu>
               <Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item>
               <Dropdown.Item as={Link} to='/settings'>Settings</Dropdown.Item>
               <Dropdown.Item onClick={this.handleSignOut}>Sign Out</Dropdown.Item>
             </Dropdown.Menu>
-          </Dropdown>}
+          </Dropdown> : <Button loading/>}
         </Menu.Menu>
       </Menu>
     );

@@ -19,53 +19,11 @@ class LikeToggle extends Component {
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name, 'Did Mount ');
     const {upload, auth, getInitLikeState} = this.props;
-
     this.mounted = true;
     getInitLikeState(auth.currentUser.uid, upload.id)
-      .then(likeList => {
-        if (this.mounted) {
-          this.setState({
-            count: _.size(likeList),
-            isLiked: auth.currentUser.uid in likeList,
-            // likeList: likeList,
-            renderLikes: true
-          })
-        }
+      .then(likeList => { if(this.mounted) {this.setState({
+        count: _.size(likeList), isLiked: auth.currentUser.uid in likeList})}
       });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-
-    switch (true) {
-      case (nextState.renderLikes):
-        return true;
-      case(nextState.count !== this.state.count):
-        return true;
-      default:
-        return false
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState);
-    const {renderLikes, isLiked, count} = this.state;
-
-    switch(true) {
-      case(renderLikes && isLiked):
-        return this.setState({renderLikes: false});
-      case(renderLikes && !isLiked):
-        return this.setState({renderLikes: false});
-      default:
-        return ('Last Render')
-    }
   }
 
   componentWillUnmount() {
@@ -77,7 +35,7 @@ class LikeToggle extends Component {
     const {auth, upload} = this.props;
     const {count} = this.state;
     this.props.removeLike(auth.currentUser.uid, upload.id, upload.publisher.id);
-    this.setState({isLiked: false, renderLikes: true, count: count - 1})
+    this.setState({isLiked: false, count: count - 1})
   };
 
   doLike = () => {
@@ -85,7 +43,7 @@ class LikeToggle extends Component {
     const {auth, upload} = this.props;
     const {count} = this.state;
     this.props.addLike(auth.currentUser.uid, upload.id, upload.publisher.id);
-    this.setState({isLiked: true, renderLikes: true, count: count + 1})
+    this.setState({isLiked: true, count: count + 1})
   };
 
   render() {

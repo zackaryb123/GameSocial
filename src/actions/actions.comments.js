@@ -50,15 +50,14 @@ export const getCommentsPromise = (uploadId) => dispatch => {
 export const addComment = (auth, uploadId, values) => dispatch => {
   const commentId = firebase.database().ref(`/comments/${uploadId}`).push().key;
   const commentRef = firebase.database().ref(`/comments/${uploadId}/${commentId}`);
-  const userRef = firebase.database().ref(`/users/${auth.uid}/comments/${uploadId}/${commentId}`);
-
+  // commentRef.child('/profile/avatar/url').set(auth.photoURL);
   commentRef.child('/comment').set(values.comment);
   commentRef.child('/uploadId').set(uploadId);
   commentRef.child('/commentId').set(commentId);
-  // commentRef.child('/profile/avatar/url').set(auth.photoURL);
   commentRef.child('/profile/username').set(auth.displayName);
   commentRef.child('profile/id').set(auth.uid);
 
-  userRef.child('/uploadId').set(uploadId);
-  userRef.child('/commentId').set(commentId);
+  // const userRef = firebase.database().ref(`/users/${auth.uid}/comments/${uploadId}/${commentId}`);
+  // userRef.child('/uploadId').set(uploadId);
+  // userRef.child('/commentId').set(commentId);
 };

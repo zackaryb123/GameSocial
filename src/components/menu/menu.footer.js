@@ -49,8 +49,7 @@ class FooterBar extends Component {
     const Logo = 'http://www.placeholde.com/400x320';
     //= require.resolve('./../../ui/assets/img/logo.PNG');
     return (
-        <Segment>
-          <Grid container stackable verticalAlign='middle'>
+          <Grid style={cssFooter} container stackable verticalAlign='middle'>
             <Grid.Row>
               <Grid.Column textAlign='justified' width={12}>
                 <List celled horizontal>
@@ -72,7 +71,6 @@ class FooterBar extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        </Segment>
     );
   }
 }
@@ -83,3 +81,7 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps,
   {})(FooterBar);
+
+const cssFooter = {
+  marginTop: '5rem'
+};

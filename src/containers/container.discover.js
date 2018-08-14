@@ -4,7 +4,7 @@ import { Container, Header, Segment, Grid, Image, Dimmer, Loader } from "semanti
 
 import {getUploadsOnce} from '../actions/actions.uploads';
 
-import FeedCard from "../components/card/card.feed";
+import FeedCard from "../components/card/card.upload";
 import _ from "lodash";
 import FeaturedSlider from "../components/slider/slider.featured";
 // import _ from 'lodash';
@@ -15,15 +15,7 @@ class Discover extends Component {
     this.state = {
       name: "Discover Container",
       status: 0,
-      samePageLogin: false,
-      loadingUploads: false,
-      loadingFeatured: false,
-
-      renderUploads: null,
-      renderFeatured: null,
-
-      updateUploads: false,
-      updateFeatured: false
+      pageRefresh: false
     };
   }
 
@@ -48,9 +40,9 @@ class Discover extends Component {
     const {auth, uploads} = this.props;
 
     if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser))
-    {this.setState({samePageLogin: true})}
-    else if(!_.isEmpty(nextProps.uploads.data) && (nextProps.uploads.data !== uploads.data))
-    {this.setState({renderUploads: true})}
+    {this.setState({pageRefresh: true})}
+    // else if(!_.isEmpty(nextProps.uploads.data) && (nextProps.uploads.data !== uploads.data))
+    // {this.setState({renderUploads: true})}
     else {console.log('Props up to date')}
 
   }
@@ -61,39 +53,24 @@ class Discover extends Component {
     switch(true){
       case (_.isEmpty(nextProps.auth.currentUser)):
         return false;
-      case (nextState.samePageLogin):
-        return true;
-      case (nextState.renderUploads):
-        return true;
-      // case (nextState.updateUploads):
-      //   return true;
-      default:
+      case (nextState.pageRefresh):
+        this.forceUpdate();
         return false;
+      default: return true;
     }
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState)
-    const {getUploadsOnce, getFeaturesOnce, auth} = this.props;
-    const {samePageLogin, renderUploads, renderFeatured} = this.state;
+    const {getUploadsOnce} = this.props;
+    const {pageRefresh} = this.state;
 
     switch(true) {
-      case (samePageLogin):
-        this.setState({ samePageLogin: false });
+      case (pageRefresh):
+        this.setState({ pageRefresh: false });
         return getUploadsOnce();
-      case(renderUploads):
-        return this.setState({ renderUploads: false });
-      // case(updateUploads):
-      //   this.setState({updateUploads: false});
-      //   return getUploadsOnce(auth.currentUser.uid);
-      default:
-        return alert(this.state.name, '');
+      default: return null;
     }
   }
 
@@ -104,7 +81,6 @@ class Discover extends Component {
 
   renderUploads(uploads) {
     return _.map(uploads, (upload) => {
-      // if(_.isEmpty(uploads)){return null}
       return (
         <Grid.Column key={upload.id} mobile={16} computer={8} largeScreen={5} style={{paddingBottom: '1rem', paddingTop: '.5rem'}}>
           <FeedCard upload={upload}/>
@@ -130,14 +106,14 @@ class Discover extends Component {
     }
 
     return (
-      <Container fluid>
-        <Container>
+      <div>
+        <Container style={{marginBottom: '2rem'}}>
           <Segment textAlign='center' style={{backgroundColor: 'coral'}}>
             <Header>Featured</Header>
           </Segment>
         </Container>
 
-        <Container fluid >
+        <div >
           <Grid textAlign="center" style={{ backgroundColor: "#1B1C1D" }}>
             <Grid.Row>
               <Grid.Column width={16} style={{maxWidth: '720px'}}>
@@ -145,9 +121,9 @@ class Discover extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        </Container>
+        </div>
 
-        <Container>
+        <Container style={{marginTop: '2rem'}}>
           <Segment textAlign='center' style={{backgroundColor: 'coral'}}>
             <Header>Discover</Header>
           </Segment>
@@ -158,7 +134,7 @@ class Discover extends Component {
             {this.renderUploads(uploads.data)}
           </Grid.Row>
         </Grid>
-      </Container>
+      </div>
     );
   }
 }

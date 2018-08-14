@@ -25,12 +25,7 @@ export class ProfileDetail extends Component {
           <Grid.Column mobile={16} computer={8} largeScreen={5} verticalAlign='middle' style={{ width: "250px", height: "250px" }}>
             <Segment basic textAlign={"center"}>
               <Image
-                style={{
-                  borderRadius: "9rem",
-                  width: "200px",
-                  height: "200px",
-                  display: "inline-block"
-                }}
+                style={{ borderRadius: "9rem", width: "200px", height: "200px", display: "inline-block" }}
                 src={'https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png'}
                 alt="Placeholder"
               />

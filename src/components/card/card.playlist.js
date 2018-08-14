@@ -1,49 +1,42 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {Player} from 'video-react';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { Player } from "video-react";
+import { Icon, Card, Image, Segment } from "semantic-ui-react";
 
-import {Icon, Card, Image, Segment} from 'semantic-ui-react';
-
-//import FormEditUserUpload from '../Form/Form.EditUserUpload';
-import {removeFromPlaylist, getPlaylistOnce} from '../../actions/actions.playlist';
+import VideoPlayer from '../video/video.player';
+import {
+  removeFromPlaylist,
+  getPlaylistOnce
+} from "../../actions/actions.playlist";
 
 class PlaylistCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
       editing: false
-    }
+    };
   }
 
-  removePlaylist(){
-    const {auth, video, playlist} = this.props;
+  hoverCard = (e) => this.setState({hoverCard: true});
+  unhoverCard = (e) => this.setState({hoverCard: false});
 
-    console.log(auth.currentUser.uid, video.id, playlist);
-    this.props.removeFromPlaylist(auth.currentUser.uid, video.id, playlist);
-    this.props.getPlaylistOnce(auth.currentUser.uid);
+  removePlaylist = () => {
+    const { auth, user, upload, activePlaylist } = this.props;
+    this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, activePlaylist);
+    this.props.getPlaylistOnce(user.data.id);
   };
 
   render() {
-    const {auth, user, video} = this.props;
+    const { auth, user, upload } = this.props;
     return (
-        <Card fluid>
-          <Player
-            className="card-img-top"
-            alt="upload" aspectRatio='16:9'
-            controls={false} playsInline={true}
-            muted={true} autoPlay={false} loop={false}>
-            <source src={video.url}/>
-          </Player>
-          {
-            auth.currentUser &&(auth.currentUser.uid === user.data.id) &&
-            <Card.Content textAlign={'right'}>
-              <Icon onClick={() => this.removePlaylist()} name={'remove circle'}/>
-            </Card.Content>
-          }
-        </Card>
+      <Card fluid>
+        <VideoPlayer source={upload} options={upload.options}/>
+        {auth.currentUser.uid === user.data.id &&
+        <Icon size='big' style={cssCloseIcon} corner onClick={this.removePlaylist} name={"remove circle"}/>}
+      </Card>
     );
-  };
+  }
 }
 
 const mapStateToProps = state => ({
@@ -51,5 +44,16 @@ const mapStateToProps = state => ({
   user: state.user
 });
 
-export default connect(mapStateToProps,
-  {removeFromPlaylist, getPlaylistOnce})(PlaylistCard);
+export default connect(
+  mapStateToProps,
+  {removeFromPlaylist, getPlaylistOnce}
+)(PlaylistCard);
+
+const cssCloseIcon = {
+  position: 'absolute',
+  top: '0',
+  right: '0',
+  backgroundColor: 'white',
+  cursor: 'pointer',
+  margin: '0'
+};

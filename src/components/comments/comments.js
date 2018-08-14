@@ -20,7 +20,7 @@ class Comments extends Component {
 
   componentDidMount() {
     // TODO: Decide weather to user on or once call and load comments on submit/refresh
-    this.props.getComments(this.props.upload.data.id);
+    this.props.getCommentsOnce(this.props.upload.data.id);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -53,7 +53,7 @@ class Comments extends Component {
     const {upload, auth} = this.props;
     this.props.addComment(auth.currentUser, upload.data.id, values);
     this.props.dispatch(reset('comments'));
-    // this.props.getCommentsOnce(upload.data.id)
+    this.props.getCommentsOnce(upload.data.id)
   }
 
   handleChange = (e) => {

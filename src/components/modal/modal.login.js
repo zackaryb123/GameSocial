@@ -21,20 +21,10 @@ class LoginModal extends Component {
   }
 
   loginSubmit(values){
-    const {history} = this.props;
-    console.log(history);
-
-    // this.props.login(values.email, values.password);
     this.props.loginFirebase(values.email, values.password)
-      // .then((auth) => {
-      //   if(auth.emailVerified) {
-      //     return (<Redirect to='/'/>);
-      //   }
-      // })
   }
 
   registerSubmit(values) {
-    //this.props.registerMlab(values);
     this.props.registerFirebase(values);
   }
 

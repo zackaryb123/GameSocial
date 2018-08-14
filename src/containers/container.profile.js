@@ -6,18 +6,19 @@ import { Grid, Header, Container, Image, Card, Segment, Dimmer, Loader } from "s
 
 import {getInitUser, getUserOnce, clearUser} from "../actions/actions.user";
 
-import FeedCard from '../components/card/card.feed';
+import FeedCard from '../components/card/card.upload';
 import MenuProfile from "../components/menu/menu.profile";
 import UserCard from '../components/card/card.user';
 import ProfileDetail from '../components/detail/detail.profile';
-//import PlaylistDetail from '../components/detail/detail.playlist';
+import PlaylistDetail from '../components/detail/detail.playlist';
 
 export class Profile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: 'Profile Container',
-      activeMenu: null
+      activeMenu: null,
+      pageRefresh: null
     }
   }
 
@@ -28,28 +29,28 @@ export class Profile extends Component {
 
   componentDidMount(){
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name,"Did Mount");
+    console.log(this.state.name,"Did Mount");
     const {match: {params}, auth, getInitUser, getUserOnce} = this.props;
     this.mount = true;
 
     if(!_.isEmpty(auth.currentUser)) {
-      getInitUser(params.userId).then(user => {
-        if(this.mount){
-          getUserOnce(user.id);
-        }
-      });
+      getUserOnce(params.userId);
     }
   }
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-    const {auth, user} = this.props;
-
-    if (!_.isEmpty(nextProps.auth.currentUser) && nextProps.auth.currentUser !== auth.currentUser
-    ) {this.setState({ samePageLogin: true });
-    } else if (!_.isEmpty(nextProps.user.data) && nextProps.user.data !== user.data
-    ) {this.setState({ renderUser: true });
-    } else {console.log("Props state up to date!");}
+    const {auth, user, match: {params}} = this.props;
+    if (!_.isEmpty(nextProps.auth.currentUser) && nextProps.auth.currentUser !== auth.currentUser) {
+      this.setState({ pageRefresh: true });
+    }
+    // else if (nextProps.user.data && (nextProps.user.data !== user.data)){
+    //   this.setState({ updateProfile: true });
+    // }
+    else if (nextProps.match.params.userId !== params.userId){
+      this.setState({ switchUser: true });
+    }
+    else {console.log("Props state up to date!");}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -58,16 +59,17 @@ export class Profile extends Component {
     switch (true) {
       case _.isEmpty(nextProps.auth.currentUser):
         return false;
-      case nextState.samePageLogin:
-        return true;
-      case nextState.renderUser:
-        return true;
-      case nextState.renderMenu:
-        return true;
-      // case (nextState.updateUser):
-      //   return true;;
-      default:
+      case nextState.pageRefresh:
+        this.forceUpdate();
         return false;
+      case nextState.switchUser:
+        this.forceUpdate();
+        return false;
+      // case nextState.updateProfile:
+      //   this.forceUpdate();
+      //   return false;
+      default:
+        return true;
     }
   }
 
@@ -80,22 +82,20 @@ export class Profile extends Component {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState)
     const {getUserOnce, auth, user, getInitUser, match: {params} } = this.props;
-    const { samePageLogin, renderUser, renderMenu } = this.state;
+    const { samePageLogin, switchUser, updateProfile } = this.state;
 
     switch (true) {
       case samePageLogin:
         this.setState({ samePageLogin: false });
-        getInitUser(params.userId).then(user => { if(this.mount) {getUserOnce(user.id)} });
-        break;
-      case renderUser:
-        return this.setState({ renderUser: false });
-      case renderMenu:
-        return this.setState({ renderMenu: false });
-      //case updateUser:
-      //   this.setState({updateUpload: false});
-      //   return getUploadOnce(auth.currentUser.uid);
+        return getUserOnce(params.userId);
+      case switchUser:
+        this.setState({ switchUser: false });
+        return getUserOnce(params.userId);
+      // case updateProfile:
+      //   this.setState({ updateProfile: false });
+      //   return getUserOnce(user.data.id);
       default:
-        return alert(this.state.name, "");
+        return null;
     }
   }
 
@@ -155,6 +155,7 @@ export class Profile extends Component {
 
   render() {
     const {user} = this.props;
+    const {activeMenu} = this.state;
 
     if(!user.data || user.loading){
       return (
@@ -176,7 +177,7 @@ export class Profile extends Component {
         <div>
           <MenuProfile user={user} getActiveMenu={(state) => this.getActiveMenu(state)}/>
           {
-            this.state.activeMenu === 'uploads' &&
+            activeMenu === 'uploads' &&
             (
               <Container>
                 <Grid stackable>
@@ -188,7 +189,7 @@ export class Profile extends Component {
             )
           }
           {
-            this.state.activeMenu === 'followers' &&
+            activeMenu === 'followers' &&
             (
               <Container>
                 <Grid stackable columns={3}>
@@ -200,7 +201,7 @@ export class Profile extends Component {
             )
           }
           {
-            this.state.activeMenu === 'following' &&
+            activeMenu === 'following' &&
             (
               <Container>
                 <Grid stackable columns={3}>
@@ -213,7 +214,7 @@ export class Profile extends Component {
             )
           }
           {
-            this.state.activeMenu === 'favorites' &&
+            activeMenu === 'favorites' &&
             (
               <Container>
                 <Grid stackable>
@@ -225,14 +226,12 @@ export class Profile extends Component {
 
             )
           }
-          {/*{*/}
-            {/*this.state.activeMenu === 'playlist' &&*/}
-            {/*(*/}
-              {/*<Container fluid>*/}
-                {/*<PlaylistDetail/>*/}
-              {/*</Container>*/}
-            {/*)*/}
-          {/*}*/}
+          {
+            activeMenu === 'playlist' &&
+            (
+              <PlaylistDetail user={user.data}/>
+            )
+          }
         </div>
       </div>
     );

@@ -20,9 +20,7 @@ class Upload extends Component {
     super(props);
     this.state = {
       name: "Upload Container",
-      samePageLogin: null,
-      renderUpload: null,
-      updateUpload: null,
+      pageRefresh: null,
     };
   }
 
@@ -33,12 +31,8 @@ class Upload extends Component {
 
   componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    console.log(this.state.name,"Did Mount");
-
+    // console.log(this.state.name,"Did Mount");
     const {auth, match: { params }, getUploadOnce } = this.props;
-
-    //TODO: Get the refresh page working and pull initial needed data
-
     if(!_.isEmpty(auth.currentUser)) {
       getUploadOnce(params.uploadId);
     }
@@ -50,9 +44,9 @@ class Upload extends Component {
     const { upload, auth } = this.props;
 
     if (!_.isEmpty(nextProps.auth.currentUser) && nextProps.auth.currentUser !== auth.currentUser
-    ) {this.setState({ samePageLogin: true });
-    } else if (!_.isEmpty(nextProps.upload.data) && nextProps.upload.data !== upload.data
-    ) {this.setState({ renderUpload: true });
+    ) {this.setState({ pageRefresh: true });
+    // } else if (!_.isEmpty(nextProps.upload.data) && nextProps.upload.data !== upload.data
+    // ) {this.setState({ renderUpload: true });
     } else {console.log("Props state up to date!");}
   }
 
@@ -63,14 +57,11 @@ class Upload extends Component {
     switch (true) {
       case _.isEmpty(nextProps.auth.currentUser):
         return false;
-      case nextState.samePageLogin:
-        return true;
-      case nextState.renderUpload:
-        return true;
-      // case (nextState.updateUpload):
-      //   return true;;
-      default:
+      case nextState.pageRefresh:
+        this.forceUpdate();
         return false;
+      default:
+        return true;
     }
   }
 
@@ -82,19 +73,14 @@ class Upload extends Component {
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
-    const {getUploadOnce, auth, upload } = this.props;
-    const { samePageLogin, renderUpload, } = this.state;
+    const {getUploadOnce, upload } = this.props;
+    const { pageRefresh } = this.state;
 
     switch (true) {
-      case samePageLogin:
-        this.setState({ samePageLogin: false });
+      case pageRefresh:
+        this.setState({ pageRefresh: false });
         return getUploadOnce(upload.data.id);
-      case renderUpload:
-        return this.setState({ renderUpload: false });
-      //   this.setState({updateUpload: false});
-      //   return getUploadOnce(auth.currentUser.uid);
-      default:
-        return alert(this.state.name, "");
+      default: return null;
     }
   }
 
@@ -106,7 +92,6 @@ class Upload extends Component {
 
   render() {
     const { upload, auth } = this.props;
-    const {hoverLink} = this.state;
 
     if(_.isEmpty(auth.currentUser)){return null}
 
@@ -124,8 +109,8 @@ class Upload extends Component {
     if (!upload.data) {return <h1>No Upload Data</h1>}
 
     return (
-      <Container fluid>
-        <Container fluid >
+      <div>
+        <div>
           <Grid textAlign="center" style={{ backgroundColor: "#1B1C1D" }}>
             <Grid.Row className="row">
               <Grid.Column width={16} style={{maxWidth: '720px'}}>
@@ -154,6 +139,7 @@ class Upload extends Component {
                         <ViewsCount upload={upload.data}/>
                         <FavoriteToggle upload={upload.data} />
                         <LikesToggle upload={upload.data} />
+                        {upload.data.type === 'video' && <PlaylistToggle upload={upload.data}/>}
                         {auth.currentUser.isAdmin && <FeaturedToggle upload={upload.data} />}
                       </Segment>
                     </Grid.Column>
@@ -162,7 +148,7 @@ class Upload extends Component {
               </Grid.Column>
             </Grid.Row>
           </Grid>
-        </Container>
+        </div>
 
         <Grid>
           <Grid.Row centered>
@@ -171,7 +157,7 @@ class Upload extends Component {
             </Grid.Column>
           </Grid.Row>
         </Grid>
-      </Container>
+      </div>
     );
   }
 }

@@ -12,62 +12,28 @@ export class FeaturedToggle extends Component {
     }
   }
 
-
   componentDidMount() {
     //DOM Manipulation (side effects/state updates)(render occurs before)
-    console.log(this.state.name, 'Did Mount ');
-
+    // console.log(this.state.name, 'Did Mount ');
     this.mounted = true;
     const {upload, getInitFeaturedState} = this.props;
 
     getInitFeaturedState(upload.id)
-      .then(exist => {if (this.mounted) {
-        this.setState({ isFeatured: exist, renderFeatured: true })
-        }});
+      .then(exist => {if (this.mounted) {this.setState({ isFeatured: exist })}});
+
+    // this.props.getFeaturedOnce()
   }
 
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-
     const {featured, upload} = this.props;
-
     if (nextProps.featured.data !== featured.data){
-      this.setState({
-        isFeatured: nextProps.featured.data && (upload.id in nextProps.featured.data),
-        renderFeatured: true
-      })
-    }else{
-      console.log('Component Up to date!')
-    }
+      this.setState({ isFeatured: nextProps.featured.data && (upload.id in nextProps.featured.data) })
+    }else{console.log('Component Up to date!')}
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-
-    if(nextState.renderFeatured){
-      return true
-    } else{
-      console.log('Toggle featured up to date')
-      return false;
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState);
-    const {renderFeatured, isFeatured} = this.state;
-
-    switch(true) {
-      case (renderFeatured):
-        return this.setState({renderFeatured: false});
-      default:
-        return ('Last Render')
-    }
-  }
-
-  componentWillUnmount() {
+  componentWillUnmount(){
     this.mounted = false;
   }
 
@@ -99,7 +65,6 @@ const mapStateToProps = state => ({
   auth: state.auth,
   featured: state.featured
 });
-
 
 export default connect(mapStateToProps,
   {addFeatured, removeFeatured, getFeaturedOnce, getInitFeaturedState})

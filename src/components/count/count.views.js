@@ -16,11 +16,6 @@ class ViewsCount extends Component {
     };
   }
 
-  componentWillMount() {
-    //Constructor equivalent (state updates)
-    // console.log(this.state.name, "Will Mount");
-  }
-
   componentDidMount(){
     //DOM Manipulation (side effects/state updates)(render occurs before)
     // console.log(this.state.name, 'Did Mount ');
@@ -38,35 +33,6 @@ class ViewsCount extends Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
-
-    // const {upload} = this.props;
-    // On like props received set the liked boolean
-    // if(nextProps.upload.views !== upload.views) {this.setState({reCount: true})}
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-
-    // if(this.state.reCount && (nextProps.upload.views !== this.props.upload.views)) {return true}
-    return true;
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
-
-  }
-
   componentWillUnmount(){
     //DOM Manipulation (side effects)
     // console.log(this.state.name, "Will Unmount");
@@ -81,7 +47,7 @@ class ViewsCount extends Component {
   }
 
   render() {
-    const {auth, viewsCount, upload} = this.props;
+    const {auth, upload} = this.props;
     return (
       auth.currentUser &&
       <span>
