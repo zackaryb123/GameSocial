@@ -61,7 +61,6 @@ class PlaylistToggle extends Component {
     return _.map(playlistList, playlist => {
       return (
         <div key={playlist.name}>
-          {console.log(playlistList[playlist.name][upload.id])}
           {
             playlistList[playlist.name][upload.id] ? (
               <Dropdown.Item style={cssPlaylist}
@@ -90,7 +89,7 @@ class PlaylistToggle extends Component {
       );
     }
     return (
-      <Dropdown item text='Playlist'>
+      <Dropdown upward item text='Playlist'>
         <Dropdown.Menu>
           {this.renderPlaylistItems()}
         </Dropdown.Menu>

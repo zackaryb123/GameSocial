@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import {Link} from 'react-router-dom';
 import { Grid, Container, Segment, Dimmer, Loader, Image, Header, Item, Feed } from "semantic-ui-react";
-
 import { getUploadOnce, clearUpload } from "./../actions/actions.upload";
 
 import Comments from "../components/comments/comments";

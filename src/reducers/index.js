@@ -19,6 +19,7 @@ import followersReducer from "./reducer.followers";
 import followingReducer from "./reducer.following";
 import featuredReducer from "./reducer.featured";
 import playlistReducer from "./reducer.playlist";
+//import lazyFeedReducer from "./reducer.lazy.feed";
 
 const rootReducer = combineReducers({
   form: formReducer,
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   following: followingReducer,
   featured: featuredReducer,
   playlist: playlistReducer,
+  // lazyFeed: lazyFeedReducer,
   loginModal: loginModalReducer,
   forgotPasswordModal: forgotPasswordReducer,
   resetPasswordModal: resetPasswordReducer,

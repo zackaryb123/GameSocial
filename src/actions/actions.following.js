@@ -1,4 +1,5 @@
 import * as firebase from 'firebase'
+import {FeedItemObj} from './models';
 
 export const FOLLOWING_REQUEST = 'FOLLOWING_REQUEST';
 export const followingRequest = () => ({
@@ -60,8 +61,38 @@ export const addFollowing = (authId ,publisher) => dispatch => {
   followingRef.child(`${publisher.id}/id`).set(publisher.id);
   followingRef.child(`${publisher.id}/username`).set(publisher.username);
   // followingRef.child(`${publisher.id}/avatar/url`).set(publisher.avatar.url);
+
+  firebase.database().ref(`users/${publisher.id}/uploads`).once('value', snapshot => {
+    let newFeed = snapshot.val();
+    let newFeedCount = snapshot.numChildren();
+
+    // firebase.database().ref(`users/${authId}/feed/count`).once('value', snapshot => {
+    //   const newCount = snapshot.val() + newFeedCount;
+    //   firebase .database().ref(`users/${authId}/feed/count`).set(newCount);
+    // });
+
+    _.forEach(newFeed, item => {
+      // const feedItem = new FeedItemObj(item);
+      firebase.database().ref(`users/${authId}/feed/${item.id}`).set(item);
+    });
+  })
 };
 
 export const removeFollowing = (authId, publisherId) => dispatch => {
   firebase.database().ref(`users/${authId}/following/${publisherId}`).remove();
+
+
+  firebase.database().ref(`users/${publisherId}/uploads`).once('value', snapshot => {
+    let newFeed = snapshot.val();
+    let newFeedCount = snapshot.numChildren();
+
+    // firebase.database().ref(`users/${authId}/feed/count`).once('value', snapshot => {
+    //   const newCount = snapshot.val() - newFeedCount;
+    //   firebase.database().ref(`users/${authId}/feed/count`).set(newCount);
+    // });
+
+    _.forEach(newFeed, item => {
+      firebase.database().ref(`users/${authId}/feed/${item.id}`).remove();
+    });
+  });
 };

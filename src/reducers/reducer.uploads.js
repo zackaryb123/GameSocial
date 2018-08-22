@@ -20,6 +20,8 @@ export default function reducer(state = initialState, action) {
     case UPLOADS_GET:
       return Object.assign({}, state, {
         data: action.data,
+        date: action.date,
+        pages: action.pages,
         error: null,
         loading: false
       });

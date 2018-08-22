@@ -2,9 +2,14 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import _ from 'lodash';
-import { Grid, Header, Container, Image, Card, Segment, Dimmer, Loader } from "semantic-ui-react";
+import { Grid, Header, Container, Image, Card, Segment, Dimmer, Loader, Table, Menu, Icon } from "semantic-ui-react";
 
 import {getInitUser, getUserOnce, clearUser} from "../actions/actions.user";
+import {
+  getUserUploadsOnce,
+  getNextUserUploadsOnce,
+  getPrevUserUploadsOnce,
+} from "../actions/actions.user.services";
 
 import FeedCard from '../components/card/card.upload';
 import MenuProfile from "../components/menu/menu.profile";
@@ -23,66 +28,64 @@ export class Profile extends Component {
   }
 
   componentWillMount() {
-    //Constructor equivalent (state updates)
-    // console.log(this.state.name, "Will Mount");
+    this.setState({count: 10,start: 0, page: 1})
   }
 
   componentDidMount(){
-    //DOM Manipulation (side effects/state updates)(render occurs before)
     console.log(this.state.name,"Did Mount");
-    const {match: {params}, auth, getInitUser, getUserOnce} = this.props;
+    const {match: {params}, auth, getUserOnce} = this.props;
     this.mount = true;
 
     if(!_.isEmpty(auth.currentUser)) {
       getUserOnce(params.userId);
     }
   }
+
+  retrievePrev() {
+    const { count, page, start, activeMenu} = this.state;
+    const {user, uploads} = this.props;
+    const date =  uploads.data[0].created_at;
+    if(start > 0){
+      this.props.getPrevUserUploadsOnce(user.data.id, date, page, count, activeMenu).then(data => {
+        this.setState({ date: data.date, start: count * data.page - count , page: data.page, total: data.total })
+      });
+    }
+  }
+
+  retrieveNext() {
+    const { count, total, page, start, activeMenu } = this.state;
+    const {user, uploads} = this.props;
+    const date = uploads.data[uploads.data.length - 1].created_at;
+
+    if(start + count < total) {
+      this.props.getNextUserUploadsOnce(user.data.id, date, page, count, activeMenu).then(data => {
+        this.setState({ date: data.date, start: count * data.page - count, page: data.page, total: data.total })
+      })
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
-    const {auth, user, match: {params}} = this.props;
+    const {auth, match: {params}} = this.props;
     if (!_.isEmpty(nextProps.auth.currentUser) && nextProps.auth.currentUser !== auth.currentUser) {
       this.setState({ pageRefresh: true });
-    }
-    // else if (nextProps.user.data && (nextProps.user.data !== user.data)){
-    //   this.setState({ updateProfile: true });
-    // }
-    else if (nextProps.match.params.userId !== params.userId){
+    } else if (nextProps.match.params.userId !== params.userId){
       this.setState({ switchUser: true });
-    }
-    else {console.log("Props state up to date!");}
+    } else {console.log("Props state up to date!");}
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
     switch (true) {
       case _.isEmpty(nextProps.auth.currentUser):
         return false;
-      case nextState.pageRefresh:
-        this.forceUpdate();
-        return false;
-      case nextState.switchUser:
-        this.forceUpdate();
-        return false;
-      // case nextState.updateProfile:
-      //   this.forceUpdate();
-      //   return false;
       default:
         return true;
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
-    const {getUserOnce, auth, user, getInitUser, match: {params} } = this.props;
-    const { samePageLogin, switchUser, updateProfile } = this.state;
+    const {getUserOnce, match: {params} } = this.props;
+    const { samePageLogin, switchUser } = this.state;
+    this.mounted = true;
 
     switch (true) {
       case samePageLogin:
@@ -91,18 +94,13 @@ export class Profile extends Component {
       case switchUser:
         this.setState({ switchUser: false });
         return getUserOnce(params.userId);
-      // case updateProfile:
-      //   this.setState({ updateProfile: false });
-      //   return getUserOnce(user.data.id);
       default:
         return null;
     }
   }
 
   componentWillUnmount(){
-    //DOM Manipulation (side effects)
-    // console.log(this.state.name, "Will Unmount");
-    this.mount = false;
+    this.mounted = false;
   }
 
 
@@ -147,14 +145,23 @@ export class Profile extends Component {
   }
 
   getActiveMenu(state){
-    this.setState({
-      activeMenu: state,
-      renderMenu: true
-    })
+    const {user} = this.props;
+    const page = 1;
+    const count = 10;
+
+    this.setState({ activeMenu: state, renderMenu: true });
+      this.props.getUserUploadsOnce( user.data.id, Date.now(), page, count, state).then(data =>{
+        if(this.mounted){
+          this.setState({
+            start: count * data.page - count,
+            date: data.date,
+            total: data.total })
+        }
+      });
   }
 
   render() {
-    const {user, auth} = this.props;
+    const {user, uploads, auth} = this.props;
     const {activeMenu} = this.state;
 
     if(user.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
@@ -170,12 +177,30 @@ export class Profile extends Component {
         <div>
           <MenuProfile user={user} getActiveMenu={(state) => this.getActiveMenu(state)}/>
           {
+            (activeMenu === 'uploads' || activeMenu === 'favorites') &&
+            <Segment textAlign='center'>
+              <Menu pagination>
+                <Menu.Item as='a' icon
+                           onClick={() => this.retrievePrev()}>
+                  <Icon name='chevron left' />
+                </Menu.Item>
+                <Menu.Item>
+                  {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                </Menu.Item>
+                <Menu.Item as='a' icon
+                           onClick={() => this.retrieveNext()}>
+                  <Icon name='chevron right' />
+                </Menu.Item>
+              </Menu>
+            </Segment>
+          }
+          {
             activeMenu === 'uploads' &&
             (
               <Container>
                 <Grid stackable>
                   <Grid.Row>
-                    {this.renderUserUploads(user.data.uploads)}
+                    {this.renderUserUploads(uploads.data)}
                   </Grid.Row>
                 </Grid>
               </Container>
@@ -225,6 +250,24 @@ export class Profile extends Component {
               <PlaylistDetail user={user.data}/>
             )
           }
+          {
+            (activeMenu === 'uploads' || activeMenu === 'favorites') &&
+            <Segment textAlign='center'>
+              <Menu pagination>
+                <Menu.Item as='a' icon
+                           onClick={() => this.retrievePrev()}>
+                  <Icon name='chevron left' />
+                </Menu.Item>
+                <Menu.Item>
+                  {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                </Menu.Item>
+                <Menu.Item as='a' icon
+                           onClick={() => this.retrieveNext()}>
+                  <Icon name='chevron right' />
+                </Menu.Item>
+              </Menu>
+            </Segment>
+          }
         </div>
       </div>
     );
@@ -233,8 +276,13 @@ export class Profile extends Component {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  user: state.user
+  user: state.user,
+  uploads: state.uploads,
+  favorites: state.favorites
 });
 
 export default connect(mapStateToProps,
-  {getInitUser, getUserOnce, clearUser})(Profile);
+  {getInitUser, getUserOnce, clearUser,
+    getUserUploadsOnce,
+    getNextUserUploadsOnce,
+    getPrevUserUploadsOnce})(Profile);

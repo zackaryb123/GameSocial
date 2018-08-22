@@ -22,7 +22,7 @@ class LikeToggle extends Component {
     this.mounted = true;
     getInitLikeState(auth.currentUser.uid, upload.id)
       .then(likeList => { if(this.mounted) {this.setState({
-        count: _.size(likeList), isLiked: auth.currentUser.uid in likeList})}
+        count: _.size(likeList), isLiked: likeList && auth.currentUser.uid in likeList})}
       });
   }
 

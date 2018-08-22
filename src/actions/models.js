@@ -34,6 +34,7 @@ class NewUserObject {
       lastName: user.lastName,
       dob: user.dob || '',
     };
+    this.feed = null;
     this.following = null;
     this.followers = null;
     this.favorites = null;
@@ -96,5 +97,12 @@ class TrackedFavoritesObj{
   }
 }
 
+class FeedItemObj{
+  constructor(upload){
+    this.id = upload.id;
+    this.created_at = upload.created_at;
+  }
+}
 
-module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, CloudinaryEnvObj, FirebaseEnvObj };
+
+module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, FeedItemObj };

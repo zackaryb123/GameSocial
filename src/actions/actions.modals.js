@@ -1,4 +1,4 @@
-import {Modal, NewVideoObj} from './models';
+import {Modal, NewVideoObj, FeedItemObj} from './models';
 import * as firebase from 'firebase';
 
 export const LOGIN_MODAL = 'LOGIN_MODAL';
@@ -128,7 +128,13 @@ export const upload = (data, file) => dispatch => {
     const updates = {};
     updates[`uploads/${postId}`] = upload;
     updates[`users/${data.publisher.id}/uploads/${postId}`] = upload;
+    updates[`users/${data.publisher.id}/feed/${postId}`] = upload;
     firebase.database().ref().update(updates);
+
+    // firebase.database().ref(`users/${data.publisher.id}/feed/count`).once('value', snapshot => {
+    //   const newCount = snapshot.val() + 1;
+    //   firebase.database().ref(`users/${data.publisher.id}/feed/count`).set(newCount);
+    // });
 
     resolve(true);
   }).then((res) => {if(res){
