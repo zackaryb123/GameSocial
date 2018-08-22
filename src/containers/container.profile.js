@@ -32,7 +32,6 @@ export class Profile extends Component {
   }
 
   componentDidMount(){
-    console.log(this.state.name,"Did Mount");
     const {match: {params}, auth, getUserOnce} = this.props;
     this.mount = true;
 
@@ -108,6 +107,7 @@ export class Profile extends Component {
     return _.map(uploads, upload =>{
       return(
         <Grid.Column key={upload.id} mobile={16} computer={8} largeScreen={5} style={{paddingBottom: '1rem', paddingTop: '.5rem'}}>
+
           <FeedCard upload={upload}/>
         </Grid.Column>
       );
@@ -185,7 +185,7 @@ export class Profile extends Component {
                   <Icon name='chevron left' />
                 </Menu.Item>
                 <Menu.Item>
-                  {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                  {this.state.start} - {this.state.start+this.state.count} of {this.state.total}
                 </Menu.Item>
                 <Menu.Item as='a' icon
                            onClick={() => this.retrieveNext()}>
@@ -237,7 +237,7 @@ export class Profile extends Component {
               <Container>
                 <Grid stackable>
                   <Grid.Row>
-                    {this.renderUserFavorites(user.data.favorites)}
+                    {this.renderUserFavorites(uploads.data)}
                   </Grid.Row>
                 </Grid>
               </Container>

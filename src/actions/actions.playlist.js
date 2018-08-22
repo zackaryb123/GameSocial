@@ -57,8 +57,12 @@ export const deletePlaylist = (authId, playlistName) => dispatch => {
 };
 
 export const addToPlaylist = (authId, upload, playlistName) => dispatch => {
-  let playlistObject = new PlaylistObject(upload, playlistName);
-  firebase.database().ref(`users/${authId}/playlist/${playlistName}/${upload.id}`).set(playlistObject);
+  firebase.database().ref(`users/${authId}/playlist/${playlistName}`).once('value', snap => {
+    const index = snap.numChildren() - 1;
+    let playlistObject = new PlaylistObject(upload, playlistName);
+    playlistObject.index = index;
+    firebase.database().ref(`users/${authId}/playlist/${playlistName}/${upload.id}`).set(playlistObject);
+  })
 };
 
 export const removeFromPlaylist = (authId, uploadId, playlistName) => dispatch => {

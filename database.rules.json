@@ -1,6 +1,27 @@
 {
   "rules": {
-    ".read": "true",
-    ".write": "true"
+    ".read": "auth!=true",
+    ".write": "auth!=true",
+    "uploads": {
+      ".indexOn": ["created_at"]
+    },
+    "users": {
+      "$id": {
+        "feed": {
+          ".indexOn":["created_at"]
+        },
+        "uploads": {
+          ".indexOn": ["created_at"]
+        },
+        "favorites": {
+          ".indexOn": ["created_at"]
+        },
+        "playlist": {
+          "$name": {
+            ".indexOn": ["created_at"]
+          }
+        }
+      }
+    }
   }
 }
