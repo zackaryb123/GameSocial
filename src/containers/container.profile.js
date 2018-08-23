@@ -9,7 +9,7 @@ import {
   getUserUploadsOnce,
   getNextUserUploadsOnce,
   getPrevUserUploadsOnce,
-} from "../actions/actions.user.services";
+} from "../actions/actions.user.get";
 
 import FeedCard from '../components/card/card.upload';
 import MenuProfile from "../components/menu/menu.profile";
@@ -107,8 +107,7 @@ export class Profile extends Component {
     return _.map(uploads, upload =>{
       return(
         <Grid.Column key={upload.id} mobile={16} computer={8} largeScreen={5} style={{paddingBottom: '1rem', paddingTop: '.5rem'}}>
-
-          <FeedCard upload={upload}/>
+          <FeedCard activeMenu={this.state.activeMenu} upload={upload}/>
         </Grid.Column>
       );
     })
@@ -138,7 +137,7 @@ export class Profile extends Component {
     return _.map(favorites, (favorite) => {
       return (
         <Grid.Column mobile={16} computer={8} largeScreen={5} key={favorite.id} style={{paddingBottom: '1rem', paddingTop: '.5rem'}}>
-          <FeedCard upload={favorite}/>
+          <FeedCard activeMenu={this.state.activeMenu} upload={favorite}/>
         </Grid.Column>
       )
     });

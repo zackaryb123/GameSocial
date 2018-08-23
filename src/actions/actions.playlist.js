@@ -64,7 +64,3 @@ export const addToPlaylist = (authId, upload, playlistName) => dispatch => {
     firebase.database().ref(`users/${authId}/playlist/${playlistName}/${upload.id}`).set(playlistObject);
   })
 };
-
-export const removeFromPlaylist = (authId, uploadId, playlistName) => dispatch => {
-  firebase.database().ref(`users/${authId}/playlist/${playlistName}/${uploadId}`).remove()
-};

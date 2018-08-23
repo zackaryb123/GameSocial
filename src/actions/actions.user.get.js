@@ -1,12 +1,13 @@
 import * as firebase from "firebase";
 import _ from "lodash";
 import {uploadsRequest, uploadsGet, uploadsError } from "./actions.uploads";
+import {playlistRequest, playlistError, playlistGet } from "./actions.playlist";
 
 const LOAD_COUNT = 20;
 const ORDER_DATE = 'created_at';
 const ORDER_INDEX = 'index';
 
-// Favorites //
+///////// Get Uploads & Favorites ///////
 export const getUserUploadsOnce = (
   userId,
   date,
@@ -129,7 +130,7 @@ export const getPrevUserUploadsOnce = (
 };
 
 
-//////////// Playlist///////////////////
+//////////// Get Playlist///////////////////
 export const getUserPlaylistOnce = (
   userId,
   start,
@@ -137,7 +138,7 @@ export const getUserPlaylistOnce = (
   count,
   activeMenu
 ) => dispatch => {
-  dispatch(uploadsRequest);
+  dispatch(uploadsRequest());
 
   return new Promise((resolve, reject) => {
     return firebase

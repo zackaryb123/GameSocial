@@ -4,6 +4,8 @@ import {Card, Image, Feed, Icon, Header} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import _ from 'lodash';
 
+import {deleteUserUpload} from  '../../actions/actions.user.delete';
+
 import FavoriteToggle from '../toggle/toggle.favorite';
 import LikeToggle from '../toggle/toggle.like';
 import VideoPlayer from "../video/video.player";
@@ -16,9 +18,8 @@ class FeedCard extends Component {
   }
 
   removeUpload = () => {
-    const { auth, user, upload, activePlaylist } = this.props;
-    // this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, activePlaylist);
-    // this.props.getPlaylistOnce(user.data.id);
+    const { auth, user, upload } = this.props;
+    this.props.deleteUserUpload(auth.currentUser.uid, upload.id);
   };
 
   hoverCard = (e) => this.setState({hoverCard: true});
@@ -31,7 +32,7 @@ class FeedCard extends Component {
   unhoverUser = (e) => this.setState({hoverUser: false});
 
   renderCardContent = (upload, hoverCard, hoverLink, hoverUser) => {
-    const {auth, user} = this.props;
+    const {auth, user, activeMenu} = this.props;
     return (
       <Card.Content style={topContentHover}>
         {/*hoverCard ? topContentHover : {display: 'none'}}>*/}
@@ -62,7 +63,7 @@ class FeedCard extends Component {
                   <FavoriteToggle upload={upload}/>
                 </Feed.Like>
                 <Feed.Like>
-                  {user.data && (auth.currentUser.uid === upload.publisher.id) && (auth.currentUser.uid === user.data.id) &&
+                  {user.data && (auth.currentUser.uid === upload.publisher.id) && (auth.currentUser.uid === user.data.id) && (activeMenu === 'uploads') &&
                     <Icon inverted size='large' style={cssCloseIcon} corner onClick={this.removeUpload} name={"remove circle"}/>}
                 </Feed.Like>
               </Feed.Meta>
@@ -112,7 +113,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps,
-  {})(FeedCard);
+  {deleteUserUpload})(FeedCard);
 
 
 const topContentHover = {
@@ -144,7 +145,6 @@ const cssCloseIcon = {
   // position: 'absolute',
   top: '0',
   right: '0',
-  // backgroundColor: 'white',
   cursor: 'pointer',
   margin: '0'
 };

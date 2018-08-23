@@ -7,7 +7,7 @@ import PlaylistCard from "../card/card.playlist";
 import PlaylistMenu from "../menu/menu.playlist";
 
 import {getPlaylistOptions} from '../../actions/actions.playlist';
-import {getUserPlaylistOnce, getNextUserPlaylistOnce, getPrevUserPlaylistOnce} from "../../actions/actions.user.services";
+import {getUserPlaylistOnce, getNextUserPlaylistOnce, getPrevUserPlaylistOnce} from "../../actions/actions.user.get";
 
 export class ProfileDetail extends Component {
   constructor(props) {
@@ -54,8 +54,6 @@ export class ProfileDetail extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
     const {playlist} = this.props;
     if (nextProps.playlist.data !== playlist.data){
       this.setState({ playlistList: nextProps.playlist.data})
@@ -69,13 +67,19 @@ export class ProfileDetail extends Component {
 
 
   renderUserPlaylist(playlist) {
+    const {activePlaylist, page, count, start } = this.state;
     return _.map(playlist, upload => {
       if (upload === playlist.name) {
         return null;
       }
       return (
         <Grid.Column mobile={16} computer={8} largeScreen={5} style={{ marginBottom: "1rem" }} key={upload.id}>
-          <PlaylistCard activePlaylist={this.state.activePlaylist} upload={upload} />
+          <PlaylistCard
+            start={start}
+            page={page}
+            count={count}
+            activePlaylist={activePlaylist}
+            upload={upload} />
         </Grid.Column>
       );
     });

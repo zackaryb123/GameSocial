@@ -1,14 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { Player } from "video-react";
-import { Icon, Card, Image, Segment } from "semantic-ui-react";
+import { Icon, Card, Image, Segment, Feed } from "semantic-ui-react";
 
 import VideoPlayer from '../video/video.player';
-import {
-  removeFromPlaylist,
-  getPlaylistOnce
-} from "../../actions/actions.playlist";
+import {getUserPlaylistOnce} from '../../actions/actions.user.get';
+import { removeFromPlaylist } from "../../actions/actions.user.delete";
 
 class PlaylistCard extends Component {
   constructor(props) {
@@ -22,18 +18,28 @@ class PlaylistCard extends Component {
   unhoverCard = (e) => this.setState({hoverCard: false});
 
   removePlaylist = () => {
-    const { auth, user, upload, activePlaylist } = this.props;
+    const { auth, upload, activePlaylist, start, page, count } = this.props;
     this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, activePlaylist);
-    this.props.getPlaylistOnce(user.data.id);
+    this.props.getUserPlaylistOnce(auth.currentUser.uid, start, page, count, activePlaylist);
   };
 
   render() {
     const { auth, user, upload } = this.props;
     return (
       <Card fluid>
+        <Feed style={{margin: '0', background: '#1B1C1D'}}>
+          <Feed.Event>
+            <Feed.Content>
+              <Feed.Meta style={{margin: '0', float: 'right'}}>
+                <Feed.Like>
+                  {auth.currentUser.uid === user.data.id &&
+                  <Icon inverted size='large' style={cssCloseIcon} corner onClick={this.removePlaylist} name={"remove circle"}/>}
+                </Feed.Like>
+              </Feed.Meta>
+            </Feed.Content>
+          </Feed.Event>
+        </Feed>
         <VideoPlayer source={upload} options={upload.options}/>
-        {auth.currentUser.uid === user.data.id &&
-        <Icon size='big' style={cssCloseIcon} corner onClick={this.removePlaylist} name={"remove circle"}/>}
       </Card>
     );
   }
@@ -46,14 +52,14 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  {removeFromPlaylist, getPlaylistOnce}
+  {removeFromPlaylist, getUserPlaylistOnce}
 )(PlaylistCard);
 
 const cssCloseIcon = {
-  position: 'absolute',
+  // position: 'absolute',
   top: '0',
   right: '0',
-  backgroundColor: 'white',
+  backgroundColor: '#1B1C1D',
   cursor: 'pointer',
   margin: '0'
 };
