@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { Container, Header, Segment, Grid, Image, Dimmer, Loader, Table, Menu, Icon } from "semantic-ui-react";
-import {getUploadsOnce, getNextUploadsOnce, getPrevUploadsOnce} from '../actions/actions.uploads';
+import {getUploads, getNextUploads, getPrevUploads} from '../actions/actions.uploads';
 
 import FeedCard from "../components/card/card.upload";
 import _ from "lodash";
 import FeaturedSlider from "../components/slider/slider.featured";
 // import _ from 'lodash';
+
+var moment = require("moment");
+moment().format();
 
 class Discover extends Component {
   constructor(props) {
@@ -26,7 +29,7 @@ class Discover extends Component {
     const {page, count} = this.state;
 
     if(!_.isEmpty(auth.currentUser)){
-      this.props.getUploadsOnce(Date.now(), page, count).then(data => {
+      this.props.getUploads(moment(Date.now()).format(), page, count).then(data => {
         if(this.mounted){
           this.setState({
             start: count * data.page - count,
@@ -45,7 +48,7 @@ class Discover extends Component {
     console.log(date);
 
     if(start > 0){
-      this.props.getPrevUploadsOnce(date, page, count).then(data => {
+      this.props.getPrevUploads(date, page, count).then(data => {
         this.setState({
           date: data.date,
           start: count * data.page - count ,
@@ -60,10 +63,10 @@ class Discover extends Component {
     const { count, total, page, start } = this.state;
     const {auth, uploads} = this.props;
 
-    const date = uploads.data[uploads.data.length-1].created_at;
+    const date = uploads.data[9].created_at;
 
     if(start + count < total){
-      this.props.getNextUploadsOnce(date, page, count).then(data => {
+      this.props.getNextUploads(date, page, count).then(data => {
         this.setState({
           date: data.date,
           page:data.page,
@@ -98,14 +101,13 @@ class Discover extends Component {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState)
     this.mounted = true;
-    const {getUploadsOnce} = this.props;
     const {pageRefresh, page, count} = this.state;
 
     switch(true) {
       case (pageRefresh):
         this.setState({ pageRefresh: false });
         if(this.mounted){
-          getUploadsOnce(Date.now(), page, count).then(data => {
+          this.props.getUploads(moment(Date.now()).format(), page, count).then(data => {
             if(this.mounted){
               this.setState({
                 start: count * data.page - count,
@@ -211,4 +213,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps,
-  {getUploadsOnce,getNextUploadsOnce, getPrevUploadsOnce})(Discover);
+  {getUploads, getNextUploads, getPrevUploads})(Discover);

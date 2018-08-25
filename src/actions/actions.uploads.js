@@ -1,5 +1,4 @@
 import  * as firebase from "firebase";
-import { feedGet } from "./actions.feed";
 
 // GET Action
 export const UPLOADS_REQUEST = 'UPLOADS_REQUEST';
@@ -8,13 +7,21 @@ export const uploadsRequest = () => ({
 });
 
 export const UPLOADS_GET = 'UPLOADS_GET';
-export const uploadsGet = (data, date, page, total) => ({
+export const uploadsGet = (newItem, date, page, total) => ({
   type: UPLOADS_GET,
-  data: data,
+  newItem: newItem,
   date: date,
   page: page,
   total: total
 });
+
+
+export const UPLOADS_CLEAR = 'UPLOADS_CLEAR';
+export const uploadsClear = (data) => ({
+  type: UPLOADS_CLEAR,
+  data
+});
+
 
 export const UPLOADS_ERROR = 'UPLOADS_ERROR';
 export const uploadsError = error => ({
@@ -23,91 +30,191 @@ export const uploadsError = error => ({
 });
 
 // Variables
-const LOAD_COUNT = 20;
+const LOAD_COUNT = 10;
 const ORDER_DATE = 'created_at';
 
+// Function
+export function getUploadSource(load, date) {
+  return function (dispatch) {
+    //Extract Videos Keys
+    const videoKeys = Object.keys(load).map(function(key) {
+      return key;
+    });
+    const databaseRef = firebase.database().ref('uploads');
+    videoKeys.forEach((id) => {
+      databaseRef.child(id).once('value', s => {
+        const upload = s.val();
+        dispatch(uploadsGet(upload, date));
+      })
+    });
+  }
+}
+
 // Actions
-export const getUploadsOnce = (date, page, count) => dispatch => {
-  dispatch(uploadsRequest());
-  return new Promise ((resolve, reject) => {
-    return firebase.database().ref('uploads/')
-      .orderByChild(ORDER_DATE)
-      .startAt(date)
-      .limitToLast(count)
-      .once('value', snapshot => {
-        const data = snapshot.val();
-
-        let uploadsArray = [];
-        _.forEach(data, i => {
-          uploadsArray.push(i);
-        });
-        uploadsArray.reverse();
-
-        firebase.database().ref('uploads').once('value', snap => {
-          let total = snap.numChildren();
-          const data = { page: 1, date: date, total: total };
-
-          resolve(data);
-          dispatch(uploadsGet(uploadsArray, date, page, total))
-        });
-      })
-  }).catch(error => dispatch(uploadsError(error)))
+export const getUploads = (date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`uploads`)
+    .orderByChild(ORDER_DATE)
+    .endAt(date)
+    .limitToLast(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getNextUploadsOnce = (date, page, count) => dispatch => {
-  dispatch(uploadsRequest());
-  return new Promise ((resolve, reject) => {
-    return firebase.database().ref('uploads/')
-      .orderByChild(ORDER_DATE)
-      .endAt(date)
-      .limitToLast(count+1)
-      .once('value', snapshot => {
-        const data = snapshot.val();
-
-        let uploadsArray = [];
-        _.forEach(data, i => {
-          uploadsArray.push(i);
-        });
-        uploadsArray.reverse();
-        uploadsArray.shift();
-
-        return firebase.database().ref('uploads').once('value', snap => {
-          let total = snap.numChildren();
-          const data = { page: page+1, date: date, total: total };
-
-          resolve(data);
-          dispatch(uploadsGet(uploadsArray, date, page, total))
-        });
-      })
-  }).catch(error => dispatch(uploadsError(error)))
+export const getNextUploads = (date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`uploads`)
+    .orderByChild(ORDER_DATE)
+    .endAt(date)
+    .limitToLast(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getPrevUploadsOnce = (date, page, count) => dispatch => {
-  dispatch(uploadsRequest());
+export const getPrevUploads = (date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`uploads`)
+    .orderByChild(ORDER_DATE)
+    .startAt(date)
+    .limitToFirst(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
+};
 
-  return new Promise ((resolve, reject) => {
-    return firebase.database().ref('uploads/')
-      .orderByChild(ORDER_DATE)
-      .startAt(date)
-      .limitToFirst(count+1)
-      .once('value', snapshot => {
-        const data = snapshot.val();
 
-        let uploadsArray = [];
-        _.forEach(data, i => {
-          uploadsArray.push(i);
-        });
 
-        uploadsArray.reverse();
-        uploadsArray.pop();
+export const getUserUploads = (userId, date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/${state}`)
+    .orderByChild(ORDER_DATE)
+    .endAt(date)
+    .limitToLast(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
+};
 
-        firebase.database().ref('uploads').once('value', snap => {
-          let total = snap.numChildren();
-          const data = { page: page-1, date: date, total: total };
+export const getNextUserUploads = (userId, date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/${state}`)
+    .orderByChild(ORDER_DATE)
+    .endAt(date)
+    .limitToLast(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
+};
 
-          resolve(data);
-          dispatch(uploadsGet(uploadsArray, date, page, total))
-        });
-      })
-  }).catch(error => dispatch(uploadsError(error)))
+export const getPrevUserUploads = (userId, date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/${state}`)
+    .orderByChild(ORDER_DATE)
+    .startAt(date)
+    .limitToFirst(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
+};
+
+
+export const getUserPlaylist = (userId, date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/playlist/${state}`)
+    .orderByChild(ORDER_DATE)
+    .endAt(date)
+    .limitToLast(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      console.log(load);
+      if(load['name']){delete load['name']}
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
+};
+
+export const getNextUserPlaylist = (userId, date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/playlist/${state}`)
+    .orderByChild(ORDER_DATE)
+    .endAt(date)
+    .limitToLast(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      if(load['name']){delete load['name']}
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
+};
+
+export const getPrevUserPlaylist = (userId, date, page, count, state) => dispatch => {
+  dispatch(uploadsClear());
+  dispatch(uploadsRequest);
+  // return new Promise((resolve, reject) => {
+  return firebase
+    .database()
+    .ref(`users/${userId}/playlist/${state}`)
+    .orderByChild(ORDER_DATE)
+    .startAt(date)
+    .limitToFirst(LOAD_COUNT)
+    .once("value", snap => {
+      let load = snap.val();
+      if(load['name']){delete load['name']}
+      console.log(load);
+      dispatch(getUploadSource(load));
+    })
+  // }).catch(error => dispatch(feedError(error)))
 };

@@ -5,17 +5,16 @@ import _ from 'lodash';
 import { Grid, Header, Container, Image, Card, Segment, Dimmer, Loader, Table, Menu, Icon } from "semantic-ui-react";
 
 import {getInitUser, getUserOnce, clearUser} from "../actions/actions.user";
-import {
-  getUserUploadsOnce,
-  getNextUserUploadsOnce,
-  getPrevUserUploadsOnce,
-} from "../actions/actions.user.get";
+import { getUserUploads, getNextUserUploads,getPrevUserUploads } from "../actions/actions.uploads";
 
 import FeedCard from '../components/card/card.upload';
 import MenuProfile from "../components/menu/menu.profile";
 import UserCard from '../components/card/card.user';
 import ProfileDetail from '../components/detail/detail.profile';
 import PlaylistDetail from '../components/detail/detail.playlist';
+
+var moment = require("moment");
+moment().format();
 
 export class Profile extends Component {
   constructor(props) {
@@ -44,11 +43,11 @@ export class Profile extends Component {
     const { count, page, start, activeMenu} = this.state;
     const {user, uploads} = this.props;
     const date =  uploads.data[0].created_at;
-    if(start > 0){
-      this.props.getPrevUserUploadsOnce(user.data.id, date, page, count, activeMenu).then(data => {
+    // if(start > 0){
+      this.props.getPrevUserUploads(user.data.id, date, page, count, activeMenu).then(data => {
         this.setState({ date: data.date, start: count * data.page - count , page: data.page, total: data.total })
       });
-    }
+    // }
   }
 
   retrieveNext() {
@@ -56,11 +55,11 @@ export class Profile extends Component {
     const {user, uploads} = this.props;
     const date = uploads.data[uploads.data.length - 1].created_at;
 
-    if(start + count < total) {
-      this.props.getNextUserUploadsOnce(user.data.id, date, page, count, activeMenu).then(data => {
+    // if(start + count < total) {
+      this.props.getNextUserUploads(user.data.id, date, page, count, activeMenu).then(data => {
         this.setState({ date: data.date, start: count * data.page - count, page: data.page, total: data.total })
       })
-    }
+    // }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -149,7 +148,7 @@ export class Profile extends Component {
     const count = 10;
 
     this.setState({ activeMenu: state, renderMenu: true });
-      this.props.getUserUploadsOnce( user.data.id, Date.now(), page, count, state).then(data =>{
+      this.props.getUserUploads( user.data.id, moment(Date.now()).format(), page, count, state).then(data =>{
         if(this.mounted){
           this.setState({
             start: count * data.page - count,
@@ -282,6 +281,4 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps,
   {getInitUser, getUserOnce, clearUser,
-    getUserUploadsOnce,
-    getNextUserUploadsOnce,
-    getPrevUserUploadsOnce})(Profile);
+    getUserUploads, getNextUserUploads,getPrevUserUploads })(Profile);

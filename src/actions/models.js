@@ -86,6 +86,14 @@ class PlaylistObject{
     this.caption = upload.caption;
     this.playlist = playlistName;
     this.options = upload.options;
+    this.created_at = upload.created_at
+  }
+}
+
+class FavoriteObject {
+  constructor(upload) {
+    this.id = upload.id;
+    this.created_at = upload.created_at
   }
 }
 
@@ -105,4 +113,4 @@ class FeedItemObj{
 }
 
 
-module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, FeedItemObj };
+module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, FeedItemObj, FavoriteObject };

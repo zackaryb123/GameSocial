@@ -7,7 +7,10 @@ import PlaylistCard from "../card/card.playlist";
 import PlaylistMenu from "../menu/menu.playlist";
 
 import {getPlaylistOptions} from '../../actions/actions.playlist';
-import {getUserPlaylistOnce, getNextUserPlaylistOnce, getPrevUserPlaylistOnce} from "../../actions/actions.user.get";
+import {getUserPlaylist, getNextUserPlaylist, getPrevUserPlaylist} from "../../actions/actions.uploads";
+
+var moment = require("moment");
+moment().format();
 
 export class ProfileDetail extends Component {
   constructor(props) {
@@ -31,24 +34,24 @@ export class ProfileDetail extends Component {
 
   retrievePrev() {
     const { count, page, start, activePlaylist} = this.state;
-    const {user} = this.props;
-    const newStart = start - count;
-    console.log(newStart);
+    const {user,uploads} = this.props;
+    const date =  uploads.data[0].created_at;
+    console.log(date);
     if(start > 0){
-      this.props.getPrevUserPlaylistOnce(user.data.id, newStart, page, count, activePlaylist).then(data => {
-        this.setState({ start: newStart , page: data.page, total: data.total })
+      this.props.getPrevUserPlaylist(user.data.id, date, page, count, activePlaylist).then(data => {
+        this.setState({ start: date , page: data.page, total: data.total })
       });
     }
   }
 
   retrieveNext() {
     const { count, total, page, start, activePlaylist } = this.state;
-    const {user} = this.props;
-    const newStart = start + count;
-    console.log(newStart);
+    const {user, uploads} = this.props;
+    const date = uploads.data[9].created_at;
+    console.log(date);
     if(start + count < total) {
-      this.props.getNextUserPlaylistOnce(user.data.id, newStart, page, count, activePlaylist).then(data => {
-        this.setState({ start: newStart, page: data.page, total: data.total })
+      this.props.getNextUserPlaylist(user.data.id, date, page, count, activePlaylist).then(data => {
+        this.setState({ start: date, page: data.page, total: data.total })
       })
     }
   }
@@ -88,11 +91,10 @@ export class ProfileDetail extends Component {
   getActivePlaylist(state) {
     this.setState({ activePlaylist: state });
     const {user} = this.props;
-    const {start} = this.state;
     const page = 1;
     const count = 10;
 
-    this.props.getUserPlaylistOnce( user.data.id, start, page, count, state).then(data =>{
+    this.props.getUserPlaylist( user.data.id, moment(Date.now()).format(), page, count, state).then(data =>{
       if(this.mounted){
         this.setState({
           start: count * data.page - count,
@@ -161,5 +163,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  {getPlaylistOptions, getUserPlaylistOnce, getNextUserPlaylistOnce, getPrevUserPlaylistOnce}
+  {getPlaylistOptions, getUserPlaylist, getNextUserPlaylist, getPrevUserPlaylist}
 )(ProfileDetail);

@@ -1,4 +1,5 @@
 import * as firebase from 'firebase';
+import {FavoriteObject} from './models';
 
 export const FAVORITES_REQUEST = 'FAVORITES_REQUEST';
 export const favoritesRequest = () => ({
@@ -37,7 +38,8 @@ export const getInitFavoriteState = (authId, uploadId) => dispatch => {
 };
 
 export const addFavorite = (authId, upload) => dispatch => {
-  firebase.database().ref(`users/${authId}/favorites/${upload.id}`).set(upload);
+  const favObj = new FavoriteObject(upload);
+  firebase.database().ref(`users/${authId}/favorites/${upload.id}`).set(favObj);
 };
 
 export const removeFavorite = (authId, uploadId) => dispatch => {

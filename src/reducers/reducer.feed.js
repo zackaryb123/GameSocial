@@ -1,19 +1,26 @@
 import {
   FEED_REQUEST,
   FEED_GET,
-  FEED_INDEX_INC,
-  FEED_INDEX_DEC,
+  FEED_INIT,
+  FEED_NEXT,
+  FEED_PREV,
+  FEED_CLEAR,
   FEED_ERROR
-} from '../actions/actions.feed';
+} from "../actions/actions.feed";
 
 const initialState = {
   loading: false,
   error: null,
-  data: null
+  data: [],
+  date: Date.now(),
+  page: 0,
+  total: 0,
+  start: 0,
+  count: 10
 };
 
 export default function reducer(state = initialState, action) {
-  switch(action.type) {
+  switch (action.type) {
     case FEED_REQUEST:
       return Object.assign({}, state, {
         error: null,
@@ -21,22 +28,18 @@ export default function reducer(state = initialState, action) {
       });
     case FEED_GET:
       return Object.assign({}, state, {
-        data: action.data,
+        data: [action.newItem, ...state.data],
         date: action.date,
         page: action.page,
+        total: action.total,
+        start: action.start,
         loading: false,
         error: null
       });
-    case FEED_INDEX_INC:
-      return { ...state,
-        index: action.index,
-        loading: false,
-        error: null
-      };
-    case FEED_INDEX_DEC:
-      return { ...state,
-        index: action.index,
-        loading: false,
+    case FEED_CLEAR:
+      return {...state,
+        data: [],
+        lading: false,
         error: null
       };
     case FEED_ERROR:
