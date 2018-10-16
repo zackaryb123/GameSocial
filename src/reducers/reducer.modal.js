@@ -1,4 +1,12 @@
-import {FORGOT_PASSWORD_MODAL, RESET_PASSWORD_MODAL, LOGIN_MODAL, UPLOAD_MODAL, FEEDBACK_MODAL} from '../actions/actions.modals';
+import {
+  FORGOT_PASSWORD_MODAL,
+  RESET_PASSWORD_MODAL,
+  LOGIN_MODAL,
+  UPLOAD_MODAL,
+  FEEDBACK_MODAL,
+  LINKS_MODAL,
+  ONEDRIVE_MODAL
+} from "../actions/actions.modals";
 
 const loginModalState = {
   openModal: false
@@ -20,6 +28,14 @@ const feedbackModalState = {
   openModal: false
 };
 
+const linksModalState = {
+  openModal: false
+};
+
+const oneDriveModalState = {
+  openModal: false,
+  videos: null
+};
 
 
 export function forgotPasswordReducer(state = forgotPasswordModalState, action){
@@ -65,6 +81,26 @@ export function uploadModalReducer(state = uploadModalState, action){
 export function feedbackModalReducer(state = feedbackModalState, action){
   switch(action.type){
     case FEEDBACK_MODAL:
+      // Update value and create new Object
+      return Object.assign({}, state, action.payload);
+    default:
+      return state;
+  }
+}
+
+export function linksModalReducer(state = linksModalState, action){
+  switch(action.type){
+    case LINKS_MODAL:
+      // Update value and create new Object
+      return Object.assign({}, state, action.payload);
+    default:
+      return state;
+  }
+}
+
+export function oneDriveModalReducer(state = oneDriveModalState, action){
+  switch(action.type){
+    case ONEDRIVE_MODAL:
       // Update value and create new Object
       return Object.assign({}, state, action.payload);
     default:

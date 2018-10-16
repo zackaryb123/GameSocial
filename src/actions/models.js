@@ -1,37 +1,14 @@
-class FirebaseEnvObj {
-  constructor(env){
-    this.name = env.name;
-    this.apiKey = env.apiKey;
-    this.authDomain = env.authDomain;
-    this.databaseURL = env.databaseURL;
-    this.projectId = env.projectId;
-    this.storageBucket = env.storageBucket;
-    this.messagingSenderId = env.messagingSenderId;
-  }
-}
-
-class CloudinaryEnvObj {
-  constructor(env){
-    this.name = env.cloud_name;
-    this.Id = env.Id;
-    this.avatarUrl = env.avatarUrl;
-    this.videoUrl = env.videoUrl;
-    this.imageUrl = env.imageUrl;
-    this.sourceUrl = env.sourceUrl;
-    this.apiUrl = env.apiUrl;
-    this.Secret = env.Secret;
-  }
-}
-
 class NewUserObject {
   constructor(auth, user) {
     this.id = auth.uid;
     this.profile = {
       id: auth.uid,
+      avatar: 'https://res.cloudinary.com/game-social/image/upload/v1535574015/Avatars/h5qobnfpoozt4ohlj2js.png',
       username: user.username,
       email: auth.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      bio: `Hello my name is ${user.firstName} ${user.lastName}`,
       dob: user.dob || '',
     };
     this.feed = null;
@@ -47,7 +24,7 @@ class NewVideoObj {
     this.url = file.secure_url;
     this.caption = values.caption;
     this.publisher = values.publisher;
-    this.created_at = file.created_at;
+    this.created_at = Date.now();
     this.format = file.format;
     this.type = file.resource_type;
     this.codec = file.format === 'video' ? file.video.codec: null;
@@ -68,14 +45,25 @@ class NewVideoObj {
 class Modal {
   constructor
   (isOpen, isLoading, showMsg,
-   accountSubmitted, message, header, status) {
+   accountSubmitted, message, header, status, videos) {
     this.openModal = isOpen;
     this.status = status;
     this.message = message;
     this.header = header;
+    this.videos = videos;
     this.isLoading = isLoading;
     this.showMsg = showMsg;
     this.accountSubmitted = accountSubmitted;
+  }
+}
+
+class XboxDvrObj {
+  constructor(item) {
+    this.name = item.name;
+    this.downloadUrl = item['@microsoft.graph.downloadUrl'];
+    this.webUrl = item.webUrl;
+    this.id = item.id;
+    this.createdDateTime = item.createdDateTime
   }
 }
 
@@ -83,7 +71,6 @@ class PlaylistObject{
   constructor(upload, playlistName) {
     this.id = upload.id;
     this.url = upload.url;
-    this.caption = upload.caption;
     this.playlist = playlistName;
     this.options = upload.options;
     this.created_at = upload.created_at
@@ -112,5 +99,16 @@ class FeedItemObj{
   }
 }
 
+class CommentObj{
+  constructor(uploadId, commentId, publisher, values){
+    this.comment = values.comment;
+    this.commentId = commentId;
+    this.uploadId = uploadId;
+    this.created_at = Date.now();
+    this.publisher = {
+      id: publisher.uid
+    }
+  }
+}
 
-module.exports = { Modal, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, FeedItemObj, FavoriteObject };
+module.exports = { Modal, XboxDvrObj, CommentObj, NewUserObject, NewVideoObj, PlaylistObject ,TrackedFavoritesObj, FeedItemObj, FavoriteObject };

@@ -2,7 +2,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import { Field, reduxForm, reset } from 'redux-form';
-import {Message, Header, Modal, Form, Input, Label, Button, Icon, Menu} from 'semantic-ui-react';
+import {
+  Message,
+  Header,
+  Modal,
+  Form,
+  Input,
+  Label,
+  Button,
+  Icon,
+  Menu,
+  Container,
+  Divider,
+  Grid
+} from "semantic-ui-react";
 import  validate  from '../form/form.validation';
 import {loginMlab, loginFirebase, registerMlab, registerFirebase} from '../../actions/actions.auth'
 import {closeLoginModal, openLoginModal, openForgotPasswordModal} from "../../actions/actions.modals";
@@ -45,7 +58,7 @@ class LoginModal extends Component {
 
   renderMenu(activeItem) {
     return (
-      <Menu style={{borderBottom: 'solid 1px'}} inverted secondary tabular>
+      <Menu style={{borderBottom: 'solid 1px #FF7F50'}} inverted secondary tabular>
         <Menu.Item name='Login' active={activeItem === 'Login'} onClick={this.handleItemClick} />
         <Menu.Item name='Register' active={activeItem === 'Register'} onClick={this.handleItemClick} />
       </Menu>
@@ -69,6 +82,46 @@ class LoginModal extends Component {
       <Modal open={this.props.openModal} closeOnDocumentClick={false} closeOnDimmerClick={false} basic size='small'>
 
         {this.renderMenu(activeItem)}
+
+        <Container>
+          <Header style={{color: 'white'}} as='h1' textAlign='center'>
+            Join the GameSocial community!
+          </Header>
+          <Divider section hidden />
+          <Grid columns={3} stackable >
+            <Grid.Row>
+              <Grid.Column>
+                <Header as='h2' icon style={{color: 'white'}}>
+                  <Icon color='blue' className='hu-search'/>
+                  Find
+                  <Header.Subheader style={{color: 'white'}}>
+                    game clips and pics across Xbox, Playstation and Nintendo. See what your peers are doing. You can search by games or just look at your favorite clips!
+                  </Header.Subheader>
+                </Header>
+              </Grid.Column>
+              <Grid.Column>
+                <Header as='h2' icon style={{color: 'white'}}>
+                  <Icon color='blue' className='hu-the-feed'/>
+                  Share
+                  <Header.Subheader style={{color: 'white'}}>
+                    by uploading your clips and share it with the rest of the GameSocial community. Like, favorite and add clips to  your playlist. Edit your profile bio and avatar.
+                  </Header.Subheader>
+                </Header>
+              </Grid.Column>
+              <Grid.Column>
+                <Header as='h2' icon style={{color: 'white'}}>
+                  <Icon color='blue' className='hu-profile'/>
+                  Link
+                  <Header.Subheader style={{color: 'white'}}>
+                    your OneDrive or Facebook account to gain access to your consoles shared clips. continuously update your DVR to gain access to newly shared clips.
+                  </Header.Subheader>
+                </Header>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+          <Divider section hidden />
+          <Divider section style={{borderColor: '#FF7F50'}} />
+        </Container>
 
         <Header icon='lock' content={activeItem}/>
 
@@ -101,7 +154,6 @@ class LoginModal extends Component {
             <Button type='submit' basic color='green' inverted><Icon name='checkmark'/>Register</Button>
           </Form>
         </Modal.Content>}
-
       </Modal>
     );
   }

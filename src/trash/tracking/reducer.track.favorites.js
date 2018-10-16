@@ -2,7 +2,7 @@ import {
   TRACK_FAVORITES_REQUEST,
   TRACK_FAVORITES_ERROR,
   TRACK_FAVORITES_GET
-} from "../actions/actions.track.favorites";
+} from "./actions.track.favorites";
 
 const initialState = {
   loading: false,

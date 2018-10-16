@@ -36,38 +36,46 @@ class MenuProfile extends Component {
   render() {
     const { activeMenu, windowWidth } = this.state;
     const { user, auth } = this.props;
+
+    if(_.isEmpty(auth.currentUser)){return null}
+
     return (
       <Menu fluid style={cssMenu} inverted tabular>
         <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
           name="uploads"
           active={activeMenu === "uploads"}
           onClick={this.handleItemClick}
-        >Uploads {_.size(user.data.uploads)}
+        >Uploads
+          {/*{_.size(user.data.uploads)}*/}
         </Menu.Item>
         <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
           name="followers"
           active={activeMenu === "followers"}
           onClick={this.handleItemClick}
-        >Followers {_.size(user.data.followers)}
+        >Followers
+          {/*{_.size(user.data.followers)}*/}
         </Menu.Item>
         <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
           name="following"
           active={activeMenu === "following"}
           onClick={this.handleItemClick}
-        >Following {_.size(user.data.following)}
+        >Following
+          {/*{_.size(user.data.following)}*/}
         </Menu.Item>
         <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
           name="favorites"
           active={activeMenu === "favorites"}
           onClick={this.handleItemClick}
-        >Favorites {_.size(user.data.favorites)}
+        >Favorites
+          {/*{_.size(user.data.favorites)}*/}
         </Menu.Item>
         {auth.currentUser.uid === user.data.id &&
           <Menu.Item style={windowWidth < 767 ? cssMenuItemMobile : null}
             name="playlist"
             active={activeMenu === "playlist"}
             onClick={this.handleItemClick}
-          >Playlist {_.size(user.data.playlist)}
+          >Playlist
+            {/*{_.size(user.data.playlist)}*/}
           </Menu.Item>
         }
       </Menu>

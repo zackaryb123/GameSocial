@@ -71,10 +71,10 @@ export const addFollowing = (authId ,publisher) => dispatch => {
     //   firebase .database().ref(`users/${authId}/feed/count`).set(newCount);
     // });
 
-    _.forEach(newFeed, item => {
-      // const feedItem = new FeedItemObj(item);
-      firebase.database().ref(`users/${authId}/feed/${item.id}`).set(item);
-    });
+    // _.forEach(newFeed, item => {
+    //   // const feedItem = new FeedItemObj(item);
+    //   firebase.database().ref(`users/${authId}/feed/${item.id}`).set(item);
+    // });
   })
 };
 
@@ -91,8 +91,8 @@ export const removeFollowing = (authId, publisherId) => dispatch => {
     //   firebase.database().ref(`users/${authId}/feed/count`).set(newCount);
     // });
 
-    _.forEach(newFeed, item => {
-      firebase.database().ref(`users/${authId}/feed/${item.id}`).remove();
-    });
+    // _.forEach(newFeed, item => {
+    //   firebase.database().ref(`users/${authId}/feed/${item.id}`).remove();
+    // });
   });
 };

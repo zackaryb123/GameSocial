@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import {
   closeLoginModal, closeResetPasswordModal, closeForgotPasswordModal,
   openLoginModal, openResetPasswordModal, openForgotPasswordModal,
-  openUploadModal, closeUploadModal, openFeedbackModal, closeFeedbackModal
+  openUploadModal, closeUploadModal, openFeedbackModal, closeFeedbackModal,
+  openLinksModal, closeLinksModal, closeOneDriveModal, openOneDriveModal
 } from '../actions/actions.modals';
 import { initApp } from '../actions/init';
 
@@ -13,6 +14,8 @@ import ForgotPasswordModal from '../components/modal/modal.password.forgot';
 import ResetPasswordModal from '../components/modal/modal.password.reset';
 import UploadModal from '../components/modal/modal.upload';
 import FeedbackModal from "../components/modal/modal.feedback";
+import LinksModal from '../components/modal/modal.links';
+import OneDriveModal from '../components/modal/modal.onedrive.upload';
 
 class ContainerShell extends Component{
   constructor(props) {
@@ -21,12 +24,6 @@ class ContainerShell extends Component{
       name: 'Shell Container',
       display: 'none'
     }
-  }
-
-
-  componentWillMount() {
-    //Constructor equivalent (state updates)
-    // console.log(this.state.name, "Will Mount");
   }
 
   componentDidMount(){
@@ -45,26 +42,7 @@ class ContainerShell extends Component{
     if(!nextProps.auth.currentUser){this.setState({display: 'none'})}
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-    return true;
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
-  }
-
-  componentWillUnmount(){
-    //DOM Manipulation (side effects)
-    // console.log(this.state.name, "Will Unmount");
-  }
+  ///////// Open //////////
 
 
   openLoginModal(e){
@@ -87,6 +65,15 @@ class ContainerShell extends Component{
     this.props.openFeedbackModal();
   }
 
+  openLinksModal(e){
+    this.props.openLinksModal();
+  }
+
+  openOneDriveModal(e){
+    this.props.openOneDriveModal();
+  }
+
+  ///////// Close //////////
 
   closeLoginModal(e){
     this.props.closeLoginModal();
@@ -108,10 +95,17 @@ class ContainerShell extends Component{
     this.props.closeFeedbackModal();
   }
 
+  closeLinksModal(e){
+    this.props.closeLinksModal();
+  }
+
+  closeOneDriveModal(e){
+    this.props.closeOneDriveModal();
+  }
 
   render() {
     // console.log('Shell render');
-    const {children, resetPasswordModal, forgotPasswordModal, loginModal, uploadModal, feedbackModal} = this.props;
+    const {children, resetPasswordModal, forgotPasswordModal, loginModal, uploadModal, feedbackModal, linksModal, oneDriveModal} = this.props;
     const {display} = this.state;
 
     return (
@@ -127,6 +121,10 @@ class ContainerShell extends Component{
           <ForgotPasswordModal autoOptions={forgotPasswordModal} openModal={forgotPasswordModal.openModal} closeModal={this.closeForgotPasswordModal.bind(this)} openLogin={this.openLoginModal.bind(this)} closeLogin={this.closeLoginModal.bind(this)} />}
         {feedbackModal.openModal &&
           <FeedbackModal autoOptions={feedbackModal} openModal={feedbackModal.openModal} closeModal={this.closeFeedbackModal.bind(this)}/>}
+        {linksModal.openModal &&
+          <LinksModal autoOptions={linksModal} openModal={linksModal.openModal} closeModal={this.closeFeedbackModal.bind(this)}/>}
+        {oneDriveModal.openModal &&
+          <OneDriveModal autoOptions={oneDriveModal} openModal={oneDriveModal.openModal} closeModal={this.closeOneDriveModal.bind(this)}/>}
       </div>
     );
   }
@@ -138,11 +136,14 @@ const mapStateToProps = state => ({
   uploadModal: state.uploadModal,
   resetPasswordModal: state.resetPasswordModal,
   forgotPasswordModal: state.forgotPasswordModal,
-  feedbackModal: state.feedbackModal
+  feedbackModal: state.feedbackModal,
+  linksModal: state.linksModal,
+  oneDriveModal: state.oneDriveModal
 });
 
 export default connect(mapStateToProps,
   {initApp, openLoginModal, closeLoginModal, closeResetPasswordModal,
     closeForgotPasswordModal, openForgotPasswordModal, openResetPasswordModal,
-  openUploadModal, closeUploadModal, closeFeedbackModal, openFeedbackModal}
+  openUploadModal, closeUploadModal, closeFeedbackModal, openFeedbackModal, openLinksModal, closeLinksModal,
+  openOneDriveModal, closeOneDriveModal}
 )(ContainerShell);

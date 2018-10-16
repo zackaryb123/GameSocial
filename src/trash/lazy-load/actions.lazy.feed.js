@@ -1,6 +1,6 @@
 import * as firebase from "firebase";
 import _ from "lodash";
-import { getFeedOnce } from "./actions.feed";
+import { getFeedOnce } from "../../actions/actions.feed";
 
 // GET Action
 export const LAZY_FEED_REQUEST = "LAZY_FEED_REQUEST";

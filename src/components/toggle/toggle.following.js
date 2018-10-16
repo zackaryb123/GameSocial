@@ -70,7 +70,7 @@ class FollowToggle extends Component {
     return (
       auth.currentUser !== publisher.id &&
       <Button style={followBtn} onClick={isFollowed ? this.unFollow : this.doFollow}>
-        <Icon style={{color: '#4183c4'}} name={isFollowed ? 'check' : null}/>
+        {isFollowed && <Icon style={{color: '#4183c4'}} name='check'/>}
         <Icon style={{color: '#4183c4'}} name='user'/>
         <Header style={{margin: '0', color: '#4183c4'}} as='h6'>{isFollowed?'Following':'Follow'}</Header>
       </Button>
@@ -98,6 +98,5 @@ const followBtn = {
   bottom: '0',
   padding: '.5rem .5rem',
   margin: '0',
-  border: '1px solid #4183c4',
   outline: 'none'
 };

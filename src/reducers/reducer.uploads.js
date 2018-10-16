@@ -1,8 +1,9 @@
 import {
   UPLOADS_REQUEST,
   UPLOADS_ERROR,
+  UPLOADS_TOTAL_GET,
   UPLOADS_CLEAR,
-  UPLOADS_GET
+  UPLOADS_GET,
 } from "../actions/actions.uploads";
 
 const initialState = {
@@ -26,6 +27,11 @@ export default function reducer(state = initialState, action) {
         error: null,
         loading: false
       });
+    case UPLOADS_TOTAL_GET:
+      return {...state,
+        count: action.count,
+        error: null,
+      };
     case UPLOADS_CLEAR:
       return {...state,
         data: [],

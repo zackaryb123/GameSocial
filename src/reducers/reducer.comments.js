@@ -5,7 +5,7 @@ import {
 const initialState = {
   loading: false,
   error: null,
-  data: null
+  data: {}
 };
 
 export default function reducer(state = initialState, action) {
@@ -16,11 +16,11 @@ export default function reducer(state = initialState, action) {
         error: null
       });
     case(COMMENTS_GET):
-      return Object.assign({}, state, {
-        data: action.data,
+      return { ...state,
+        data : {[action.comment.commentId] : action.comment},
         error: null,
         loading: false
-      });
+      };
     case(COMMENTS_ERROR):
       return Object.assign({}, state, {
         error: action.error,

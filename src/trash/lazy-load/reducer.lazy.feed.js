@@ -4,7 +4,7 @@ import {
   UP_SCROLL,
   DOWN_SCROLL,
   LAZY_FEED_ERROR
-} from "../actions/actions.lazy.feed";
+} from "./actions.lazy.feed";
 
 const initialState = {
   loading: false,

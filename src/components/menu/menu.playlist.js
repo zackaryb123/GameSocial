@@ -66,7 +66,7 @@ class PlaylistMenu extends Component {
         //TODO: Open feedback modal with message
         alert('Playlist already exist!');
       }
-    })
+    });
   };
 
   renderPlaylistMenuItems(){
@@ -105,6 +105,8 @@ class PlaylistMenu extends Component {
     const { playlist, windowWidth } = this.state;
     const {auth, user} = this.props;
 
+    if(_.isEmpty(auth.currentUser)){return null}
+
     return (
       <Menu style={windowWidth >= 767 ? floatLeft : null} pointing secondary vertical={windowWidth >= 767}>
         {/*<Menu.Item>*/}
@@ -117,10 +119,10 @@ class PlaylistMenu extends Component {
          <Dropdown item text='Settings'>
            <Dropdown.Menu>
              <Form onSubmit={this.handleSubmit}>
-               <Form.Group style={cssFormGroup}>
+               <Form.Group className='playlist-field' style={cssFormGroup}>
                  <Form.Input onChange={this.handleChange} onClick={e => e.stopPropagation()}
                   name={'playlist'} value={playlist} placeholder='Create Playlist' />
-                 <Form.Button icon='plus' />
+                 <Form.Button icon='plus' style={{height: '100%', margin: '0'}} />
                </Form.Group>
              </Form>
            </Dropdown.Menu>

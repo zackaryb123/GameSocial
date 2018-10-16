@@ -1,5 +1,5 @@
 import * as firebase from 'firebase';
-import {TrackedFavoritesObj} from './models';
+import {TrackedFavoritesObj} from '../../actions/models';
 
 export const TRACK_FAVORITES_REQUEST = 'TRACK_FAVORITES_REQUEST';
 export const trackFavoritesRequest = () => ({

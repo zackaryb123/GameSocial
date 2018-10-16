@@ -1,4 +1,5 @@
 import * as firebase from  'firebase';
+import {CommentObj} from './models';
 
 export const COMMENTS_REQUEST = 'COMMENTS_REQUEST';
 export const commentsRequest = () => ({
@@ -6,9 +7,9 @@ export const commentsRequest = () => ({
 });
 
 export const COMMENTS_GET = 'COMMENTS_GET';
-export const commentsGet = (data) => ({
+export const commentsGet = (comment) => ({
   type: COMMENTS_GET,
-  data
+  comment
 });
 
 export const COMMENTS_ERROR = 'COMMENTS_ERROR';
@@ -18,31 +19,19 @@ export const commentsError = error => ({
 });
 
 // ACTIONS
-
 export const getCommentsOnce = (uploadId) => dispatch => {
   dispatch(commentsRequest());
   return firebase.database().ref(`/comments/${uploadId}`).once('value', snapshot => {
     const comments = snapshot.val();
-    dispatch(commentsGet(comments));
-  }).catch(error => dispatch(commentsError(error)))
-};
 
-export const getComments = (uploadId) => dispatch => {
-  dispatch(commentsRequest());
-  return firebase.database().ref(`/comments/${uploadId}`).on('value', snapshot => {
-    const comments = snapshot.val();
-    dispatch(commentsGet(comments));
-  })
-};
-
-export const getCommentsPromise = (uploadId) => dispatch => {
-  dispatch(commentsRequest());
-  return new Promise((resolve, reject) => {
-    firebase.database().ref(`/comments/${uploadId}`).once('value', data => {
-      const comments = data.val();
-      dispatch(commentsGet(comments));
-      resolve(comments);
-    }).catch(error => dispatch(error))
+    _.forEach(comments, comment => {
+      firebase.database().ref(`users/${comment.publisher.id}/profile`).once('value', snap => {
+        let publisher = snap.val();
+        comment.publisher = publisher;
+        console.log(comment);
+        dispatch(commentsGet(comment))
+      })
+    });
   })
 };
 
@@ -50,14 +39,6 @@ export const getCommentsPromise = (uploadId) => dispatch => {
 export const addComment = (auth, uploadId, values) => dispatch => {
   const commentId = firebase.database().ref(`/comments/${uploadId}`).push().key;
   const commentRef = firebase.database().ref(`/comments/${uploadId}/${commentId}`);
-  // commentRef.child('/profile/avatar/url').set(auth.photoURL);
-  commentRef.child('/comment').set(values.comment);
-  commentRef.child('/uploadId').set(uploadId);
-  commentRef.child('/commentId').set(commentId);
-  commentRef.child('/profile/username').set(auth.displayName);
-  commentRef.child('profile/id').set(auth.uid);
-
-  // const userRef = firebase.database().ref(`/users/${auth.uid}/comments/${uploadId}/${commentId}`);
-  // userRef.child('/uploadId').set(uploadId);
-  // userRef.child('/commentId').set(commentId);
+  const commentObj = new CommentObj(uploadId, commentId, auth, values);
+  commentRef.set(commentObj);
 };

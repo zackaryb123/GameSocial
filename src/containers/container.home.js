@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {Container, Header, Segment} from 'semantic-ui-react'
-import RequiresLogin from '../components/hoc/requires.auth';
+import { Container, Grid, Header, Segment, Divider, Icon } from "semantic-ui-react";
+import FeaturedSlider from "../components/slider/slider.featured";
+import {getFeaturedOnce} from "../actions/actions.featured";
+import _ from "lodash";
 
 class Home extends Component {
   constructor(props) {
@@ -11,61 +13,71 @@ class Home extends Component {
     };
   }
 
-  componentWillMount() {
-    //Constructor equivalent (state updates)
-    // console.log(this.state.name, "Will Mount");
-  }
-
-  componentDidMount() {
-    //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name,"Did Mount");
+  componentDidMount(){
+    const {auth} = this.props;
+    if(!_.isEmpty(auth.currentUser)) {
+      this.props.getFeaturedOnce();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
+    const {auth} = this.props;
+
+    if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser))
+    {this.setState({pageRefresh: true})}
+    else {console.log('Props up to date')}
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // Re-render if prev/current props !equal and data requested is !empty (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-    return true
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
+    switch(true){
+      case (_.isEmpty(nextProps.auth.currentUser)):
+        return false;
+      default: return true;
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState);
-  }
+    this.mounted = true;
+    const {auth} = this.props;
+    const {pageRefresh, page, count} = this.state;
 
-
-  componentWillUnmount(){
-    //DOM Manipulation (side effects)
-    // console.log(this.state.name, "Will Unmount");
+    switch(true) {
+      case (pageRefresh):
+        this.setState({ pageRefresh: false });
+        this.props.getFeaturedOnce();
+        break;
+      default: return null;
+    }
   }
 
   render() {
-    const {feed} = this.props;
-
+    const {auth, featured} = this.props;
+    if(_.isEmpty(auth.currentUser) || _.isEmpty(featured.data)){return null}
     return (
-      <Container>
-        <Segment style={{backgroundColor: 'coral'}}>
-          <Header>Home Landing Page</Header>
+      <div>
+        <Segment basic textAlign='center' style={{backgroundColor: '#1B1C1D'}}>
+          <Header style={{color: 'white'}}>Featured</Header>
         </Segment>
-      </Container>
+
+        <div>
+          <Grid textAlign="center" style={{ backgroundColor: "#1B1C1D" }}>
+            <Grid.Row>
+              <Grid.Column width={16} style={{maxWidth: '720px'}}>
+                <FeaturedSlider/>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </div>
+
+      </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  feed: state.feed,
-  following: state.following,
-  likes: state.likes
+  featured: state.featured
 });
 
-export default (connect(mapStateToProps, {})(Home));
+export default (connect(mapStateToProps, {getFeaturedOnce})(Home));

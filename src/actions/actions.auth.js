@@ -1,9 +1,9 @@
 import jwtDecode from 'jwt-decode';
 import {SubmissionError} from 'redux-form';
 import * as firebase from 'firebase';
-import {API_BASE_URL} from '../dbConfig';
+const MicrosoftConfig  = require('MicrosoftConfig');
 import {normalizeResponseErrors} from './utils';
-import {saveAuthToken, clearAuthToken} from '../local-storage'; //import clearAuthToken removed
+import {saveAuthToken, clearAuthToken} from '../local-storage';
 import {NewUserObject} from './models';
 import {closeLoginModal, openLoginModal} from "./actions.modals";
 
@@ -11,6 +11,43 @@ export const SET_AUTH_TOKEN = 'SET_AUTH_TOKEN';
 export const setAuthToken = authToken => ({
   type: SET_AUTH_TOKEN,
   authToken
+});
+
+export const SET_FACEBOOK = 'SET_FACEBOOK';
+export const setFacebook = (facebook) => ({
+  type: SET_FACEBOOK,
+  facebook
+});
+
+export const SET_ONEDRIVE_VIDEO_FILE_ID = 'SET_ONEDRIVE_VIDEO_FILE_ID';
+export const setOneDriveVideoFileId = (videoFileId) => ({
+  type: SET_ONEDRIVE_VIDEO_FILE_ID,
+  videoFileId: videoFileId
+});
+
+export const SET_ONEDRIVE_XBOX_FILE_ID = 'SET_ONEDRIVE_XBOX_FILE_ID';
+export const setOneDriveXboxFileId = (xboxFileId) => ({
+  type: SET_ONEDRIVE_XBOX_FILE_ID,
+  xboxFileId: xboxFileId
+});
+
+export const XBOX_VIDEOS = 'XBOX_VIDEOS';
+export const xboxVideos = (xboxVideos) => ({
+  type: XBOX_VIDEOS,
+  xboxVideos: xboxVideos
+});
+
+
+export const LINK_XBOX_DVR = 'LINK_XBOX_DVR';
+export const linkXboxDVR = (linkXboxDVR) => ({
+  type: LINK_XBOX_DVR,
+  linkXboxDVR: linkXboxDVR
+});
+
+export const BROWSE_XBOX_DVR = 'BROWSE_XBOX_DVR';
+export const browseXboxDVR = (browseXboxDVR) => ({
+  type: BROWSE_XBOX_DVR,
+  browseXboxDVR: browseXboxDVR
 });
 
 export const CLEAR_AUTH = 'CLEAR_AUTH';
@@ -42,10 +79,12 @@ export const loginFirebase = (email, password) => dispatch => {
     return firebase.auth().signInWithEmailAndPassword(email, password)
       .then(auth => {
         if(auth.user.emailVerified) {
-          let currentUser = auth.user;
           firebase.database().ref(`/users/${auth.user.uid}`).once('value', snapshot => {
             const user = snapshot.val();
             // auth.updateProfile({photoURL: user.profile.avatar.url});
+            if(!_.isEmpty(user.oneDrive)){
+              dispatch(user.oneDrive.videoFileId, user.onDrive.xboxFileId)
+            }
             auth.user.isAdmin = user.isAdmin
           });
           dispatch(authGet(auth.user));
@@ -63,6 +102,7 @@ export const registerFirebase = (values) => dispatch => {
   return firebase.auth().createUserWithEmailAndPassword(values.email, values.password)
     .then(auth => {
       const newUser = new NewUserObject(auth.user, values);
+
       firebase.auth().currentUser.updateProfile({displayName: values.username});
       firebase.database().ref('users/').child(auth.user.uid).set(newUser);
 

@@ -19,6 +19,7 @@ import Feed from "./containers/container.feed";
 import Profile from "./containers/container.profile";
 import AboutUs from "./containers/container.about-us";
 import CommunityRules from "./containers/container.community-rules";
+import PrivacyPolicy from "./containers/container.privacy.policy";
 import ContactUs from "./containers/container.contact-us";
 import Settings from "./containers/container.settings";
 
@@ -37,6 +38,7 @@ ReactDOM.render(
             <Route exact path="/settings" component={Settings} />
             <Route exact path="/contact-us" component={ContactUs} />
             <Route exact path="/community-rules" component={CommunityRules} />
+            <Route exact path="/privacy-policy" component={PrivacyPolicy} />
             <Route exact path="/about-us" component={AboutUs} />
             <Route
               exact

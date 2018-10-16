@@ -1,7 +1,8 @@
 import React, { Component } from "react";
+import * as firebase from 'firebase';
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { Image, Card, Button } from "semantic-ui-react";
+import { Image, Card, Loader, Dimmer } from "semantic-ui-react";
 
 import FollowToggle from "../toggle/toggle.following";
 
@@ -16,16 +17,25 @@ class UserCard extends Component {
     };
   }
 
+  componentDidMount(){
+    const {publisher} = this.props;
+    firebase.database().ref(`users/${publisher.id}/profile`).once('value', snap => {
+      const publisher = snap.val();
+      this.setState({avatar: publisher.avatar})
+    })
+  }
+
   render() {
-    const { publisher, auth } = this.props;
+    const {publisher, auth } = this.props;
+    const {avatar} = this.state;
     return (
       <Card>
         <Card.Content>
-          <Image
+          {avatar ? <Image
             style={{ borderRadius: ".25rem" }}
             size="mini"
-            src="https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png"
-          />
+            src={avatar}/>
+          : null}
           <Card.Header style={cssHeader}>
             <Link to={`/profile/${publisher.id}`}>{publisher.username}</Link>
           </Card.Header>

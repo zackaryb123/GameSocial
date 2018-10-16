@@ -35,15 +35,7 @@ class FeaturedSlider extends Component {
     };
   }
 
-
-  componentWillMount() {
-    //Constructor equivalent (state updates)
-    // console.log(this.state.name, "Will Mount");
-  }
-
   componentDidMount() {
-    //DOM Manipulation (side effects/state updates)(render occurs before)
-    // console.log(this.state.name,"Did Mount");
     this.mounted = true;
     if(!_.isEmpty(this.props.auth.currentUser)) {
       this.props.getFeaturedOnce();
@@ -51,8 +43,6 @@ class FeaturedSlider extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
     const {auth} = this.props;
     if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)){this.setState({pageRefresh: true})}
     else {console.log('Props up to date')}
@@ -60,36 +50,27 @@ class FeaturedSlider extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
     switch(true){
       case (_.isEmpty(nextProps.auth.currentUser)):
-        return false;
-      case (nextState.pageRefresh):
-        // this.forceUpdate();
         return false;
       default: return true;
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
     const {getFeaturedOnce} = this.props;
     const {pageRefresh} = this.state;
 
     switch(true) {
       case (pageRefresh):
         this.setState({pageRefresh: false});
-        getFeaturedOnce()
+        getFeaturedOnce();
         break;
       default:return null;
     }
   }
 
   componentWillUnmount(){
-    //DOM Manipulation (side effects)
-    // console.log(this.state.name, "Will Unmount");
     this.mounted = false;
   }
 
@@ -109,7 +90,7 @@ class FeaturedSlider extends Component {
               <Segment inverted>
                 <Feed>
                   <Feed.Event>
-                    <Feed.Label><img src='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' /></Feed.Label>
+                    <Feed.Label><img src={feature.publisher.avatar} /></Feed.Label>
                     <Feed.Content>
                       <Feed.Date style={white}>{feature.created_at}</Feed.Date>
                       <Feed.Summary style={white}>

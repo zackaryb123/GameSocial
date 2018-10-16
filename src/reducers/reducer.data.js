@@ -1,10 +1,10 @@
 import {
   FETCH_PROTECTED_DATA_SUCCESS,
   FETCH_PROTECTED_DATA_ERROR
-} from '../actions/actions.data';
+} from "../actions/actions.data";
 
 const initialState = {
-  data: '',
+  data: "",
   error: null
 };
 

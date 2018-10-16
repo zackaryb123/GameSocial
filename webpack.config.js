@@ -2,24 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const WebpackMd5Hash = require("webpack-md5-hash");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const RewriteImportPlugin = require("less-plugin-rewrite-import");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-
-class myRewriteImportPlugin {
-  // Define the `apply` method
-  apply(compiler) {
-    // Specify the event hook to attach to
-    compiler.plugin("done", () => {
-      new RewriteImportPlugin({
-        paths: {
-          "../../theme.config": "src/ui/theme.config"
-        }
-      });
-    });
-  }
-}
 
 const envConfig = require("./env.config");
 
@@ -41,22 +24,44 @@ const multConfig = [__dirname + "/src/index.js", __dirname + "/src/main.less"];
 
 module.exports = {
   stats: "verbose",
-  devtool: "eval-source-map",
-  watch: true,
-  entry: { main: singleEntry },
+  devtool: "cheap-module-source-map",
+  entry: singleEntry,
   output: {
-    filename: "bundle.js",
-    path: path.join(__dirname, "/public")
+    filename: "[name].bundle.js",
+    path: path.join(__dirname, "/public/"),
+    publicPath: "/"
   },
   resolve: {
     alias: {
-      "../../theme.config$": path.join(__dirname, "./src/ui/theme.config")
+      "../../theme.config$": path.join(__dirname, "./src/ui/theme.config"),
+      OBJLoader: path.join(
+        __dirname,
+        "./node_modules/three/examples/js/loaders/OBJLoader.js"
+      ),
+      MTLLoader: path.join(
+        __dirname,
+        "node_modules/three/examples/js/loaders/MTLLoader.js"
+      ),
+      DDSLoader: path.join(
+        __dirname,
+        "node_modules/three/examples/js/loaders/DDSLoader.js"
+      )
     }
   },
   devServer: {
     historyApiFallback: true,
-    contentBase: "./public",
-    hot: true
+    contentBase: "public",
+    compress: false,
+    open: true,
+    openPage: "",
+    port: 8081,
+    hot: true,
+    inline: true,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Credentials": "true"
+    },
+    allowedHosts: ["http://localhost:8080"]
   },
   module: {
     rules: [
@@ -88,41 +93,49 @@ module.exports = {
           "file-loader?name=/ui/assets/img/[name].[ext]"
           // 'image-webpack-loader', // Optimize the image file size
         ],
-        exclude: [path.resolve(__dirname, "src/ui/assets/fonts")]
+        exclude: [path.resolve(__dirname, "/src/ui/assets/fonts")]
       },
       {
         test: /\.(webm|mp4)$/,
         loader: "file"
+      },
+      {
+        test: /\.mtl$/,
+        use: ["mtl-loader?name=/ui/assets/mtl/[name].[ext]"],
+        exclude: [path.resolve(__dirname, "/src/ui/assets/mtl")]
+      },
+      {
+        test: /\.obj$/,
+        use: [
+          "file-loader?name=/ui/assets/obj/[name].[ext]",
+          "webpack-obj-loader?name=/ui/assets/obj/[name].[ext]"
+        ],
+        exclude: [path.resolve(__dirname, "/src/ui/assets/obj")]
       }
     ]
   },
   externals: {
     FirebaseConfig: JSON.stringify(envConfig[env].firebase),
     CloudinaryConfig: JSON.stringify(envConfig[env].cloudinary),
-    mLabConfig: JSON.stringify(envConfig[env].mLab)
+    MicrosoftConfig: JSON.stringify(envConfig[env].microsoft)
   },
   plugins: [
+    new webpack.ProvidePlugin({ THERE: "three" }),
     new HtmlWebpackPlugin({
-      inject: false,
+      inject: true,
       hash: true,
       title: "GameSocial",
+      excludeChunks: ["styleguide"],
       template: "./src/index.html",
       filename: "index.html"
     }),
-    new CleanWebpackPlugin("public", {}),
+    // new CleanWebpackPlugin("public", {}),
     new WebpackMd5Hash(),
     new MiniCssExtractPlugin({
       filename: "./ui/assets/css/[name].css"
     }),
-    new myRewriteImportPlugin(),
+    // new myRewriteImportPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin()
-    // new CopyWebpackPlugin([
-    //   { from: "src/icon.png", to: "icon.png" },
-    //   { from: "src/site.webmanifest", to: "site.webmanifest" },
-    //   { from: "src/tile.png", to: "tile.png" },
-    //   { from: "src/tile-wide.png", to: "tile-wide.png" },
-    //   { from: "src/browserconfig.xml", to: "browserconfig.xml" }
-    // ])
   ]
 };

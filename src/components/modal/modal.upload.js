@@ -7,8 +7,7 @@ import _ from "lodash";
 import {getUserOnce} from "../../actions/actions.user";
 import {openUploadModal, upload} from "../../actions/actions.modals";
 import FormDropzone from "../form/form.dropzone";
-import {CloudinaryConfig} from "../../dbConfig";
-
+const CloudinaryConfig = require('CloudinaryConfig')
 import axios from "axios";
 
 class UploadModal extends Component {
@@ -39,9 +38,7 @@ class UploadModal extends Component {
   }
 
   onFileSelect(file) {
-    //const CloudinaryConfig = require('CloudinaryConfig');
-
-    const unsignedUploadPreset = CloudinaryConfig.cloud_name;
+    const unsignedUploadPreset = CloudinaryConfig.uploadPreset;
     const thisComponent = this;
     const fileSelected = file[0];
 
@@ -62,7 +59,7 @@ class UploadModal extends Component {
 // If correct file create form data and axios POST to cloudinary
     if (hasVideoIndex || hasImageIndex) {
       const data = new FormData();
-      const timestamp = Date.now() / 1000;
+      const timestamp = Date.now(); // / 1000;
 
       data.append('file', fileSelected);
       data.append('upload_preset', unsignedUploadPreset);
@@ -75,7 +72,7 @@ class UploadModal extends Component {
           thisComponent.setState({fileProgress: progress});
           if (progress === 100) {
             console.log('COMPLETE!');
-            thisComponent.setState({fileStatus: 'Complete'});
+            thisComponent.setState({fileStatus: 'Complete', cloudinaryStatus: 'loading' });
           } else {
             thisComponent.setState({fileStatus: 'Uploading...'});
           }
@@ -83,11 +80,13 @@ class UploadModal extends Component {
       };
 
 // axios POST request to cloudinary
+      //TODO: Axios response takes to long find way to make faster
       const url = hasImageIndex ? CloudinaryConfig.imageUrl : CloudinaryConfig.videoUrl;
       axios.post(url, data, config)
         .then(res => {
+          console.log(res.data);
           let fileError = {status: false, msg: ''};
-          thisComponent.setState({videoError: fileError, fileSelected: res.data});
+          thisComponent.setState({videoError: fileError, fileSelected: res.data, cloudinaryStatus: 'Complete'});
         }).catch(error => {
           let videoError = {status: true, msg: error.message + ': File size is likely too big.'};
           thisComponent.setState({videoError: videoError});
@@ -135,6 +134,9 @@ class UploadModal extends Component {
           {uploadModal.message && uploadModal.status === 1 && <Message negative><Message.Header>{uploadModal.header}</Message.Header><p>{uploadModal.message}</p></Message>}
           <Form inverted={true} onSubmit={handleSubmit(this.onSubmit.bind(this))}>
             <FormDropzone file={this.state.file} fileLabel="File" fileType={''} handleOnDrop={this.handleOnDrop.bind(this)} disabled={this.state.disabled} directions="Drop or click to upload a video or image file."/>
+            {this.state.fileProgress && <span>{`${this.state.fileProgress} % `}</span>}
+            {this.state.cloudinaryStatus === 'loading' && <span>Loading...</span>}
+            {this.state.cloudinaryStatus === 'Complete' && <span>Complete</span>}
             <Field onChange={this.handleChange} fluid name="caption" type="text" placeholder="Enter Caption" component={this.renderFields}/>
             <Button
               disabled={this.props.pristine || this.props.submitting || _.isEmpty(this.state.fileSelected) || !this.state.fileIsSelected}

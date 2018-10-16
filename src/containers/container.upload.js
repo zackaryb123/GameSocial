@@ -40,7 +40,7 @@ class Upload extends Component {
   componentWillReceiveProps(nextProps) {
     //Update state based on changed props (state updates)
     // console.log(this.state.name, "Will Receive Props", nextProps);
-    const { upload, auth } = this.props;
+    const {auth } = this.props;
 
     if (!_.isEmpty(nextProps.auth.currentUser) && nextProps.auth.currentUser !== auth.currentUser
     ) {this.setState({ pageRefresh: true });
@@ -56,29 +56,21 @@ class Upload extends Component {
     switch (true) {
       case _.isEmpty(nextProps.auth.currentUser):
         return false;
-      case nextState.pageRefresh:
-        this.forceUpdate();
-        return false;
       default:
         return true;
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-  }
-
   componentDidUpdate(prevProps, prevState) {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState);
-    const {getUploadOnce, upload } = this.props;
+    const {getUploadOnce, match: { params } } = this.props;
     const { pageRefresh } = this.state;
 
     switch (true) {
       case pageRefresh:
         this.setState({ pageRefresh: false });
-        return getUploadOnce(upload.data.id);
+        return getUploadOnce(params.uploadId);
       default: return null;
     }
   }
@@ -105,7 +97,7 @@ class Upload extends Component {
                 <Segment inverted>
                   <Feed>
                     <Feed.Event>
-                      <Feed.Label><img src='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' /></Feed.Label>
+                      <Feed.Label><img src={upload.data.publisher.avatar} /></Feed.Label>
                       <Feed.Content>
                         <Feed.Date style={white}>{upload.data.created_at}</Feed.Date>
                         <Feed.Summary style={white}>

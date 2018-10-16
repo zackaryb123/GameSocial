@@ -8,6 +8,7 @@ import PlaylistMenu from "../menu/menu.playlist";
 
 import {getPlaylistOptions} from '../../actions/actions.playlist';
 import {getUserPlaylist, getNextUserPlaylist, getPrevUserPlaylist} from "../../actions/actions.uploads";
+import {getPlaylistTotal} from "../../actions/actions.user.services";
 
 var moment = require("moment");
 moment().format();
@@ -16,12 +17,9 @@ export class ProfileDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activePlaylist: null
+      activePlaylist: null,
+      page: 1
     };
-  }
-
-  componentWillMount() {
-    this.setState({count: 10, start: 0, page: 1})
   }
 
   componentDidMount() {
@@ -38,9 +36,8 @@ export class ProfileDetail extends Component {
     const date =  uploads.data[0].created_at;
     console.log(date);
     if(start > 0){
-      this.props.getPrevUserPlaylist(user.data.id, date, page, count, activePlaylist).then(data => {
-        this.setState({ start: date , page: data.page, total: data.total })
-      });
+      this.props.getPlaylistTotal(auth.currentUser.uid, state);
+      this.props.getPrevUserPlaylist(user.data.id, date, page, activePlaylist)
     }
   }
 
@@ -50,9 +47,8 @@ export class ProfileDetail extends Component {
     const date = uploads.data[9].created_at;
     console.log(date);
     if(start + count < total) {
-      this.props.getNextUserPlaylist(user.data.id, date, page, count, activePlaylist).then(data => {
-        this.setState({ start: date, page: data.page, total: data.total })
-      })
+      this.props.getPlaylistTotal(auth.currentUser.uid, state);
+      this.props.getNextUserPlaylist(user.data.id, date, page, activePlaylist)
     }
   }
 
@@ -89,22 +85,14 @@ export class ProfileDetail extends Component {
   }
 
   getActivePlaylist(state) {
-    this.setState({ activePlaylist: state });
-    const {user} = this.props;
-    const page = 1;
-    const count = 10;
-
-    this.props.getUserPlaylist( user.data.id, moment(Date.now()).format(), page, count, state).then(data =>{
-      if(this.mounted){
-        this.setState({
-          start: count * data.page - count,
-          total: data.total })
-      }
-    });
+    const {user, auth} = this.props;
+    this.setState({ activePlaylist: state, page: 1 });
+    this.props.getPlaylistTotal(auth.currentUser.uid, state);
+    this.props.getUserPlaylist( user.data.id, moment(Date.now()).format(), 1, state)
   }
 
   render() {
-    const { activePlaylist, playlistList } = this.state;
+    const { activePlaylist, playlistList, page } = this.state;
     const {uploads} = this.props;
     return (
       <div>
@@ -120,7 +108,7 @@ export class ProfileDetail extends Component {
                       <Icon name='chevron left' />
                     </Menu.Item>
                     <Menu.Item>
-                      {this.state.start} - {this.state.start+this.state.count} of {this.state.total}
+                      {page*10-10} - {uploads.count<10 ? uploads.count-1 : page*10} of {uploads.count-1}
                     </Menu.Item>
                     <Menu.Item as='a' icon
                                onClick={() => this.retrieveNext()}>
@@ -139,7 +127,7 @@ export class ProfileDetail extends Component {
                       <Icon name='chevron left' />
                     </Menu.Item>
                     <Menu.Item>
-                      {this.state.start} - {this.state.start+this.state.count} of {this.state.total}
+                      {page*10-10} - {uploads.count<10 ? uploads.count-1 : page*10} of {uploads.count-1}
                     </Menu.Item>
                     <Menu.Item as='a' icon
                                onClick={() => this.retrieveNext()}>
@@ -163,5 +151,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  {getPlaylistOptions, getUserPlaylist, getNextUserPlaylist, getPrevUserPlaylist}
+  {getPlaylistOptions, getUserPlaylist, getNextUserPlaylist, getPrevUserPlaylist, getPlaylistTotal}
 )(ProfileDetail);

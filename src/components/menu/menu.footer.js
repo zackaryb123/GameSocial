@@ -14,37 +14,6 @@ class FooterBar extends Component {
       // console.log(this.state.name, "Constructor");
   }
 
-    componentWillMount() {
-      // console.log(this.state.name, "Will Mount");
-    }
-
-    componentDidMount() {
-      // console.log(this.state.name,"Did Mount");
-    }
-
-    componentWillReceiveProps(nextProps) {
-      // console.log(this.state.name, "Will Receive Props", nextProps);
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-      // console.log("Should", this.state.name, "Update", nextProps, nextState);
-      return true;
-    }
-
-    componentWillUpdate(nextProps, nextState) {
-      // console.log(this.state.name ,"Will Update", nextProps, nextState);
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-      // console.log(this.state.name, "Did Update", prevProps, prevState)
-    }
-
-    componentWillUnmount(){
-      // console.log(this.state.name, "Will Unmount");
-    }
-
-
-
   render() {
     const Logo = 'http://www.placeholde.com/400x320';
     //= require.resolve('./../../ui/assets/img/logo.PNG');
@@ -54,7 +23,6 @@ class FooterBar extends Component {
               <Grid.Column textAlign='justified' width={12}>
                 <List celled horizontal>
                   <List.Item style={{borderLeft: 'none'}}>
-                    {/*<Image as={Link} to={'/'} size='tiny' src={Logo}/>*/}
                     <Header as={Link} to='/'>Game Social</Header>
                   </List.Item>
                   <List.Item><Link to={'/about-us'}>About Us</Link></List.Item>
@@ -67,6 +35,14 @@ class FooterBar extends Component {
                   <List.Item as={Link} to='/'><List.Icon size='large' name='facebook'/></List.Item>
                   <List.Item as={Link} to='/'><List.Icon size='large' name='twitter'/></List.Item>
                   <List.Item as={Link} to='/'><List.Icon size='large' name='instagram'/></List.Item>
+                </List>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column>
+                <List celled horizontal>
+                  <List.Item><Link to={'/privacy-policy'}>Privacy Policy</Link></List.Item>
+                  <List.Item><Link to={'/privacy-policy'}>Terms & Conditions</Link></List.Item>
                 </List>
               </Grid.Column>
             </Grid.Row>

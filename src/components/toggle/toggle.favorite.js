@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Icon} from 'semantic-ui-react';
 
 import {removeFavorite, addFavorite,getInitFavoriteState, getFavoritesOnce} from "../../actions/actions.favorites";
-import {removeTrackedFavorite, addTrackedFavorite, getTrackedFavoritesOnce} from "../../actions/actions.track.favorites";
+import {removeTrackedFavorite, addTrackedFavorite, getTrackedFavoritesOnce} from "../../trash/tracking/actions.track.favorites";
 
 class FavoriteToggle extends Component {
   constructor(props) {

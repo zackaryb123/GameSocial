@@ -1,4 +1,4 @@
-import {Modal, NewVideoObj, FeedItemObj} from './models';
+import {Modal, NewVideoObj} from './models';
 import * as firebase from 'firebase';
 
 export const LOGIN_MODAL = 'LOGIN_MODAL';
@@ -31,6 +31,19 @@ export const feedbackModal = (content) => ({
   type: FEEDBACK_MODAL,
   payload: content
 });
+
+export const LINKS_MODAL = 'LINKS_MODAL';
+export const linksModal = (content) => ({
+  type: LINKS_MODAL,
+  payload: content
+});
+
+export const ONEDRIVE_MODAL = 'ONEDRIVE_MODAL';
+export const oneDriveModal = (content) => ({
+  type: ONEDRIVE_MODAL,
+  payload: content
+});
+
 
 /******Open Modal Actions********/
 export function openLoginModal(header, message, status){
@@ -68,6 +81,19 @@ export function openFeedbackModal(header, message, status){
   }
 }
 
+export function openLinksModal(header, message, status){
+  return function (dispatch) {
+    let newModal = new Modal(true, false, false,false, message, header, status);
+    dispatch(linksModal(newModal));
+  }
+}
+
+export function openOneDriveModal(header, message, status, videos){
+  return function (dispatch) {
+    let newModal = new Modal (true, false, false,false, message, header, status, videos);
+    dispatch(oneDriveModal(newModal));
+  }
+}
 
 /******Close Modals Actions********/
 export function closeLoginModal(){
@@ -106,6 +132,20 @@ export function closeFeedbackModal(){
   }
 }
 
+export function closeLinksModal(){
+  return function (dispatch) {
+    let newModal = new Modal(false, false, false, false, '', '', null);
+    dispatch(linksModal(newModal));
+  }
+}
+
+export function closeOneDriveModal(){
+  return function (dispatch) {
+    let newModal = new Modal(false, false, false, false, '', '', null);
+    dispatch(oneDriveModal(newModal));
+  }
+}
+
 /******Modal Services********/
 export const sendResetPassEmail = (email) => dispatch => {
   return firebase.auth().sendPasswordResetEmail(email)
@@ -128,13 +168,7 @@ export const upload = (data, file) => dispatch => {
     const updates = {};
     updates[`uploads/${postId}`] = upload;
     updates[`users/${data.publisher.id}/uploads/${postId}`] = upload;
-    updates[`users/${data.publisher.id}/feed/${postId}`] = upload;
     firebase.database().ref().update(updates);
-
-    // firebase.database().ref(`users/${data.publisher.id}/feed/count`).once('value', snapshot => {
-    //   const newCount = snapshot.val() + 1;
-    //   firebase.database().ref(`users/${data.publisher.id}/feed/count`).set(newCount);
-    // });
 
     resolve(true);
   }).then((res) => {if(res){

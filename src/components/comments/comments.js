@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import { Segment, Form, Comment, Header, Input, Label, Button } from "semantic-ui-react";
+import { Segment, Form, Comment, Header, Input, Label, Button, Feed } from "semantic-ui-react";
 import {reduxForm, reset, Field} from "redux-form";
 import {Link} from 'react-router-dom';
 import {addComment, getComments, getCommentsOnce, getCommentsPromise} from "../../actions/actions.comments";
+
+var moment = require("moment");
+moment().format();
 
 class Comments extends Component {
   constructor(props) {
@@ -14,40 +17,11 @@ class Comments extends Component {
       initState: false
     }
   }
-  componentWillMount() {
-    //this.props.getCommentsOnce(upload.data.id)
-  }
 
   componentDidMount() {
-    // TODO: Decide weather to user on or once call and load comments on submit/refresh
     this.props.getCommentsOnce(this.props.upload.data.id);
   }
 
-  componentWillReceiveProps(nextProps) {
-    //Update state based on changed props (state updates)
-    // console.log(this.state.name, "Will Receive Props", nextProps);
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
-    return true;
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    // Set or reset cached values before next render (DO NOT CHANGE STATE)
-    // console.log(this.state.name ,"Will Update", nextProps, nextState);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
-  }
-
-  componentWillUnmount(){
-    //DOM Manipulation (side effects)
-    // console.log(this.state.name, "Will Unmount");
-  }
 
   onSubmit(values) {
     const {upload, auth} = this.props;
@@ -63,31 +37,30 @@ class Comments extends Component {
     })
   };
 
-  renderCommentList() {
-    const {comments} = this.props;
-
-    return _.map(comments.data, comment => {
-      // let infoArray = Object.values(comment);
-      // console.log(infoArray);
-
-      return (
-        <Comment key={comment.commentId + comment.uploadId}>
-          <Comment.Avatar src='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' />
-          <Comment.Content>
-            <Comment.Author as={Link} to={`/profile/${comment.profile.id}`}>{comment.username}
-            </Comment.Author>
-            <Comment.Metadata>
-              <div>Today at 5:42PM</div>
-            </Comment.Metadata>
-            <Comment.Text>{comment.comment}
-            </Comment.Text>
-            <Comment.Actions>
-              <Comment.Action>Reply</Comment.Action>
-            </Comment.Actions>
-          </Comment.Content>
-        </Comment>
-      )
-    })
+  renderCommentList(comments) {
+    if(!_.isEmpty(comments.data)) {
+      return _.map(comments.data, comment => {
+        return (
+          <Comment key={comment.commentId + comment.uploadId}>
+            <Comment.Avatar
+              src={comment.publisher.avatar}/>
+            <Comment.Content>
+              <Comment.Author as={Link} to={`/profile/${comment.publisher.id}`}>{comment.publisher.username}
+              </Comment.Author>
+              <Comment.Metadata>
+                <div>{moment(comment.created_at).format("MMM Do YY") === moment(Date.now()).format("MMM Do YY") ?
+                  moment(comment.created_at).fromNow() : moment(comment.created_at).format("MMM Do YY, h:mm:ss a")}</div>
+              </Comment.Metadata>
+              <Comment.Text>{comment.comment}
+              </Comment.Text>
+              <Comment.Actions>
+                <Comment.Action>Reply</Comment.Action>
+              </Comment.Actions>
+            </Comment.Content>
+          </Comment>
+        )
+      })
+    }
   }
 
   renderFields(field) {
@@ -102,7 +75,6 @@ class Comments extends Component {
   render() {
     const {comments} = this.props;
 
-    console.log(this.renderCommentList());
     return(
       <Segment>
         <Form onSubmit={this.props.handleSubmit(values => this.onSubmit(values))}>
@@ -114,7 +86,7 @@ class Comments extends Component {
             <Header as={'h3'} dividing>
               Comments
             </Header>
-              {this.renderCommentList()}
+              {!_.isEmpty(comments.data) && this.renderCommentList(comments)}
           </Comment.Group>
         </div>
       </Segment>

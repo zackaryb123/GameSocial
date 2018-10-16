@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {Icon} from 'semantic-ui-react';
-import {removeLike, addLike, getInitLikeState, getLikesOnce} from "../../trash/actions.likes";
+import {removeLike, addLike, getInitLikeState, getLikesOnce} from "../../trash/likes/actions.likes";
 
 class LikeToggle extends Component {
   constructor(props) {

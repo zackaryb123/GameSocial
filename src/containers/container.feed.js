@@ -1,79 +1,65 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import * as firebase from 'firebase';
 import { Container, Header, Grid, Segment, Dimmer, Loader, Table, Menu, Icon } from "semantic-ui-react";
-import {getInitFeed, getNextFeed, getPrevFeed} from '../actions/actions.feed';
+import {getUserUploads, getNextUserUploads, getPrevUserUploads} from "../actions/actions.uploads";
+import {setFeed} from '../actions/actions.user.services';
 import FeedCard from '../components/card/card.upload';
-
-var moment = require("moment");
-moment().format();
 
 class Feed extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "Feed Container",
-      count: 10,
       page: 1
     };
   }
 
   componentDidMount() {
     const {count, page} = this.state;
-    const { auth, feed } = this.props;
+    const { auth } = this.props;
     this.mounted = true;
     if (!_.isEmpty(auth.currentUser)) {
-      this.props.getInitFeed(auth.currentUser.uid, moment(Date.now()).format(), 'init', page, count).then(data => {
-        if(this.mounted){
-          this.setState({
-            // start: count * data.page - count,
-            // date: data.date,
-            // total: data.total
-          })
-        }
-      });
+      this.props.setFeed(auth.currentUser.uid);
+      this.props.getUserUploads(auth.currentUser.uid, Date.now(), page, 'feed');
+      // this.props.getFeedUploads(auth.currentUser.uid, Date.now());
+      this.setState({page: 1})
     } else { console.log('No Remount')}
   }
 
   retrievePrev() {
-    const { count, page, prevDate, start} = this.state;
-    const {auth, feed} = this.props;
-    const date =  feed.data[0].created_at;
-    // if(start > 0){
-      this.props.getPrevFeed(auth.currentUser.uid, date, 'prev', page, count).then(data => {
-        this.setState({
-          // date: data.date,
-          // start: count * data.page - count ,
-          // page: data.page,
-          // total: data.total
-        })
-      });
-    // }
+    const { page } = this.state;
+    const { auth, uploads } = this.props;
+
+    if(!_.isEmpty(uploads.data)) {
+      const date = uploads.data[0].created_at;
+      if(page > 1){
+        this.props.getPrevUserUploads(auth.currentUser.uid, date, page, 'feed');
+        // this.props.getPrevFeedUploads(auth.currentUser.uid, date);
+        this.setState({page: page-1})
+      }
+    }
   }
 
   retrieveNext() {
     const { count, total, page, start } = this.state;
-    const {feed ,auth} = this.props;
-    const date = feed.data[9].created_at;
-    // this.setState({prevDate: feed.data[9].created_at});
-    // if(start + count < total){
-      this.props.getNextFeed(auth.currentUser.uid, date, 'next', page, count).then(data => {
-        this.setState({
-          // date: data.date,
-          // start: count * data.page - count,
-          // page: data.page,
-          // total: data.total
-        })
-      });
-    // }
+    const {uploads, auth} = this.props;
+
+    if(!_.isEmpty(uploads.data)) {
+      const date = uploads.data[uploads.data.length-1].created_at;
+      if(!_.isEmpty(uploads.data[9])){
+        this.props.getNextUserUploads(auth.currentUser.uid, date, page, 'feed');
+        // this.props.getNextFeedUploads(auth.currentUser.uid, date);
+        this.setState({page: page+1})
+      }
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     this.mounted = true;
     const {auth} = this.props;
     if(!_.isEmpty(nextProps.auth.currentUser) && (nextProps.auth.currentUser !== auth.currentUser)) {
-      this.setState({pageRefresh: true})} // Handle refresh
+      this.setState({pageRefresh: true})}
     else{console.log('Props state up to date!')}
   }
 
@@ -93,8 +79,9 @@ class Feed extends Component {
       case (pageRefresh):
         this.setState({pageRefresh: false});
         if(this.mounted){
-          this.props.getInitFeed(auth.currentUser.uid, moment(Date.now()).format(), 'init', page, count).then(data => {
-            this.setState({start: count * data.page - count, date: data.date, total: data.total})});
+          this.props.setFeed(auth.currentUser.uid);
+          this.props.getUserUploads(auth.currentUser.uid, Date.now(), page, 'feed')
+          // this.props.getFeedUploads(auth.currentUser.uid, Date.now());
         }
         break;
       default: return null;
@@ -105,8 +92,8 @@ class Feed extends Component {
     this.mounted = false;
   }
 
-  renderFeed(feed) {
-    return _.map(feed.data, upload =>{
+  renderFeed(uploads) {
+    return _.map(uploads.data, upload =>{
       return(
         <Grid.Column key={upload.id} mobile={16} computer={8} largeScreen={5} style={{paddingBottom: '1rem', paddingTop: '.5rem'}}>
             <FeedCard upload={upload}/>
@@ -116,22 +103,22 @@ class Feed extends Component {
   }
 
   render() {
-    const {feed, auth} = this.props;
+    const {uploads, auth} = this.props;
 
-    if(feed.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
-    if(_.isEmpty(auth.currentUser) || _.isEmpty(feed.data)){return null}
+    if(uploads.loading){return (<Segment><Dimmer active><Loader>Loading</Loader></Dimmer></Segment>)}
+    if(_.isEmpty(auth.currentUser) || _.isEmpty(uploads.data)){return null}
 
     return (
       <Container style={[cssTopPadding, cssBottomPadding]}>
         <Segment textAlign='center' style={{backgroundColor: 'coral'}}>
-          <Header>Feed {this.state.page}</Header>
+          <Header>Feed</Header>
           <Menu pagination>
             <Menu.Item as='a' icon
                        onClick={() => this.retrievePrev()}>
               <Icon name='chevron left' />
             </Menu.Item>
               <Menu.Item>
-                {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                {this.state.page}
               </Menu.Item>
             <Menu.Item as='a' icon
                        onClick={() => this.retrieveNext()}>
@@ -141,7 +128,7 @@ class Feed extends Component {
         </Segment>
         <Grid stackable>
           <Grid.Row centered>
-            {this.renderFeed(feed)}
+            {this.renderFeed(uploads)}
           </Grid.Row>
         </Grid>
         <div>
@@ -152,7 +139,7 @@ class Feed extends Component {
                 <Icon name='chevron left' />
               </Menu.Item>
               <Menu.Item>
-                {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                {this.state.page}
               </Menu.Item>
               <Menu.Item as='a' icon
                          onClick={() => this.retrieveNext()}>
@@ -168,13 +155,12 @@ class Feed extends Component {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  feed: state.feed,
-  lazyFeed: state.lazyFeed,
-  likes: state.likes
+  uploads: state.uploads
 });
 
 export default (connect(mapStateToProps,
-  {getInitFeed, getNextFeed, getPrevFeed})(Feed));
+  { getUserUploads, getNextUserUploads, getPrevUserUploads,
+    setFeed})(Feed));
 
 let cssTopPadding = {
   paddingTop: '0'

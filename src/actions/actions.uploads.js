@@ -1,4 +1,6 @@
 import  * as firebase from "firebase";
+import _ from "lodash";
+import { FeedItemObj } from "./models";
 
 // GET Action
 export const UPLOADS_REQUEST = 'UPLOADS_REQUEST';
@@ -15,6 +17,11 @@ export const uploadsGet = (newItem, date, page, total) => ({
   total: total
 });
 
+export const UPLOADS_TOTAL_GET = 'UPLOADS_TOTAL_GET';
+export const uploadsTotalGet = (count) => ({
+  type: UPLOADS_TOTAL_GET,
+  count: count
+});
 
 export const UPLOADS_CLEAR = 'UPLOADS_CLEAR';
 export const uploadsClear = (data) => ({
@@ -50,8 +57,8 @@ export function getUploadSource(load, date) {
   }
 }
 
-// Actions
-export const getUploads = (date, page, count, state) => dispatch => {
+/////////////// Uploads /////////////////////
+export const getUploads = (date) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -69,7 +76,7 @@ export const getUploads = (date, page, count, state) => dispatch => {
   // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getNextUploads = (date, page, count, state) => dispatch => {
+export const getNextUploads = (date) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -87,7 +94,7 @@ export const getNextUploads = (date, page, count, state) => dispatch => {
   // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getPrevUploads = (date, page, count, state) => dispatch => {
+export const getPrevUploads = (date) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -106,8 +113,8 @@ export const getPrevUploads = (date, page, count, state) => dispatch => {
 };
 
 
-
-export const getUserUploads = (userId, date, page, count, state) => dispatch => {
+/////////// User Uploads ///////////////
+export const getUserUploads = (userId, date, page, state) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -125,7 +132,7 @@ export const getUserUploads = (userId, date, page, count, state) => dispatch => 
   // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getNextUserUploads = (userId, date, page, count, state) => dispatch => {
+export const getNextUserUploads = (userId, date, page, state) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -143,7 +150,7 @@ export const getNextUserUploads = (userId, date, page, count, state) => dispatch
   // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getPrevUserUploads = (userId, date, page, count, state) => dispatch => {
+export const getPrevUserUploads = (userId, date, page, state) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -161,8 +168,8 @@ export const getPrevUserUploads = (userId, date, page, count, state) => dispatch
   // }).catch(error => dispatch(feedError(error)))
 };
 
-
-export const getUserPlaylist = (userId, date, page, count, state) => dispatch => {
+///////////// Playlist Uploads ///////////////
+export const getUserPlaylist = (userId, date, page, state) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -181,7 +188,7 @@ export const getUserPlaylist = (userId, date, page, count, state) => dispatch =>
   // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getNextUserPlaylist = (userId, date, page, count, state) => dispatch => {
+export const getNextUserPlaylist = (userId, date, page, state) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {
@@ -200,7 +207,7 @@ export const getNextUserPlaylist = (userId, date, page, count, state) => dispatc
   // }).catch(error => dispatch(feedError(error)))
 };
 
-export const getPrevUserPlaylist = (userId, date, page, count, state) => dispatch => {
+export const getPrevUserPlaylist = (userId, date, page, state) => dispatch => {
   dispatch(uploadsClear());
   dispatch(uploadsRequest);
   // return new Promise((resolve, reject) => {

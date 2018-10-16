@@ -1,54 +1,75 @@
 import React, {Component} from 'react';
+import * as firebase  from 'firebase';
 import {connect} from 'react-redux';
 import {Card, Image, Feed, Icon, Header} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import _ from 'lodash';
 
 import {deleteUserUpload} from  '../../actions/actions.user.delete';
+import {getUserUploads} from '../../actions/actions.uploads';
 
 import FavoriteToggle from '../toggle/toggle.favorite';
 import LikeToggle from '../toggle/toggle.like';
 import VideoPlayer from "../video/video.player";
 
+var moment = require("moment");
+moment().format();
+
 class FeedCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      publisher: null
     }
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+    this.getPublisherInfo();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  getPublisherInfo() {
+    const {upload} = this.props;
+    firebase.database().ref(`users/${upload.publisher.id}/profile`).once('value', snap => {
+      if(this.mounted) {
+        this.setState({publisher: snap.val()})
+      }
+    })
   }
 
   removeUpload = () => {
     const { auth, user, upload } = this.props;
-    this.props.deleteUserUpload(auth.currentUser.uid, upload.id);
+    if(confirm(`Are you sure you want to remove ${upload.title}?`)) {
+      this.props.deleteUserUpload(auth.currentUser.uid, upload.id);
+      // TODO: pass down page and date to render same page
+      this.props.getUserUploads(user.data.id, Date.now(), 1, 'uploads');
+    }
   };
-
-  hoverCard = (e) => this.setState({hoverCard: true});
-  unhoverCard = (e) => this.setState({hoverCard: false});
-
-  hoverLink = (e) => this.setState({hoverLink: true});
-  unhoverLink = (e) => this.setState({hoverLink: false});
-
-  hoverUser = (e) => this.setState({hoverUser: true});
-  unhoverUser = (e) => this.setState({hoverUser: false});
 
   renderCardContent = (upload, hoverCard, hoverLink, hoverUser) => {
     const {auth, user, activeMenu} = this.props;
+
+    if(_.isEmpty(auth.currentUser)) {return null}
     return (
       <Card.Content style={topContentHover}>
-        {/*hoverCard ? topContentHover : {display: 'none'}}>*/}
         <Feed>
           <Feed.Event>
-            <Feed.Label image='https://res.cloudinary.com/game-social/image/upload/v1529600986/Avatars/do3vsmak5q0uvsotseed.png' />
+            <Feed.Label image={this.state.publisher && this.state.publisher.avatar} />
             <Feed.Content>
               <Feed.Summary>
                 <Feed.User
-                  // onMouseEnter={this.hoverUser} onMouseLeave={this.unhoverUser}
                   as={Link} to={`/profile/${upload.publisher.id}`}
                   style={hoverUser?white:lightBlue}>{upload.publisher.username}</Feed.User>
-                <Feed.Date style={white}>{upload.created_at}</Feed.Date>
+                <Feed.Date style={white}>
+                  {moment(upload.created_at).format("MMM Do YY") === moment(Date.now()).format("MMM Do YY") ?
+                    moment(upload.created_at).fromNow() : moment(upload.created_at).format("MMM Do YY, h:mm:ss a")}
+                  </Feed.Date>
               </Feed.Summary>
               <Feed.Extra name='caption'
-                // onMouseEnter={this.hoverLink} onMouseLeave={this.unhoverLink}
                 as={Link} to={`/upload/${upload.publisher.id}/uploads/${upload.id}`}
                 style={hoverLink?white:lightBlue} text>{upload.caption}</Feed.Extra>
               <Feed.Meta style={metaContent}>
@@ -81,18 +102,14 @@ class FeedCard extends Component {
 
     if(upload.type === 'video'){
       return (
-        <Card fluid name='card'
-              // onMouseEnter={this.hoverCard} onMouseLeave={this.unhoverCard}
-        >
+        <Card fluid name='card'>
           {this.renderCardContent(upload, hoverCard, hoverLink, hoverUser)}
           <VideoPlayer source={upload} options={upload.options}/>
         </Card>
       );
     } else if (upload.type === 'image') {
       return(
-        <Card fluid name='card'
-              // onMouseEnter={this.hoverCard} onMouseLeave={this.unhoverCard}
-        >
+        <Card fluid name='card'>
           {this.renderCardContent(upload, hoverCard, hoverLink, hoverUser)}
           <Image alt="upload" src={upload.url}/>
         </Card>
@@ -113,7 +130,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps,
-  {deleteUserUpload})(FeedCard);
+  {deleteUserUpload, getUserUploads})(FeedCard);
 
 
 const topContentHover = {

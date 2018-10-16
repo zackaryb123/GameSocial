@@ -4,6 +4,7 @@ import {Link, Redirect} from 'react-router-dom';
 import {Header, Menu, Image, Dropdown, Button, Icon} from 'semantic-ui-react'
 import {signOut} from "../../actions/actions.auth";
 import {openUploadModal} from "../../actions/actions.modals";
+import _ from "lodash";
 
 class HeaderBar extends Component {
   constructor(props) {
@@ -36,18 +37,20 @@ class HeaderBar extends Component {
     this.setState({signedOut: true});
     this.props.signOut();
   };
-  handleDropDown = (e) => this.setState({dropped: !this.state.dropped});
-  openUploadModal() {this.props.openUploadModal()}
+  // handleDropDown = (e) => this.setState({dropped: !this.state.dropped});
+  openUploadModal(e, {name}) {
+    // this.handleItemClick();
+    this.props.openUploadModal()
+  }
 
 
   render() {
-    // console.log(this.state.name, 'Render');
     const {auth} = this.props;
+    const { activeItem, windowWidth, dropped, signedOut } = this.state;
 
     const Logo = 'http://www.placeholde.com/350x270';
     // = require.resolve('./../../ui/assets/img/logo.PNG');
 
-    const { activeItem, windowWidth, dropped } = this.state;
     return (
       <Menu stackable fixed='top' inverted pointing style={{backgroundColor: '#696969'}}>
 
@@ -56,9 +59,20 @@ class HeaderBar extends Component {
           {/*<Image as={Link} to='/' size='tiny' src={Logo} />*/}
         </Menu.Item>
 
-        <Button fluid secondary style={windowWidth >= 767 ? {display: 'none'}: {display: 'block', marginTop: '-3rem', backgroundColor: '#696969'}} icon>
-          <Icon size='large' onClick={this.handleDropDown} name={dropped ? 'angle double up':'angle double down' } />
-        </Button>
+        <Menu.Menu position="right" style={(windowWidth >= 767) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
+        <Dropdown
+          style={(windowWidth >= 767)? {display: 'none'}: null}
+          item={true} name='angle down' icon={{ name: 'angle down', size: 'large' }} active={(activeItem === 'profile').toString()} onClick={this.handleItemClick}>
+          <Dropdown.Menu>
+            <Dropdown.Item as={Link} to={`/feed`}>Feed</Dropdown.Item>
+            <Dropdown.Item as={Link} to='/discover'>Discover</Dropdown.Item>
+            <Dropdown.Item onClick={this.openUploadModal.bind(this)}>Upload</Dropdown.Item>
+            {auth.currentUser && !auth.loading ? <Dropdown.Item as={Link} to={`/profile/${auth.currentUser.uid}`}>profile</Dropdown.Item> : <Button loading/>}
+            <Dropdown.Item as={Link} to='/settings'>Settings</Dropdown.Item>
+            <Dropdown.Item onClick={this.handleSignOut}>Sign Out</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        </Menu.Menu>
 
         <Menu.Item as={Link} to='/feed' style={(windowWidth < 767) && !dropped ? {display: 'none'}: null}
           icon={{name: 'signal'}}
@@ -72,9 +86,12 @@ class HeaderBar extends Component {
           active={activeItem === 'discover'}
           onClick={this.handleItemClick}/>
 
-        <Menu.Menu position='right' style={(windowWidth < 767) ? {display: !dropped ? 'none': 'block'}: {position: 'absolute', height: '100%', right: '0'}}>
-          <Menu.Item name='upload' active={activeItem === 'upload'} onClick={this.handleItemClick}>
-            <Button secondary style={{backgroundColor: '#696969'}} icon={{name: 'upload', size: 'large'}} onClick={this.openUploadModal.bind(this)} name={'upload'}/>
+        <Menu.Menu position='right' style={(windowWidth < 767) ? {display: !dropped ? 'none': 'block'}: null}>
+          <Menu.Item
+            icon={{name: 'upload', size: 'large'}}
+            name='upload'
+            active={activeItem === 'upload'}
+            onClick={this.openUploadModal.bind(this)}>
           </Menu.Item>
 
           {auth.currentUser && !auth.loading ?

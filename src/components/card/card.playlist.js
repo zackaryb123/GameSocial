@@ -3,8 +3,12 @@ import { connect } from "react-redux";
 import { Icon, Card, Image, Segment, Feed } from "semantic-ui-react";
 
 import VideoPlayer from '../video/video.player';
-import {getUserPlaylistOnce} from '../../actions/actions.user.get';
-import { removeFromPlaylist } from "../../actions/actions.user.delete";
+import { removeFromPlaylist } from "../../actions/actions.playlist";
+import {getPlaylistTotal} from "../../actions/actions.user.services";
+import {getUserPlaylist} from "../../actions/actions.uploads";
+
+var moment = require("moment");
+moment().format();
 
 class PlaylistCard extends Component {
   constructor(props) {
@@ -15,12 +19,15 @@ class PlaylistCard extends Component {
   }
 
   hoverCard = (e) => this.setState({hoverCard: true});
-  unhoverCard = (e) => this.setState({hoverCard: false});
+  // unhoverCard = (e) => this.setState({hoverCard: false});
 
   removePlaylist = () => {
-    const { auth, upload, activePlaylist, start, page, count } = this.props;
-    this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, activePlaylist);
-    this.props.getUserPlaylistOnce(auth.currentUser.uid, start, page, count, activePlaylist);
+    const { auth, upload, activePlaylist, page } = this.props;
+    if(confirm(`Are you sure you want to delete video from ${activePlaylist}`)){
+      this.props.removeFromPlaylist(auth.currentUser.uid, upload.id, activePlaylist);
+      this.props.getPlaylistTotal(auth.currentUser.uid, activePlaylist);
+      this.props.getUserPlaylist( auth.currentUser.uid, moment(Date.now()).format(), page, activePlaylist);
+    }
   };
 
   render() {
@@ -52,7 +59,7 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  {removeFromPlaylist, getUserPlaylistOnce}
+  {removeFromPlaylist, getPlaylistTotal, getUserPlaylist}
 )(PlaylistCard);
 
 const cssCloseIcon = {

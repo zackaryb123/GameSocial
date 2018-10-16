@@ -44,7 +44,7 @@ export class FeaturedToggle extends Component {
 
     if (isFeatured) {this.props.removeFeatured(upload.id)}
     else{this.props.addFeatured(upload)}
-    this.props.getFeaturedOnce()
+    this.props.getFeaturedOnce();
   };
 
   render(){

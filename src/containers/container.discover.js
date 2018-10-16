@@ -6,7 +6,6 @@ import {getUploads, getNextUploads, getPrevUploads} from '../actions/actions.upl
 import FeedCard from "../components/card/card.upload";
 import _ from "lodash";
 import FeaturedSlider from "../components/slider/slider.featured";
-// import _ from 'lodash';
 
 var moment = require("moment");
 moment().format();
@@ -16,12 +15,8 @@ class Discover extends Component {
     super(props);
     this.state = {
       name: "Discover Container",
+      page: 1
     };
-  }
-
-
-  componentWillMount() {
-    this.setState({count: 10,start: 0, page: 1})
   }
 
   componentDidMount() {
@@ -29,33 +24,20 @@ class Discover extends Component {
     const {page, count} = this.state;
 
     if(!_.isEmpty(auth.currentUser)){
-      this.props.getUploads(moment(Date.now()).format(), page, count).then(data => {
-        if(this.mounted){
-          this.setState({
-            start: count * data.page - count,
-            date: data.date,
-            total: data.total })
-        }
-      });
+      this.props.getUploads(Date.now())
     } else { console.log('No Remount')}
   }
 
   retrievePrev() {
-    const { count, page, start} = this.state;
-    const {uploads} = this.props;
+    const {page} = this.state;
+    const {uploads, auth} = this.props;
 
-    const date =  uploads.data[0].created_at;
-    console.log(date);
-
-    if(start > 0){
-      this.props.getPrevUploads(date, page, count).then(data => {
-        this.setState({
-          date: data.date,
-          start: count * data.page - count ,
-          page: data.page,
-          total: data.total
-        })
-      })
+    if(!_.isEmpty(uploads.data)){
+      const date =  uploads.data[0].created_at;
+      if(page > 1){
+        this.props.getPrevUploads(date);
+        this.setState({page: page-1});
+      }
     }
   }
 
@@ -63,18 +45,12 @@ class Discover extends Component {
     const { count, total, page, start } = this.state;
     const {auth, uploads} = this.props;
 
-    const date = uploads.data[9].created_at;
-
-    if(start + count < total){
-      this.props.getNextUploads(date, page, count).then(data => {
-        this.setState({
-          date: data.date,
-          page:data.page,
-          start: count * data.page - count,
-          total: data.total
-        })
-      });
-
+    if(!_.isEmpty(uploads.data)){
+      const date = uploads.data[uploads.data.length-1].created_at;
+      if(!_.isEmpty(uploads.data[9])){
+        this.props.getNextUploads(date);
+        this.setState({page: page+1});
+      }
     }
   }
 
@@ -101,21 +77,15 @@ class Discover extends Component {
     //DOM Manipulation (render occurs before)
     // console.log(this.state.name, "Did Update", prevProps, prevState)
     this.mounted = true;
+    const {auth} = this.props;
     const {pageRefresh, page, count} = this.state;
 
     switch(true) {
       case (pageRefresh):
         this.setState({ pageRefresh: false });
         if(this.mounted){
-          this.props.getUploads(moment(Date.now()).format(), page, count).then(data => {
-            if(this.mounted){
-              this.setState({
-                start: count * data.page - count,
-                date: data.date,
-                total: data.total })
-            }
-          });
-        } else { console.log('No Remount')}
+          this.props.getUploads(Date.now());
+        }
         break;
       default: return null;
     }
@@ -142,20 +112,6 @@ class Discover extends Component {
 
     return (
       <div>
-        <Segment basic textAlign='center' style={{backgroundColor: '#1B1C1D'}}>
-          <Header style={{color: 'white'}}>Featured</Header>
-        </Segment>
-
-        <div>
-          <Grid textAlign="center" style={{ backgroundColor: "#1B1C1D" }}>
-            <Grid.Row>
-              <Grid.Column width={16} style={{maxWidth: '720px'}}>
-                <FeaturedSlider/>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        </div>
-
         <Container>
         <div style={{marginTop: '2rem'}}>
           <Segment textAlign='center' style={{backgroundColor: 'coral'}}>
@@ -166,7 +122,7 @@ class Discover extends Component {
                 <Icon name='chevron left' />
               </Menu.Item>
               <Menu.Item>
-                {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                {this.state.page}
               </Menu.Item>
               <Menu.Item as='a' icon
                          onClick={() => this.retrieveNext()}>
@@ -191,7 +147,7 @@ class Discover extends Component {
                 <Icon name='chevron left' />
               </Menu.Item>
               <Menu.Item>
-                {this.state.start}- {this.state.start+this.state.count} of {this.state.total}
+                {this.state.page}
               </Menu.Item>
               <Menu.Item as='a' icon
                          onClick={() => this.retrieveNext()}>
@@ -208,8 +164,7 @@ class Discover extends Component {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  uploads: state.uploads,
-  featured: state.featured
+  uploads: state.uploads
 });
 
 export default connect(mapStateToProps,
