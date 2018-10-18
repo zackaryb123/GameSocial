@@ -64,8 +64,6 @@ class Discover extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // Compare and determine if render needed (DO NOT CHANGE STATE)
-    // console.log("Should", this.state.name, "Update", nextProps, nextState);
     switch(true){
       case (_.isEmpty(nextProps.auth.currentUser)):
         return false;
@@ -74,8 +72,6 @@ class Discover extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    //DOM Manipulation (render occurs before)
-    // console.log(this.state.name, "Did Update", prevProps, prevState)
     this.mounted = true;
     const {auth} = this.props;
     const {pageRefresh, page, count} = this.state;
